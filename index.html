@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Esportify – Joue. Survis. Domine.</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Esportify – Joue. Survis. Domine.</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -18,21 +18,20 @@
     <ul class="nav-links">
       <li><a href="index.html" class="active">Accueil</a></li>
       <li><a href="#gallery">Galerie</a></li>
-      <li><a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank">FAQ</a></li>
+      <li><a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" rel="noopener noreferrer">FAQ</a></li>
       <li><a href="#contact">Contact</a></li>
     </ul>
   </div>
   <a href="index.html" class="nav-logo">
-    <img class="logo-img" src="Assets/logobleu.png" alt="logo-Esportify"
-    height="50" width="50" />
+    <img class="logo-img" src="Assets/logobleu.png" alt="logo-Esportify" height="50" width="50" />
     <span class="logo-text">ESPORTIFY</span>
   </a>
   <div class="nav-right">
-    <a href="#events" class="nav-events">VOIR LES EVENTS</a>
+    <a href="events.html" class="nav-events">VOIR LES EVENTS</a>
     <a href="connexion.html" class="btn-join">NOUS REJOINDRE</a>
     <div class="lang-selector">
-      <span class="lang-active">🌐 FR</span>
-      <span class="lang-inactive">🌐 EN</span> 
+      <span class="lang-btn active" data-lang="fr">🌐 FR</span>
+      <span class="lang-btn" data-lang="en">🌐 EN</span>
     </div>
     </div>
   </div>
@@ -43,9 +42,9 @@
   <ul>
     <li><a href="index.html">Accueil</a></li>
     <li><a href="#gallery">Galerie</a></li>
-    <li><a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">FAQ</a></li>
+    <li><a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" rel="noopener noreferrer">FAQ</a></li>
     <li><a href="#contact">Contact</a></li>
-    <li><a href="#events">Voir les events</a></li>
+    <li><a href="events.html">Voir les events</a></li>
     <li><a href="connexion.html" class="btn-join-mobile">Nous rejoindre</a></li>
   </ul>
 </div>
@@ -62,7 +61,7 @@
         <span class="purple">DOMINE.</span>
       </h1>
       <p class="hero-subtitle">Découvre des tournois gaming créés par des joueurs passionnés. Inscris-toi en quelques secondes et grimpe au classement.</p>
-      <a href="#events" class="btn-primary">Voir le stream →</a>
+      <a href="event-detail.html" class="btn-primary">Voir le stream →</a>
     </div>
     <div class="hero-image">
       <img src="Assets/eifigamer.png" alt="Joueuse gaming setup" />
@@ -79,6 +78,7 @@
   <div class="tournament-carousel">
     <div class="tournament-cards" id="tournamentCards">
       <div class="tournament-card">
+        <a href="event-detail.html?id=1" class="tournament-card-link">
         <div class="card-badge validated">Validé</div>
         <div class="game-icon"><div class="game-icon">
   <svg width="32" height="32" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
@@ -95,10 +95,12 @@
         <div class="card-meta">
           <span>👥 32 joueurs</span>
           <span>📅 10 Août</span>
-        </div>
+        </div></a>
       </div>
+
       <div class="tournament-card featured">
-        <div class="card-badge validated">Validé</div>
+        <a href="event-detail.html?id=2" class="tournament-card-link">
+        <div class="card-badge live">En cours</div>
         <div class="game-icon"> <div class="game-icon">
   <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 16 16" fill="none">
     <path d="M3 0L6.58579 3.58579L3.58579 6.58579L0 3V0H3Z" fill="#B734BE"/>
@@ -111,9 +113,11 @@
         <div class="card-meta">
           <span>👥 45 joueurs</span>
           <span>📅 28 Août</span>
-        </div>
+        </div></a>
       </div>
+      
       <div class="tournament-card">
+        <a href="event-detail.html?id=3" class="tournament-card-link">
         <div class="card-badge pending">En attente</div>
         <div class="game-icon"><svg width="32px" height="32px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M21.9999 8.16234L21.9999 8.23487C21.9999 9.09561 21.9999 9.52598 21.7927 9.8781C21.5855 10.2302 21.2093 10.4392 20.4569 10.8572L19.6636 11.298C20.2102 9.44984 20.3926 7.46414 20.4601 5.76597C20.4629 5.69316 20.4662 5.61945 20.4695 5.54497L20.4718 5.49279C21.1231 5.71896 21.4887 5.88758 21.7168 6.20408C22 6.59692 22 7.11873 21.9999 8.16234Z" fill="#45ACF7"/>
@@ -124,7 +128,7 @@
         <div class="card-meta">
           <span>👥 64 joueurs</span>
           <span>📅 4 Sept.</span>
-        </div>
+        </div></a>
       </div>
     </div>
     <div class="carousel-controls">
@@ -147,29 +151,9 @@
   <div class="gallery-slider">
     <button class="gallery-arrow left" id="galleryPrev">‹</button>
     <div class="gallery-track" id="galleryTrack">
-      <div class="gallery-slide active">
-        <img src="https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800&q=80" alt="Gaming tournament moment" />
-      </div>
-      <div class="gallery-slide">
-        <img src="Assets/gallerie3.jpg" alt="Fortnite tournament" />
-      </div>
-      <div class="gallery-slide">
-        <img src="Assets/gallerie4.jpg" alt="Gamers united" />
-      </div>
-      <div class="gallery-slide">
-        <img src="Assets/gallerie2.jpg" alt="Ravo esport" />
-      </div>
-        <div class="gallery-slide">
-        <img src="Assets/gallerie1.jpg" alt="Freestyle event" />
-      </div>
-    </div>
     <button class="gallery-arrow right" id="galleryNext">›</button>
   </div>
-  <div class="gallery-dots">
-    <span class="gdot active"></span>
-    <span class="gdot"></span>
-    <span class="gdot"></span>
-  </div>
+  <div class="gallery-dots" id="galleryDots"></div>
 </section>
 
 <!-- SPONSORS -->
@@ -177,13 +161,19 @@
   <h2>NOS <span class="purple">SPONSORS</span></h2>
   <div class="sponsor-logos">
     <div class="sponsor-item">
-      <img src="Assets/mlbb-logo.webp" alt="Mobile Legends" width="190" height="150" />
+      <a href="https://www.mobilelegends.com/" target="_blank" rel="noopener noreferrer">
+        <img src="Assets/mlbb-logo.webp" alt="Mobile Legends" width="190" height="150" />
+      </a>
     </div>
     <div class="sponsor-item">
-      <img src="Assets/pubg-logo.png" alt="PUBG Mobile" width="190" height="190" />
+      <a href="https://pubg.com/fr/main" target="_blank" rel="noopener noreferrer">
+        <img src="Assets/pubg-logo.png" alt="PUBG Mobile" width="190" height="190" />
+      </a>
     </div>
     <div class="sponsor-item">
-      <img src="Assets/unreal-logo.png" alt="Unreal Engine" width="120" height="120" />
+      <a href="https://www.unrealengine.com/" target="_blank" rel="noopener noreferrer">
+        <img src="Assets/unreal-logo.png" alt="Unreal Engine" width="120" height="120" />
+      </a>
     </div>
   </div>
 </section>
@@ -233,7 +223,7 @@
       <div class="footer-col">
         <h4 class="col-title purple">ENTREPRISE</h4>
         <ul>
-          <li><a href="#">Contact</a></li>
+          <li><a href="#contact">Contact</a></li>
           <li><a href="#">FAQ</a></li>
           <li><a href="#">Nouveautés</a></li>
           <li><a href="#">Carrières</a></li>
@@ -243,15 +233,15 @@
       <div class="footer-col">
         <h4 class="col-title blue">SPONSORS</h4>
         <ul>
-          <li><a href="#">Mobile Legends</a></li>
-          <li><a href="#">Pubg Mobile</a></li>
-          <li><a href="#">Unreal Engine</a></li>
+          <li><a href="https://www.mobilelegends.com/" target="_blank" rel="noopener noreferrer">Mobile Legends</a></li>
+          <li><a href="https://pubg.com/fr/main" target="_blank" rel="noopener noreferrer">Pubg Mobile</a></li>
+          <li><a href="https://www.unrealengine.com/" target="_blank" rel="noopener noreferrer">Unreal Engine</a></li>
         </ul>
       </div>
       <div class="footer-col">
         <h4 class="col-title purple">TOURNOIS</h4>
         <ul>
-          <li><a href="#">Événements à venir</a></li>
+          <li><a href="events.html">Événements à venir</a></li>
           <li><a href="#">Événements passés</a></li>
         </ul>
       </div>
@@ -260,22 +250,15 @@
   <div class="footer-bottom">
     <p>Copyright © 2026 Esportify. All rights Reserved</p>
     <div class="social-links">
-      <a href="#" aria-label="TikTok">
-        <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.87a8.18 8.18 0 004.78 1.52V7.01a4.85 4.85 0 01-1.01-.32z"/></svg>
-      </a>
-      <a href="#" aria-label="Instagram">
-        <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162S8.597 18.163 12 18.163s6.162-2.759 6.162-6.162S15.403 5.838 12 5.838zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
-      </a>
-      <a href="#" aria-label="X/Twitter">
-        <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.747l7.73-8.835L1.254 2.25H8.08l4.259 5.63L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-      </a>
-      <a href="#" aria-label="LinkedIn">
-        <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-      </a>
+      <a href="#" aria-label="TikTok"><svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.87a8.18 8.18 0 004.78 1.52V7.01a4.85 4.85 0 01-1.01-.32z"/></svg></a>
+      <a href="#" aria-label="Instagram"><svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162S8.597 18.163 12 18.163s6.162-2.759 6.162-6.162S15.403 5.838 12 5.838zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></a>
+      <a href="#" aria-label="X/Twitter"><svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.747l7.73-8.835L1.254 2.25H8.08l4.259 5.63L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+      <a href="#" aria-label="LinkedIn"><svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
     </div>
   </div>
 </footer>
 
+<script src="data.js"></script>
 <script src="script.js"></script>
 </body>
 </html>
