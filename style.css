@@ -259,6 +259,16 @@ img { max-width: 100%; display: block; }
 .tournament-card.featured { border-color: var(--purple); }
 .tournament-card.featured:hover { border-color: var(--purple-light); }
 
+.tournament-card-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+.tournament-card-link:hover .tournament-card {
+  border-color: var(--blue);
+  transform: translateY(-3px);
+}
+
 .tournament-card.empty-card {
   display: flex;
   flex-direction: column;
@@ -567,7 +577,7 @@ img { max-width: 100%; display: block; }
 
 
 /* ============================
-   ESPACE JOUEUR & DASHBOARD — Sidebar Layout
+   ESPACE JOUEUR & DASHBOARD
 ============================ */
 .app-layout {
   display: grid;
@@ -609,11 +619,11 @@ img { max-width: 100%; display: block; }
   max-width: 900px;
 }
 
-/* Stat cards */
+
 .stat-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 2rem; }
 .stat-card {
   background: var(--card-bg);
-  border: 1px solid var(--card-border);
+  border: 2px solid var(--blue);
   border-color: var(--blue);
   border-radius: 8px;
   padding: 1.25rem 1.5rem;
@@ -636,7 +646,8 @@ img { max-width: 100%; display: block; }
 .stat-value.purple { color: var(--purple); }
 .stat-value.white { color: var(--white); }
 
-/* Event cards */
+
+
 .events-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 .event-card {
   background: var(--card-bg);
@@ -829,6 +840,12 @@ img { max-width: 100%; display: block; }
 }
 .btn-create:hover { background: var(--blue-light); }
 
+.badge-non_valide {
+  background: rgba(239,68,68,0.15);
+  color: #ef4444;
+  border: 1px solid rgba(239,68,68,0.4);
+}
+
 
 /* ============================
    PAGE EVENTS — HEADER
@@ -922,7 +939,7 @@ img { max-width: 100%; display: block; }
 
 .event-list-card {
   background: var(--card-bg);
-  border: 1px solid var(--card-border);
+  border: 2px solid var(--card-border);
   border-radius: 10px;
   overflow: hidden;
   cursor: pointer;
@@ -935,9 +952,9 @@ img { max-width: 100%; display: block; }
   border-color: var(--blue);
   transform: translateY(-4px);
 }
-.event-list-card.statut-en_cours { border-color: rgba(34,197,94,0.4); }
+.event-list-card.statut-en_cours { border-color: #22c55e;; }
 .event-list-card.statut-en_cours:hover { border-color: #22c55e; }
-.event-list-card.statut-en_attente { border-color: rgba(183,52,190,0.3); }
+.event-list-card.statut-en_attente { border-color: var(--purple); }
 
 .elc-image {
   width: 100%;
@@ -1201,17 +1218,19 @@ img { max-width: 100%; display: block; }
   padding: 1rem;
   font-size: 13px;
   vertical-align: middle;
+  border-top: 2px solid var(--card-border);
+  border-bottom: 2px solid var(--card-border);
 }
 .orga-table td:first-child {
   border-radius: 8px 0 0 8px;
-  border-left: 1px solid var(--card-border);
+  border-left: 2px solid var(--card-border);
   font-family: var(--font-heading);
   font-size: 14px;
   letter-spacing: 0.04em;
 }
 .orga-table td:last-child {
   border-radius: 0 8px 8px 0;
-  border-right: 1px solid var(--card-border);
+  border-right: 2px solid var(--card-border);
 }
 .orga-table tr td {
   border-top: 1px solid var(--card-border);

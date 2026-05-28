@@ -30,8 +30,8 @@
     <a href="events.html" class="nav-events">VOIR LES EVENTS</a>
     <a href="dashboard-organisateur.html" class="btn-join active">MON ESPACE</a>
     <div class="lang-selector">
-      <span class="lang-active">🌐 FR</span>
-      <span class="lang-inactive">🌐 EN</span>
+      <span class="lang-btn active" data-lang="fr">🌐 FR</span>
+      <span class="lang-btn" data-lang="en">🌐 EN</span>
     </div>
   </div>
 </nav>
@@ -142,15 +142,14 @@
           <tbody id="orgaEventsList"></tbody>
         </table>
       </div>
-
-    </div> <!-- ← fin vue-dashboard -->
+    </div>
 
     <!-- VUE TOUS LES ÉVÉNEMENTS -->
     <div id="vue-tous-events" style="display:none">
       <div class="page-title-row">
         <div>
           <h1 class="page-title">TOUS LES <span class="blue">ÉVÉNEMENTS</span></h1>
-          <p class="page-subtitle">Vue globale de la plateforme</p>
+          <p class="page-subtitle">Vue globale des events de la plateforme</p>
         </div>
       </div>
       <div class="events-list" id="allEventsList"></div>
@@ -221,12 +220,12 @@
             </div>
             <div class="form-group">
               <label>Email</label>
-              <input type="email" value="express@esportify.gg" />
+              <input type="email" value="sohin@esportify.fr" />
             </div>
           </div>
           <div class="form-group" style="margin-top: 1rem;">
             <label>Bio</label>
-            <textarea rows="3">Organisateur compétitif depuis 2022. Spécialisé FPS et MOBA.</textarea>
+            <textarea rows="3">Organisatrice compétitive depuis 2022. Spécialisée FPS et MOBA.</textarea>
           </div>
         </div>
         <div class="params-section">
@@ -246,7 +245,7 @@
       </div>
     </div>
 
-  </main>
+  
 
 <!-- MODAL CRÉER ÉVÉNEMENT -->
 <div class="modal-overlay" id="createModal" style="display:none">
@@ -300,6 +299,8 @@
     </div>
   </div>
 </div>
+</main>
+</div>
 
 <!-- FOOTER -->
 <footer class="footer">
@@ -311,7 +312,7 @@
       <div class="footer-col">
         <h4 class="col-title purple">ENTREPRISE</h4>
         <ul>
-          <li><a href="#">Contact</a></li>
+          <li><a href="index.html#contact">Contact</a></li>
           <li><a href="#">FAQ</a></li>
           <li><a href="#">Nouveautés</a></li>
           <li><a href="#">Carrières</a></li>
@@ -321,15 +322,15 @@
       <div class="footer-col">
         <h4 class="col-title blue">SPONSORS</h4>
         <ul>
-          <li><a href="#">Mobile Legends</a></li>
-          <li><a href="#">Pubg Mobile</a></li>
-          <li><a href="#">Unreal Engine</a></li>
+          <li><a href="https://www.mobilelegends.com/" target="_blank" rel="noopener noreferrer">Mobile Legends</a></li>
+          <li><a href="https://pubg.com/fr/main" target="_blank" rel="noopener noreferrer">Pubg Mobile</a></li>
+          <li><a href="https://www.unrealengine.com/" target="_blank" rel="noopener noreferrer">Unreal Engine</a></li>
         </ul>
       </div>
       <div class="footer-col">
         <h4 class="col-title purple">TOURNOIS</h4>
         <ul>
-          <li><a href="#">Événements à venir</a></li>
+          <li><a href="events.html">Événements à venir</a></li>
           <li><a href="#">Événements passés</a></li>
         </ul>
       </div>

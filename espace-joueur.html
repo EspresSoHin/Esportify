@@ -53,31 +53,31 @@
   <!-- SIDEBAR -->
   <aside class="sidebar">
     <nav class="sidebar-nav">
-      <a href="espace-joueur.html" class="sidebar-item active">
+      <a href="espace-joueur.html" class="sidebar-item active" id="sidebarHome">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
         </svg>
         Mon espace
       </a>
-      <a href="#" class="sidebar-item">
+      <a href="#" class="sidebar-item" id="sidebarEvents">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
         </svg>
         Évènements
       </a>
-      <a href="#" class="sidebar-item">
+      <a href="#" class="sidebar-item" id="sidebarFavoris">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
         </svg>
         Favoris
       </a>
-      <a href="#" class="sidebar-item">
+      <a href="#" class="sidebar-item" id="sidebarClassement">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/>
         </svg>
         Classement
       </a>
-      <a href="#" class="sidebar-item">
+      <a href="#" class="sidebar-item" id="sidebarParams">
   <svg width="20" height="20" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
     <path fill="#8899bb" d="M600.704 64a32 32 0 0 1 30.464 22.208l35.2 109.376c14.784 7.232 28.928 15.36 42.432 24.512l112.384-24.192a32 32 0 0 1 34.432 15.36L944.32 364.8a32 32 0 0 1-4.032 37.504l-77.12 85.12a357.12 357.12 0 0 1 0 49.024l77.12 85.248a32 32 0 0 1 4.032 37.504l-88.704 153.6a32 32 0 0 1-34.432 15.296L708.8 803.904c-13.44 9.088-27.648 17.28-42.368 24.512l-35.264 109.376A32 32 0 0 1 600.704 960H423.296a32 32 0 0 1-30.464-22.208L357.696 828.48a351.616 351.616 0 0 1-42.56-24.64l-112.32 24.256a32 32 0 0 1-34.432-15.36L79.68 659.2a32 32 0 0 1 4.032-37.504l77.12-85.248a357.12 357.12 0 0 1 0-48.896l-77.12-85.248A32 32 0 0 1 79.68 364.8l88.704-153.6a32 32 0 0 1 34.432-15.296l112.32 24.256c13.568-9.152 27.776-17.408 42.56-24.64l35.2-109.312A32 32 0 0 1 423.232 64H600.64zm-23.424 64H446.72l-36.352 113.088-24.512 11.968a294.113 294.113 0 0 0-34.816 20.096l-22.656 15.36-116.224-25.088-65.28 113.152 79.68 88.192-1.92 27.136a293.12 293.12 0 0 0 0 40.192l1.92 27.136-79.808 88.192 65.344 113.152 116.224-25.024 22.656 15.296a294.113 294.113 0 0 0 34.816 20.096l24.512 11.968L446.72 896h130.688l36.48-113.152 24.448-11.904a288.282 288.282 0 0 0 34.752-20.096l22.592-15.296 116.288 25.024 65.28-113.152-79.744-88.192 1.92-27.136a293.12 293.12 0 0 0 0-40.256l-1.92-27.136 79.808-88.128-65.344-113.152-116.288 24.96-22.592-15.232a287.616 287.616 0 0 0-34.752-20.096l-24.448-11.904L577.344 128zM512 320a192 192 0 1 1 0 384 192 192 0 0 1 0-384zm0 64a128 128 0 1 0 0 256 128 128 0 0 0 0-256z"/>
   </svg>
@@ -88,20 +88,21 @@
 
   
   <main class="app-main">
+
+  <!-- VUE MON ESPACE -->
+  <div id="vue-home">
     <h1 class="page-title">MON ESPACE</h1>
 
-    <!-- PROFIL -->
     <div class="profile-card">
       <div class="profile-info">
         <div class="avatar">
-            <svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<circle cx="12" cy="9" r="3" stroke="#8899bb" stroke-width="1.5"/>
-<circle cx="12" cy="12" r="10" stroke="#8899bb" stroke-width="1.5"/>
-<path d="M17.9691 20C17.81 17.1085 16.9247 15 11.9999 15C7.07521 15 6.18991 17.1085 6.03076 20" stroke="#8899bb" stroke-width="1.5" stroke-linecap="round"/>
-</svg></div>
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#8899bb" stroke-width="1.5">
+            <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+          </svg>
+        </div>
         <div>
           <p class="profile-name">SYLUSKITTEN109</p>
-          <p class="profile-rank">🜲 Rang #42 – Platinum</p>
+          <p class="profile-rank">🏆 Rang #42 – Platinum</p>
         </div>
       </div>
       <div class="profile-actions">
@@ -110,11 +111,10 @@
             <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
           </svg>
         </button>
-        <a class="report-link" href="https://www.youtube.com/watch?v=0tOXxuLcaog" target="_blank">⚠ signaler un problème</a>
+        <a class="report-link" href="#">⚠ signaler un problème</a>
       </div>
     </div>
 
-    <!-- STATS -->
     <div class="stat-cards">
       <div class="stat-card">
         <div class="stat-label">
@@ -126,12 +126,9 @@
       <div class="stat-card">
         <div class="stat-label">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-  <path d="M8 21h8"/>
-  <path d="M12 17v4"/>
-  <path d="M7 4h10v5a5 5 0 0 1-10 0V4z"/>
-  <path d="M5 6H3a2 2 0 0 0 2 2"/>
-  <path d="M19 6h2a2 2 0 0 1-2 2"/>
-</svg>
+            <path d="M8 21h8"/><path d="M12 17v4"/><path d="M7 4h10v5a5 5 0 0 1-10 0V4z"/>
+            <path d="M5 6H3a2 2 0 0 0 2 2"/><path d="M19 6h2a2 2 0 0 1-2 2"/>
+          </svg>
           Victoires
         </div>
         <div class="stat-value purple">4</div>
@@ -145,53 +142,193 @@
       </div>
     </div>
 
-    <!-- EVENTS -->
     <p class="section-label">MES FAVORIS & ÉVÉNEMENTS</p>
     <div class="events-grid">
-
       <div class="event-card green-border">
         <div class="event-card-header">
           <h3 class="event-title">LEAGUE OF LEGENDS 5V5</h3>
           <span class="event-badge badge-live">En cours</span>
         </div>
-        <div class="event-meta">
-          <span>👥 10 joueurs</span>
-          <span>📅 28 Août</span>
-        </div>
+        <div class="event-meta"><span>👥 10 joueurs</span><span>📅 28 Août</span></div>
         <button class="event-btn">▶ Rejoindre maintenant</button>
       </div>
-
       <div class="event-card blue-border">
         <div class="event-card-header">
           <h3 class="event-title">VALORANT OPEN CUP</h3>
           <span class="event-badge badge-join">Inscrit</span>
         </div>
-        <div class="event-meta">
-          <span>👥 32 joueurs</span>
-          <span>📅 10 Août</span>
-        </div>
+        <div class="event-meta"><span>👥 32 joueurs</span><span>📅 10 Août</span></div>
         <button class="event-btn">↺ Voir la rediff.</button>
       </div>
-
       <div class="event-card purple-border">
         <div class="event-card-header">
           <h3 class="event-title">CS 2 PRO SERIES</h3>
           <span class="event-badge badge-fav">Favoris</span>
         </div>
-        <div class="event-meta">
-          <span>👥 64 joueurs</span>
-          <span>📅 04 Sept.</span>
-        </div>
+        <div class="event-meta"><span>👥 64 joueurs</span><span>📅 04 Sept.</span></div>
         <button class="event-btn">⏱ Pas encore démarré</button>
       </div>
-
       <div class="event-card empty">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         Parcourir les événements
       </div>
-
     </div>
-  </main>
+  </div>
+
+  <!-- VUE ÉVÉNEMENTS -->
+  <div id="vue-events" style="display:none">
+    <div class="page-title-row">
+      <div>
+        <h1 class="page-title">MES ÉVÉNEMENTS</h1>
+        <p class="page-subtitle">Historique et statut de tes demandes</p>
+      </div>
+      <button class="btn-create" onclick="showJoueurCreateModal()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Créer un événement
+      </button>
+    </div>
+
+    <div class="orga-table-wrapper">
+      <table class="orga-table">
+        <thead>
+          <tr>
+            <th>Titre</th>
+            <th>Date</th>
+            <th>Statut</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="mesEventsList"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- VUE FAVORIS -->
+  <div id="vue-favoris" style="display:none">
+    <h1 class="page-title">FAVORIS</h1>
+    <p class="page-subtitle" style="margin-bottom: 2rem;">Tes tournois sauvegardés</p>
+    <div class="events-grid">
+      <div class="event-card purple-border">
+        <div class="event-card-header">
+          <h3 class="event-title">CS 2 PRO SERIES</h3>
+          <span class="event-badge badge-fav">Favoris</span>
+        </div>
+        <div class="event-meta"><span>👥 64 joueurs</span><span>📅 04 Sept.</span></div>
+        <button class="event-btn">Voir l'événement →</button>
+      </div>
+      <div class="event-card empty">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        Parcourir les événements
+      </div>
+    </div>
+  </div>
+
+  <!-- VUE CLASSEMENT -->
+  <div id="vue-classement" style="display:none">
+    <h1 class="page-title">CLASSEMENT</h1>
+    <p class="page-subtitle" style="margin-bottom: 2rem;">Historique de tes scores</p>
+    <div class="orga-table-wrapper">
+      <table class="orga-table">
+        <thead>
+          <tr>
+            <th>Événement</th>
+            <th>Date</th>
+            <th>Position</th>
+            <th>Points</th>
+            <th>Résultat</th>
+          </tr>
+        </thead>
+        <tbody id="scoresTable"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- VUE PARAMÈTRES -->
+  <div id="vue-params-joueur" style="display:none">
+    <h1 class="page-title">PARAMÈTRES</h1>
+    <p class="page-subtitle" style="margin-bottom: 2rem;">Gérer ton profil</p>
+    <div class="params-card">
+      <div class="params-section">
+        <h3 class="params-title">Informations du compte</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Pseudo</label>
+            <input type="text" value="SYLUSKITTEN109" />
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" value="syluski@esportify.gg" />
+          </div>
+        </div>
+      </div>
+      <div class="params-section">
+        <h3 class="params-title">Sécurité</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nouveau mot de passe</label>
+            <input type="password" placeholder="••••••••" />
+          </div>
+          <div class="form-group">
+            <label>Confirmer</label>
+            <input type="password" placeholder="••••••••" />
+          </div>
+        </div>
+      </div>
+      <button class="btn-submit" style="margin-top: 1.5rem;">Sauvegarder</button>
+    </div>
+  </div>
+
+</main>
+</div>
+
+<!-- MODAL CRÉER ÉVÉNEMENT JOUEUR -->
+<div class="modal-overlay" id="joueurCreateModal" style="display:none">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h2 class="modal-title">PROPOSER UN ÉVÉNEMENT</h2>
+      <button class="modal-close" onclick="hideJoueurCreateModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Titre *</label>
+          <input type="text" id="joueurTitre" placeholder="Nom du tournoi" />
+        </div>
+        <div class="form-group">
+          <label>Nombre de joueurs *</label>
+          <input type="number" id="joueurJoueurs" placeholder="32" min="2" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Description *</label>
+        <textarea id="joueurDescription" rows="3" placeholder="Décris le tournoi, les règles, le format..."></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Date et heure de début *</label>
+          <input type="datetime-local" id="joueurDateDebut" />
+        </div>
+        <div class="form-group">
+          <label>Date et heure de fin *</label>
+          <input type="datetime-local" id="joueurDateFin" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Image (URL)</label>
+        <input type="text" id="joueurImage" placeholder="https://..." />
+      </div>
+      <p style="font-size: 12px; color: var(--text-muted); margin-top: 0.5rem;">
+        Ton événement sera soumis à validation avant d'être visible publiquement.
+      </p>
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="hideJoueurCreateModal()">Annuler</button>
+        <button class="btn-create" onclick="submitJoueurEvent()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Soumettre la demande
+        </button>
+      </div>
+    </div>
+  </div>
 </div>
 
 

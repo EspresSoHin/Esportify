@@ -23,14 +23,14 @@ function initGallery() {
   const dotsContainer = document.getElementById('galleryDots');
   if (!track || typeof GALLERY_DATA === 'undefined') return;
 
-  // sliderssss
+
   track.innerHTML = GALLERY_DATA.map((img, i) => `
     <div class="gallery-slide${i === 0 ? ' active' : ''}">
       <img src="${img.src}" alt="${img.alt}" />
     </div>
   `).join('');
 
-  // les petits points
+
   dotsContainer.innerHTML = GALLERY_DATA.map((_, i) => `
     <span class="gdot${i === 0 ? ' active' : ''}" onclick="goToSlide(${i})"></span>
   `).join('');
@@ -65,10 +65,6 @@ document.getElementById('galleryNext')?.addEventListener('click', () => {
 // Autoplay galerie toutes les 4 secondes
 if (document.getElementById('galleryTrack')) {
   initGallery();
-  setInterval(() => {
-    galleryIndex = (galleryIndex + 1) % GALLERY_DATA.length;
-    updateGallery();
-  }, 4000);
 }
 
 
@@ -111,19 +107,21 @@ function renderCarousel() {
       </div>`;
 
     return `
-      <div class="tournament-card${ev.statut === 'en_cours' ? ' featured' : ''}">
-        <div class="card-badge ${ev.statut === 'valide' ? 'validated' : ev.statut === 'en_cours' ? 'live' : 'pending'}">
-          ${badgeLabel(ev.statut)}
+      <a href="event-detail.html?id=${ev.id}" class="tournament-card-link" style="text-decoration:none; color:inherit; display:block;">
+        <div class="tournament-card${ev.statut === 'en_cours' ? ' featured' : ''}">
+            <div class="card-badge ${ev.statut === 'valide' ? 'validated' : ev.statut === 'en_cours' ? 'live' : 'pending'}">
+                ${badgeLabel(ev.statut)}
+            </div>
+            <div class="game-icon">
+             ${gameSVG(ev.titre)}
+            </div>
+            <h3 class="card-title">${ev.titre}</h3>
+            <div class="card-meta">
+                <span>👥 ${ev.joueurs} joueurs</span>
+                <span>📅 ${new Date(ev.dateDebut).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}</span>
+            </div>
         </div>
-        <div class="game-icon">
-          <span style="font-size: 28px;">${gameEmoji(ev.titre)}</span>
-        </div>
-        <h3 class="card-title">${ev.titre}</h3>
-        <div class="card-meta">
-          <span>👥 ${ev.joueurs} joueurs</span>
-          <span>📅 ${new Date(ev.dateDebut).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}</span>
-        </div>
-      </div>`;
+     </a>`;
   }).join('');
 
 
@@ -187,14 +185,15 @@ function badgeLabel(statut) {
   return labels[statut] || statut;
 }
 
-function gameEmoji(titre) { //enlever les emojis c'est un calvaire on mets des svg ou chai pas moi mais pas des emojis je t'en conjure
-  if (titre.toLowerCase().includes('valorant')) return '🎯';
-  if (titre.toLowerCase().includes('legend')) return '⚔️';
-  if (titre.toLowerCase().includes('cs2') || titre.toLowerCase().includes('counter')) return '🔫';
-  if (titre.toLowerCase().includes('fortnite')) return '🏗️';
-  if (titre.toLowerCase().includes('rocket')) return '🚗';
-  if (titre.toLowerCase().includes('fifa')) return '⚽';
-  return '🎮';
+function gameSVG(titre) {
+  const t = titre.toLowerCase();
+  if (t.includes('valorant')) return GAME_ICONS.valorant;
+  if (t.includes('legend'))   return GAME_ICONS.league;
+  if (t.includes('cs2') || t.includes('counter')) return GAME_ICONS.cs2;
+  if (t.includes('fortnite')) return GAME_ICONS.fortnite;
+  if (t.includes('rocket'))   return GAME_ICONS.rocket;
+  if (t.includes('fifa'))     return GAME_ICONS.fifa;
+  return GAME_ICONS.default;
 }
 
 // ================================
@@ -220,7 +219,7 @@ function renderEvents(events) {
     <a href="event-detail.html?id=${ev.id}" class="event-list-card statut-${ev.statut}">
       ${ev.image
         ? `<img class="elc-image" src="${ev.image}" alt="${ev.titre}" />`
-        : `<div class="elc-image-placeholder">${gameEmoji(ev.titre)}</div>`
+        : `<div class="elc-image-placeholder">${gameSVG(ev.titre)}</div>`
       }
       <div class="elc-body">
         <div class="elc-header">
@@ -253,7 +252,7 @@ function renderAllEvents() {
     <a href="event-detail.html?id=${ev.id}" class="event-list-card statut-${ev.statut}">
       ${ev.image
         ? `<img class="elc-image" src="${ev.image}" alt="${ev.titre}" />`
-        : `<div class="elc-image-placeholder">${gameEmoji(ev.titre)}</div>`
+        : `<div class="elc-image-placeholder">${gameSVG(ev.titre)}</div>`
       }
       <div class="elc-body">
         <div class="elc-header">
@@ -265,12 +264,27 @@ function renderAllEvents() {
           <span>📅 ${formatDate(ev.dateDebut)}</span>
         </div>
         <div class="elc-footer">
-          <span class="elc-organisateur">Par <strong>${ev.organisateur}</strong></span>
-          ${ev.organisateur === ORGA_PSEUDO
-            ? `<span style="font-size:11px; color:var(--blue);">← le tien</span>`
-            : `<span class="elc-cta">Voir →</span>`
-          }
-        </div>
+  <span class="elc-organisateur">Par <strong>${ev.organisateur}</strong></span>
+  <div class="action-btns">
+    ${ev.organisateur === ORGA_PSEUDO
+      ? `
+        <button class="btn-icon" onclick="editEvent(${ev.id})" title="Modifier">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+            <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+          </svg>
+        </button>
+        <button class="btn-icon danger" onclick="deleteEvent(${ev.id})" title="Supprimer">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
+            <path d="M10 11v6M14 11v6"/>
+          </svg>
+        </button>`
+      : `<span class="elc-cta">Voir →</span>`
+    }
+  </div>
+</div>
       </div>
     </a>
   `).join('');
@@ -546,7 +560,7 @@ function deleteEvent(id) {
   renderOrgaEvents();
 }
 
-// Participants
+
 function renderParticipants() {
   const select = document.getElementById('participantEventFilter');
   const tbody  = document.getElementById('participantsList');
@@ -699,5 +713,136 @@ if (document.getElementById('orgaEventsList')) {
   });
   document.getElementById('sidebarParams')?.addEventListener('click', e => {
     e.preventDefault(); switchDashboardView('parametres');
+  });
+}
+
+
+// ================================
+// ESPACE JOUEUR
+// ================================
+function renderMesEvents() {
+  const tbody = document.getElementById('mesEventsList');
+  if (!tbody) return;
+
+  tbody.innerHTML = MES_EVENTS_DATA.map(ev => {
+    const badgeClass = ev.statut === 'valide' ? 'badge-valide'
+      : ev.statut === 'en_attente' ? 'badge-en_attente'
+      : 'badge-non_valide';
+    const badgeText = ev.statut === 'valide' ? 'Validé'
+      : ev.statut === 'en_attente' ? 'En attente'
+      : 'Non validé';
+
+    return `
+      <tr>
+        <td>${ev.titre}</td>
+        <td>${formatDateOrga(ev.dateDebut)}</td>
+        <td><span class="elc-badge ${badgeClass}">${badgeText}</span></td>
+        <td>
+          ${ev.modifiable
+            ? `<button class="action-btn btn-start" style="font-size:11px; padding:5px 12px;"
+                 onclick="editJoueurEvent(${ev.id})">
+                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                 Modifier
+               </button>`
+            : `<span style="font-size:12px; color:var(--text-muted);">Non modifiable</span>`
+          }
+        </td>
+      </tr>`;
+  }).join('');
+}
+
+function renderScores() {
+  const tbody = document.getElementById('scoresTable');
+  if (!tbody) return;
+
+  tbody.innerHTML = MES_SCORES_DATA.map(s => {
+    const couleur = s.position === 1 ? 'var(--blue)'
+      : s.position <= 3 ? 'var(--purple)'
+      : 'var(--text-muted)';
+    return `
+      <tr>
+        <td>${s.evenement}</td>
+        <td>${new Date(s.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}</td>
+        <td style="font-family: var(--font-heading); font-size: 18px; color: ${couleur};">#${s.position}</td>
+        <td style="color: var(--blue); font-weight: 600;">${s.points} pts</td>
+        <td><span class="elc-badge ${s.position === 1 ? 'badge-en_cours' : s.position <= 3 ? 'badge-valide' : 'badge-en_attente'}">${s.resultat}</span></td>
+      </tr>`;
+  }).join('');
+}
+
+function editJoueurEvent(id) {
+  alert(`Modification de l'événement #${id} — à connecter au formulaire.`);
+}
+
+function showJoueurCreateModal() {
+  document.getElementById('joueurCreateModal').style.display = 'flex';
+}
+function hideJoueurCreateModal() {
+  document.getElementById('joueurCreateModal').style.display = 'none';
+}
+function submitJoueurEvent() {
+  const titre  = document.getElementById('joueurTitre').value.trim();
+  const joueurs = parseInt(document.getElementById('joueurJoueurs').value);
+  const desc   = document.getElementById('joueurDescription').value.trim();
+  const dateDebut = document.getElementById('joueurDateDebut').value;
+  const dateFin   = document.getElementById('joueurDateFin').value;
+  const image     = document.getElementById('joueurImage').value.trim() || null;
+
+  if (!titre || !joueurs || !desc || !dateDebut || !dateFin) {
+    alert('Merci de remplir tous les champs obligatoires (*).');
+    return;
+  }
+
+  MES_EVENTS_DATA.push({
+    id: MES_EVENTS_DATA.length + 1,
+    titre, dateDebut,
+    statut: 'en_attente',
+    modifiable: true
+  });
+
+  hideJoueurCreateModal();
+  renderMesEvents();
+}
+
+// Navigation sidebar espace joueur
+function switchJoueurView(view) {
+  const vues = ['home', 'events', 'favoris', 'classement', 'params-joueur'];
+  vues.forEach(v => {
+    const el = document.getElementById(`vue-${v}`);
+    if (el) el.style.display = v === view ? 'block' : 'none';
+  });
+
+  const sidebarIds = {
+    'home':         ['sidebarHome'],
+    'events':       ['sidebarEvents'],
+    'favoris':      ['sidebarFavoris'],
+    'classement':   ['sidebarClassement'],
+    'params-joueur':['sidebarParams'],
+  };
+
+  document.querySelectorAll('.sidebar-item').forEach(item => item.classList.remove('active'));
+  (sidebarIds[view] || []).forEach(id => {
+    document.getElementById(id)?.classList.add('active');
+  });
+}
+
+if (document.getElementById('vue-home')) {
+  renderMesEvents();
+  renderScores();
+
+  document.getElementById('sidebarHome')?.addEventListener('click', e => {
+    e.preventDefault(); switchJoueurView('home');
+  });
+  document.getElementById('sidebarEvents')?.addEventListener('click', e => {
+    e.preventDefault(); switchJoueurView('events');
+  });
+  document.getElementById('sidebarFavoris')?.addEventListener('click', e => {
+    e.preventDefault(); switchJoueurView('favoris');
+  });
+  document.getElementById('sidebarClassement')?.addEventListener('click', e => {
+    e.preventDefault(); switchJoueurView('classement');
+  });
+  document.getElementById('sidebarParams')?.addEventListener('click', e => {
+    e.preventDefault(); switchJoueurView('params-joueur');
   });
 }
