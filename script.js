@@ -1,3 +1,16 @@
+// ================================
+// ENCODAGE HTML
+// ================================
+
+function escapeHTML(str) {
+  return str
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+//apres je dois ajouter escapeHTML sur les variables qui sont injecté dans le DOM pour eviter les faille XSS
 
 // ================================
 // LANGUAGE SELECTOR
@@ -14,6 +27,152 @@ buttons.forEach(btn => {
 
 
 // ================================
+// HAMBURGER MENU
+// ================================
+const hamburger = document.getElementById('hamburger');
+const mobileMenu = document.getElementById('mobileMenu');
+
+hamburger?.addEventListener('click', () => {
+  mobileMenu.classList.toggle('open');
+  hamburger.classList.toggle('open');
+});
+
+
+document.addEventListener('click', (e) => {
+  if (!hamburger?.contains(e.target) && !mobileMenu?.contains(e.target)) {
+    mobileMenu?.classList.remove('open');
+    hamburger?.classList.remove('open');
+  }
+});
+
+
+// ================================
+// CONNEXION
+// ================================
+
+// Mots de passe démo — Bien sur que ça va pas rester à la fin baka gaijin
+const DEMO_CREDENTIALS = {
+  'Syluskitten109':  { password: 'joueur123',  role: 'joueur' },
+  'ExpresSohin':     { password: 'orga123',    role: 'organisateur' },
+  'AdminEsportify':  { password: 'admin123',   role: 'admin' },
+};
+
+function switchAuthTab(tab) {
+  const isConnexion = tab === 'connexion';
+  document.getElementById('formConnexion').style.display   = isConnexion ? 'block' : 'none';
+  document.getElementById('formInscription').style.display = isConnexion ? 'none'  : 'block';
+  document.getElementById('tabConnexion').classList.toggle('active', isConnexion);
+  document.getElementById('tabInscription').classList.toggle('active', !isConnexion);
+}
+
+function togglePasswordVisibility(inputId, btn) {
+  const input = document.getElementById(inputId);
+  const isHidden = input.type === 'password';
+  input.type = isHidden ? 'text' : 'password';
+  btn.style.color = isHidden ? 'var(--blue)' : 'var(--text-muted)';
+}
+
+function fillDemo(role) {
+  const map = {
+    joueur:       { id: 'Syluskitten109', pw: 'joueur123' },
+    organisateur: { id: 'ExpresSohin',    pw: 'orga123' },
+    admin:        { id: 'AdminEsportify', pw: 'admin123' },
+  };
+  const creds = map[role];
+  if (!creds) return;
+  document.getElementById('loginIdentifiant').value = creds.id;
+  document.getElementById('loginPassword').value    = creds.pw;
+}
+
+function showAuthError(id, message) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = message;
+  el.style.display = 'block';
+}
+function hideAuthError(id) {
+  const el = document.getElementById(id);
+  if (el) el.style.display = 'none';
+}
+
+function handleLogin() {
+  hideAuthError('loginError');
+  const identifiant = document.getElementById('loginIdentifiant').value.trim();
+  const password    = document.getElementById('loginPassword').value;
+
+  if (!identifiant || !password) {
+    showAuthError('loginError', 'Merci de remplir tous les champs.');
+    return;
+  }
+
+  // Simulation auth — à remplacer par un fetch('/api/login')
+  const user = DEMO_CREDENTIALS[identifiant];
+  if (!user || user.password !== password) {
+    showAuthError('loginError', 'Identifiant ou mot de passe incorrect.');
+    return;
+  }
+
+
+  USER_SESSION.connecte = true;
+  USER_SESSION.pseudo   = identifiant;
+  USER_SESSION.role     = user.role;
+
+  showToast(`Bienvenue ${identifiant} !`);
+
+  setTimeout(() => {
+    if (user.role === 'admin')        window.location.href = 'dashboard-admin.html';
+    else if (user.role === 'organisateur') window.location.href = 'dashboard-organisateur.html';
+    else                              window.location.href = 'espace-joueur.html';
+  }, 800);
+}
+
+function handleRegister() {
+  hideAuthError('registerError');
+  const pseudo    = document.getElementById('regPseudo').value.trim();
+  const email     = document.getElementById('regEmail').value.trim();
+  const role      = 'joueur';
+  const password  = document.getElementById('regPassword').value;
+  const confirm   = document.getElementById('regPasswordConfirm').value;
+  const cgu       = document.getElementById('regCGU').checked;
+
+  if (!pseudo || !email || !password || !confirm) {
+    showAuthError('registerError', 'Merci de remplir tous les champs obligatoires.');
+    return;
+  }
+  if (password !== confirm) {
+    showAuthError('registerError', 'Les mots de passe ne correspondent pas.');
+    return;
+  }
+  if (password.length < 6) {
+    showAuthError('registerError', 'Le mot de passe doit contenir au moins 6 caractères.');
+    return;
+  }
+  if (!cgu) {
+    showAuthError('registerError', "Merci d'accepter les conditions d'utilisation.");
+    return;
+  }
+
+  // Simulation inscription — à remplacer par fetch('/api/register')
+  showToast(
+    role === 'organisateur'
+      ? 'Demande envoyée — ton compte sera activé après validation.'
+      : 'Compte créé ! Tu peux maintenant te connecter.'
+  );
+  setTimeout(() => switchAuthTab('connexion'), 2000);
+}
+
+if (document.getElementById('formConnexion')) {
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Enter') return;
+    const formConn = document.getElementById('formConnexion');
+    const formInsc = document.getElementById('formInscription');
+    if (formConn && formConn.style.display !== 'none') handleLogin();
+    else if (formInsc && formInsc.style.display !== 'none') handleRegister();
+  });
+}
+
+
+// ================================
 // GALERIE
 // ================================
 let galleryIndex = 0;
@@ -26,7 +185,7 @@ function initGallery() {
 
   track.innerHTML = GALLERY_DATA.map((img, i) => `
     <div class="gallery-slide${i === 0 ? ' active' : ''}">
-      <img src="${img.src}" alt="${img.alt}" />
+      <img src="${escapeHTML(img.src)}" alt="${escapeHTML(img.alt)}" />
     </div>
   `).join('');
 
@@ -115,7 +274,7 @@ function renderCarousel() {
             <div class="game-icon">
              ${gameSVG(ev.titre)}
             </div>
-            <h3 class="card-title">${ev.titre}</h3>
+            <h3 class="card-title">${escapeHTML(ev.titre)}</h3>
             <div class="card-meta">
                 <span>👥 ${ev.joueurs} joueurs</span>
                 <span>📅 ${new Date(ev.dateDebut).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}</span>
@@ -125,7 +284,7 @@ function renderCarousel() {
   }).join('');
 
 
-  if (dotsContainer) { //question sur (_, i) le tiret du bas
+  if (dotsContainer) { //tibo in shape voice: rien à foutre de ton argument
     dotsContainer.innerHTML = Array.from({ length: totalPages }, (_, i) => `
       <span class="dot${i === carouselPage ? ' active' : ''}" onclick="goToCarouselPage(${i})"></span>
     `).join('');
@@ -171,17 +330,11 @@ function formatDateFull(dateStr) {
 function formatDateShort(dateStr) {
   const d = new Date(dateStr);
   return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })
-    + ' ' + d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-}
-
-function formatDateOrga(dateStr) {
-  const d = new Date(dateStr);
-  return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })
     + ' · ' + d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
 }
 
 function badgeLabel(statut) {
-  const labels = { valide: 'Validé', en_cours: 'En cours', en_attente: 'En attente' };
+  const labels = { valide: 'Validé', en_cours: 'En cours', en_attente: 'En attente', suspendu: 'Suspendu', refuse: 'Refusé' };
   return labels[statut] || statut;
 }
 
@@ -262,12 +415,12 @@ function renderEvents(events) {
   container.innerHTML = events.map(ev => `
     <a href="event-detail.html?id=${ev.id}" class="event-list-card statut-${ev.statut}">
       ${ev.image
-        ? `<img class="elc-image" src="${ev.image}" alt="${ev.titre}" />`
+        ? `<img class="elc-image" src="${ev.image}" alt="${escapeHTML(ev.titre)}" />`
         : `<div class="elc-image-placeholder">${gameSVG(ev.titre)}</div>`
       }
       <div class="elc-body">
         <div class="elc-header">
-            <h2 class="elc-title">${ev.titre}</h2>
+            <h2 class="elc-title">${escapeHTML(ev.titre)}</h2>
             <div style="display:flex; align-items:center; gap:8px;">
                 <span class="elc-badge badge-${ev.statut}">${badgeLabel(ev.statut)}</span>
                 <button class="btn-favori${FAVORIS.has(ev.id) ? ' active' : ''}" 
@@ -285,7 +438,7 @@ function renderEvents(events) {
           <span>🏁 ${formatDate(ev.dateFin)}</span>
         </div>
         <div class="elc-footer">
-          <span class="elc-organisateur">Par <strong>${ev.organisateur}</strong></span>
+          <span class="elc-organisateur">Par <strong>${escapeHTML(ev.organisateur)}</strong></span>
           <span class="elc-cta">Voir les détails →</span>
         </div>
       </div>
@@ -304,12 +457,12 @@ function renderAllEvents() {
   container.innerHTML = events.map(ev => `
     <a href="event-detail.html?id=${ev.id}" class="event-list-card statut-${ev.statut}">
       ${ev.image
-        ? `<img class="elc-image" src="${ev.image}" alt="${ev.titre}" />`
+        ? `<img class="elc-image" src="${ev.image}" alt="${escapeHTML(ev.titre)}" />`
         : `<div class="elc-image-placeholder">${gameSVG(ev.titre)}</div>`
       }
       <div class="elc-body">
         <div class="elc-header">
-          <h2 class="elc-title">${ev.titre}</h2>
+          <h2 class="elc-title">${escapeHTML(ev.titre)}</h2>
           <span class="elc-badge badge-${ev.statut}">${badgeLabel(ev.statut)}</span>
         </div>
         <div class="elc-meta">
@@ -317,7 +470,7 @@ function renderAllEvents() {
           <span>📅 ${formatDate(ev.dateDebut)}</span>
         </div>
         <div class="elc-footer">
-  <span class="elc-organisateur">Par <strong>${ev.organisateur}</strong></span>
+  <span class="elc-organisateur">Par <strong>${escapeHTML(ev.organisateur)}</strong></span>
   <div class="action-btns">
     ${ev.organisateur === ORGA_PSEUDO
       ? `
@@ -402,10 +555,10 @@ function renderDetail() {
     return;
   }
 
-  const discussion = DISCUSSION_DATA[ev.id] || [];
+  const discussion = DISCUSSION_DATA[ev.id] || []; //FAILLE DE SECURITER ICI AVEC INPUT NON SANITIZE 
 
   container.innerHTML = `
-    <div class="detail-hero" ${ev.image ? `style="background-image: url('${ev.image}')"` : ''}>
+    <div class="detail-hero" ${ev.image ? `style="background-image: url('${escapeHTML(ev.image)}')"` : ''}>
       <div class="detail-hero-overlay">
         <div class="detail-hero-inner">
           <a href="events.html" class="detail-back">← Retour aux événements</a>
@@ -413,8 +566,8 @@ function renderDetail() {
             <span class="elc-badge badge-${ev.statut}">${badgeLabel(ev.statut)}</span>
             ${ev.discussion ? '<span class="elc-badge badge-valide">💬 Discussion active</span>' : ''}
           </div>
-          <h1 class="detail-title">${ev.titre}</h1>
-          <p class="detail-organisateur">Organisé par <strong>${ev.organisateur}</strong></p>
+          <h1 class="detail-title">${escapeHTML(ev.titre)}</h1>
+          <p class="detail-organisateur">Organisé par <strong>${escapeHTML(ev.organisateur)}</strong></p>
         </div>
       </div>
     </div>
@@ -423,7 +576,7 @@ function renderDetail() {
       <div class="detail-main">
         <div class="detail-section">
           <h2 class="detail-section-title">Description</h2>
-          <p class="detail-desc">${ev.description}</p>
+          <p class="detail-desc">${escapeHTML(ev.description)}</p>
         </div>
         <div class="detail-section">
           <h2 class="detail-section-title">Informations</h2>
@@ -464,10 +617,10 @@ function renderDetail() {
                 <div class="msg-avatar">${msg.auteur.slice(0,2).toUpperCase()}</div>
                 <div class="msg-content">
                   <div class="msg-header">
-                    <strong class="msg-auteur">${msg.auteur}</strong>
+                    <strong class="msg-auteur">${escapeHTML(msg.auteur)}</strong>
                     <span class="msg-date">${formatDateShort(msg.date)}</span>
                   </div>
-                  <p class="msg-text">${msg.message}</p>
+                  <p class="msg-text">${escapeHTML(msg.message)}</p>
                 </div>
               </div>
             `).join('')}
@@ -509,6 +662,22 @@ function renderDetail() {
   `;
 }
 
+
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Enter') return;
+
+  const input = document.getElementById('msgInput');
+
+  // Vérifie que l'input existe et qu'il est focus
+  if (input && document.activeElement === input) {
+    const params = new URLSearchParams(window.location.search);
+    const eventId = parseInt(params.get('id'));
+
+    postMessage(eventId);
+  }
+});
+
+
 function postMessage(eventId) {
   const input = document.getElementById('msgInput');
   const val = input.value.trim();
@@ -525,11 +694,11 @@ function postMessage(eventId) {
         <strong class="msg-auteur">Moi</strong>
         <span class="msg-date">${formatDateShort(now)}</span>
       </div>
-      <p class="msg-text">${val}</p>
+      <p class="msg-text">${escapeHTML(val)}</p>
     </div>
   `;
   list.appendChild(div);
-  input.value = '';
+  input.value = ''; 
   list.scrollTop = list.scrollHeight;
 }
 
@@ -590,7 +759,7 @@ function renderOrgaEvents() {
       <tr>
         <td>${ev.titre}</td>
         <td>${ev.joueurs}</td>
-        <td>${formatDateOrga(ev.dateDebut)}</td>
+        <td>${formatDateShort(ev.dateDebut)}</td>
         <td><span class="elc-badge badge-${ev.statut}">${badgeLabel(ev.statut)}</span></td>
         <td>${actionsHTML}</td>
       </tr>`;
@@ -647,8 +816,8 @@ function renderParticipants() {
 
   tbody.innerHTML = liste.map(p => `
     <tr>
-      <td>${p.joueur}${p.eventTitre ? ` <span style="font-size:11px; color:var(--text-muted);">(${p.eventTitre})</span>` : ''}</td>
-      <td>${formatDateOrga(p.dateInscription)}</td>
+      <td>${escapeHTML(p.joueur)}${escapeHTML(p.eventTitre) ? ` <span style="font-size:11px; color:var(--text-muted);">(${escapeHTML(p.eventTitre)})</span>` : ''}</td>
+      <td>${formatDateShort(p.dateInscription)}</td>
       <td><span class="elc-badge badge-${p.statut === 'accepte' ? 'valide' : 'en_attente'}">
         ${p.statut === 'accepte' ? 'Accepté' : p.statut === 'refuse' ? 'Refusé' : 'En attente'}
       </span></td>
@@ -690,7 +859,7 @@ function renderStatsBars() {
   container.innerHTML = mesEvents.map((ev, i) => `
     <div class="stats-bar-item">
       <div class="stats-bar-label">
-        <span>${ev.titre}</span>
+        <span>${escapeHTML(ev.titre)}</span>
         <span>${ev.joueurs} joueurs</span>
       </div>
       <div class="stats-bar-track">
@@ -720,6 +889,16 @@ function switchDashboardView(view) {
   (sidebarIds[view] || []).forEach(id => {
     document.getElementById(id)?.classList.add('active');
   });
+
+  const bnMap = {
+  'dashboard':    'bnDashboard',
+  'tous-events':  'bnEvents',
+  'participants': 'bnParticipants',
+  'statistiques': 'bnStats',
+  'parametres':   'bnParams',
+  };
+  document.querySelectorAll('.bottom-nav-item').forEach(i => i.classList.remove('active'));
+  document.getElementById(bnMap[view])?.classList.add('active');
 }
 
 function showCreateModal() {
@@ -796,8 +975,8 @@ function renderMesEvents() {
 
     return `
       <tr>
-        <td>${ev.titre}</td>
-        <td>${formatDateOrga(ev.dateDebut)}</td>
+        <td>${escapeHTML(ev.titre)}</td>
+        <td>${formatDateShort(ev.dateDebut)}</td>
         <td><span class="elc-badge ${badgeClass}">${badgeText}</span></td>
         <td>
           ${ev.modifiable
@@ -823,7 +1002,7 @@ function renderScores() {
       : 'var(--text-muted)';
     return `
       <tr>
-        <td>${s.evenement}</td>
+        <td>${escapeHTML(s.evenement)}</td>
         <td>${new Date(s.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}</td>
         <td style="font-family: var(--font-heading); font-size: 18px; color: ${couleur};">#${s.position}</td>
         <td style="color: var(--blue); font-weight: 600;">${s.points} pts</td>
@@ -886,6 +1065,16 @@ function switchJoueurView(view) {
   (sidebarIds[view] || []).forEach(id => {
     document.getElementById(id)?.classList.add('active');
   });
+
+  const bnMap = {
+  'home':          'bnHome',
+  'events':        'bnJEvents',
+  'favoris':       'bnFavoris',
+  'classement':    'bnClassement',
+  'params-joueur': 'bnJParams',
+  };
+  document.querySelectorAll('.bottom-nav-item').forEach(i => i.classList.remove('active'));
+  document.getElementById(bnMap[view])?.classList.add('active');
 }
 
 if (document.getElementById('vue-home')) {
@@ -910,4 +1099,273 @@ if (document.getElementById('vue-home')) {
 }
 
 
+// ================================
+// DASHBOARD ADMIN
+// ================================
 
+
+function moderationAction(id, action) {
+  const ev = EVENTS_DATA.find(e => e.id === id);
+  if (!ev) return;
+
+  if (action === 'valider') {
+    ev.statut = 'valide';
+    ev.visible = true;
+    showToast('Événement validé — maintenant visible publiquement');
+  } else if (action === 'refuser') {
+    ev.statut = 'refuse';
+    ev.visible = false;
+    showToast('Événement refusé');
+  } else if (action === 'suspendre') {
+    ev.statut = 'suspendu';
+    ev.visible = false;
+    showToast('Événement suspendu');
+  }
+
+  renderModeration();
+  renderAdminDashboard();
+}
+
+function promouvoir(pseudo, nouveauRole) {
+  const user = USERS_DATA.find(u => u.pseudo === pseudo);
+  if (!user) return;
+  const ancienRole = user.role;
+  user.role = nouveauRole;
+  showToast(`${pseudo} promu ${nouveauRole}`);
+  renderUtilisateurs();
+}
+
+function renderAdminDashboard() {
+  const attente = EVENTS_DATA.filter(ev => ev.statut === 'en_attente').length;
+  const suspendus = EVENTS_DATA.filter(ev => ev.statut === 'suspendu').length;
+
+  const elAttente = document.getElementById('adminCountAttente');
+  const elUsers = document.getElementById('adminCountUsers');
+  const elSuspendus = document.getElementById('adminCountSuspendus');
+  if (elAttente) elAttente.textContent = attente;
+  if (elUsers) elUsers.textContent = USERS_DATA.length;
+  if (elSuspendus) elSuspendus.textContent = suspendus;
+
+  const tbody = document.getElementById('adminDemandesRecentes');
+  if (!tbody) return;
+
+  const recentes = EVENTS_DATA
+    .filter(ev => ev.statut === 'en_attente' || ev.statut === 'suspendu')
+    .slice(0, 5);
+
+  tbody.innerHTML = recentes.length === 0
+    ? `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:2rem;">Aucune demande en attente</td></tr>`
+    : recentes.map(ev => `
+      <tr>
+        <td>${ev.titre}</td>
+        <td style="color:var(--blue)">${ev.organisateur}</td>
+        <td>${formatDateShort(ev.dateDebut)}</td>
+        <td><span class="elc-badge badge-${ev.statut}">${badgeLabel(ev.statut)}</span></td>
+        <td>${renderModerationActions(ev)}</td>
+      </tr>`).join('');
+}
+
+function renderModerationActions(ev) {
+  if (ev.statut === 'valide') {
+    return `<div class="action-btns">
+      <button class="action-btn btn-stop" onclick="moderationAction(${ev.id}, 'suspendre')" style="font-size:11px; padding:5px 12px;">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+        Suspendre
+      </button>
+    </div>`;
+  }
+  return `<div class="action-btns">
+    <button class="action-btn btn-start" onclick="moderationAction(${ev.id}, 'valider')" style="font-size:11px; padding:5px 12px;">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+      Valider
+    </button>
+    <button class="action-btn btn-stop" onclick="moderationAction(${ev.id}, 'refuser')" style="font-size:11px; padding:5px 12px;">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      Refuser
+    </button>
+    ${ev.statut !== 'suspendu' ? `
+    <button class="btn-icon" onclick="moderationAction(${ev.id}, 'suspendre')" title="Suspendre">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+    </button>` : ''}
+  </div>`;
+}
+
+function renderModeration() {
+  const tbody = document.getElementById('adminModerationList');
+  if (!tbody) return;
+
+  const filterStatut = document.getElementById('adminFilterStatut')?.value || 'tous';
+  const filterSearch = document.getElementById('adminFilterSearch')?.value.toLowerCase().trim() || '';
+
+  let events = [...EVENTS_DATA];
+  if (filterStatut !== 'tous') events = events.filter(ev => ev.statut === filterStatut);
+  if (filterSearch) events = events.filter(ev =>
+    ev.titre.toLowerCase().includes(filterSearch) ||
+    ev.organisateur.toLowerCase().includes(filterSearch)
+  );
+
+  tbody.innerHTML = events.length === 0
+    ? `<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:2rem;">Aucun événement trouvé</td></tr>`
+    : events.map(ev => `
+      <tr>
+        <td>${ev.titre}</td>
+        <td style="color:var(--blue)">${ev.organisateur}</td>
+        <td>${ev.joueurs}</td>
+        <td>${formatDateShort(ev.dateDebut)}</td>
+        <td><span class="elc-badge badge-${ev.statut}">${badgeLabel(ev.statut)}</span></td>
+        <td>${renderModerationActions(ev)}</td>
+      </tr>`).join('');
+}
+
+function renderUtilisateurs() {
+  const tbody = document.getElementById('adminUsersList');
+  if (!tbody) return;
+
+  const search = document.getElementById('adminUserSearch')?.value.toLowerCase().trim() || '';
+  const users = search
+    ? USERS_DATA.filter(u => u.pseudo.toLowerCase().includes(search))
+    : USERS_DATA;
+
+  tbody.innerHTML = users.map(u => {
+    const rolesDisponibles = ['joueur', 'organisateur', 'admin']
+      .filter(r => r !== u.role);
+
+    return `
+      <tr>
+        <td>${escapeHTML(u.pseudo)}</td>
+        <td><span class="role-badge role-${u.role}">${u.role.toUpperCase()}</span></td>
+        <td style="color:var(--text-muted)">${u.eventsOrganises}</td>
+        <td>
+          <div class="action-btns">
+            ${rolesDisponibles.map(r => `
+              <button class="action-btn ${r === 'admin' ? 'btn-stop' : 'btn-start'}"
+                      style="font-size:11px; padding:5px 12px;"
+                      onclick="promouvoir('${u.pseudo}', '${r}')">
+                → ${r.charAt(0).toUpperCase() + r.slice(1)}
+              </button>
+            `).join('')}
+          </div>
+        </td>
+      </tr>`;
+  }).join('');
+}
+
+function renderAdminAllEvents() {
+  const container = document.getElementById('adminAllEventsList');
+  if (!container) return;
+
+  container.innerHTML = EVENTS_DATA.map(ev => `
+    <a href="event-detail.html?id=${ev.id}" class="event-list-card statut-${ev.statut}">
+      ${ev.image
+        ? `<img class="elc-image" src="${ev.image}" alt="${ev.titre}" />`
+        : `<div class="elc-image-placeholder">${gameSVG(ev.titre)}</div>`
+      }
+      <div class="elc-body">
+        <div class="elc-header">
+          <h2 class="elc-title">${ev.titre}</h2>
+          <span class="elc-badge badge-${ev.statut}">${badgeLabel(ev.statut)}</span>
+        </div>
+        <div class="elc-meta">
+          <span>👥 ${ev.joueurs} joueurs</span>
+          <span>📅 ${formatDate(ev.dateDebut)}</span>
+          <span style="color: ${ev.visible ? '#22c55e' : '#ef4444'}">
+            ${ev.visible ? '👁 Public' : '🔒 Masqué'}
+          </span>
+        </div>
+        <div class="elc-footer">
+          <span class="elc-organisateur">Par <strong>${ev.organisateur}</strong></span>
+          <div class="action-btns" onclick="event.preventDefault()">
+            ${renderModerationActions(ev)}
+          </div>
+        </div>
+      </div>
+    </a>
+  `).join('');
+}
+
+function renderAdminStats() {
+  const totalEl = document.getElementById('adminStatTotalEvents');
+  const orgasEl = document.getElementById('adminStatOrgas');
+  if (totalEl) totalEl.textContent = EVENTS_DATA.length;
+
+  const orgas = [...new Set(EVENTS_DATA.map(ev => ev.organisateur))];
+  if (orgasEl) orgasEl.textContent = orgas.length;
+
+  const container = document.getElementById('adminStatsBars');
+  if (!container) return;
+
+  const max = Math.max(...orgas.map(o => EVENTS_DATA.filter(ev => ev.organisateur === o).length));
+  const colors = ['blue', 'purple', 'green'];
+  container.innerHTML = orgas.map((orga, i) => {
+    const count = EVENTS_DATA.filter(ev => ev.organisateur === orga).length;
+    return `
+      <div class="stats-bar-item">
+        <div class="stats-bar-label">
+          <span>${orga}</span>
+          <span>${count} event${count > 1 ? 's' : ''}</span>
+        </div>
+        <div class="stats-bar-track">
+          <div class="stats-bar-fill ${colors[i % colors.length]}"
+               style="width:${Math.round((count / max) * 100)}%"></div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function switchAdminView(view) {
+  const vues = ['dashboard', 'moderation', 'utilisateurs', 'evenements', 'stats', 'params'];
+  vues.forEach(v => {
+    const el = document.getElementById(`admin-vue-${v}`);
+    if (el) el.style.display = v === view ? 'block' : 'none';
+  });
+
+  const map = {
+    'dashboard':    'adminSidebarDashboard',
+    'moderation':   'adminSidebarModeration',
+    'utilisateurs': 'adminSidebarUtilisateurs',
+    'evenements':   'adminSidebarEvenements',
+    'stats':        'adminSidebarStats',
+    'params':       'adminSidebarParams',
+  };
+
+  document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+  document.getElementById(map[view])?.classList.add('active');
+
+  const bnMap = {
+  'dashboard':    'bnAdminDash',
+  'moderation':   'bnAdminMod',
+  'utilisateurs': 'bnAdminUsers',
+  'evenements':   'bnAdminEvents',
+  'params':       'bnAdminParams',
+  };
+  document.querySelectorAll('.bottom-nav-item').forEach(i => i.classList.remove('active'));
+  document.getElementById(bnMap[view])?.classList.add('active');
+}
+
+// Init admin
+if (document.getElementById('admin-vue-dashboard')) {
+  renderAdminDashboard();
+  renderModeration();
+  renderUtilisateurs();
+  renderAdminAllEvents();
+  renderAdminStats();
+
+  document.getElementById('adminSidebarDashboard')?.addEventListener('click', e => {
+    e.preventDefault(); switchAdminView('dashboard');
+  });
+  document.getElementById('adminSidebarModeration')?.addEventListener('click', e => {
+    e.preventDefault(); switchAdminView('moderation');
+  });
+  document.getElementById('adminSidebarUtilisateurs')?.addEventListener('click', e => {
+    e.preventDefault(); switchAdminView('utilisateurs');
+  });
+  document.getElementById('adminSidebarEvenements')?.addEventListener('click', e => {
+    e.preventDefault(); renderAdminAllEvents(); switchAdminView('evenements');
+  });
+  document.getElementById('adminSidebarStats')?.addEventListener('click', e => {
+    e.preventDefault(); renderAdminStats(); switchAdminView('stats');
+  });
+  document.getElementById('adminSidebarParams')?.addEventListener('click', e => {
+    e.preventDefault(); switchAdminView('params');
+  });
+}

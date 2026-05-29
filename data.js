@@ -16,10 +16,10 @@ const USER_SESSION = {
 // ================================
 
 const GALLERY_DATA = [
-  { src: "Assets/gallerie1.jpg", alt: "Freestyle event" },
-  { src: "Assets/gallerie2.jpg", alt: "Ravo esport" },
-  { src: "Assets/gallerie3.jpg", alt: "Fortnite tournament" },
-  { src: "Assets/gallerie4.jpg", alt: "Gamers united" },
+  { src: "Assets/gallerie1.webp", alt: "Freestyle event" },
+  { src: "Assets/gallerie2.webp", alt: "Ravo esport" },
+  { src: "Assets/gallerie3.webp", alt: "Fortnite tournament" },
+  { src: "Assets/gallerie4.webp", alt: "Gamers united" },
   { src: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800&q=80", alt: "Gaming tournament moment" },
 ];
 
@@ -37,7 +37,7 @@ const EVENTS_DATA = [
     dateFin: "2026-08-10T23:00",
     statut: "valide",
     visible: true,
-    image: "Assets/valorant-thumb.jpg",
+    image: "Assets/valorant-thumb.webp",
     discussion: true
   },
   {
@@ -50,7 +50,7 @@ const EVENTS_DATA = [
     dateFin: "2026-08-28T23:30",
     statut: "en_cours",
     visible: true,
-    image: "Assets/leagueoflegend-thumb.png",
+    image: "Assets/leagueoflegend-thumb.webp",
     discussion: true
   },
   {
@@ -63,7 +63,7 @@ const EVENTS_DATA = [
     dateFin: "2026-09-04T21:00",
     statut: "en_attente",
     visible: true,
-    image: "Assets/cs2-thumb.png",
+    image: "Assets/cs2-thumb.webp",
     discussion: false
   },
   {
@@ -76,7 +76,7 @@ const EVENTS_DATA = [
     dateFin: "2026-09-12T22:00",
     statut: "en_attente",
     visible: true,
-    image: "Assets/fortnite-thumb.jpg",
+    image: "Assets/fortnite-thumb.webp",
     discussion: true
   },
   {
@@ -89,7 +89,7 @@ const EVENTS_DATA = [
     dateFin: "2026-08-20T20:00",
     statut: "valide",
     visible: true,
-    image: "Assets/rocketleague-thumb.png",
+    image: "Assets/rocketleague-thumb.webp",
     discussion: false
   },
   {
@@ -102,7 +102,7 @@ const EVENTS_DATA = [
     dateFin: "2026-09-20T18:00",
     statut: "valide",
     visible: true,
-    image: "Assets/fifa26-thumb.avif",
+    image: "Assets/fifa26-thumb.webp",
     discussion: true
   }
 ];
@@ -238,3 +238,29 @@ const GAME_ICONS = {
     <path d="M6 12h4M8 10v4M15 11h.01M18 11h.01"/>
   </svg>`
 };
+
+
+// ================================
+// DATAS ADMIN
+// ================================
+
+const USERS_DATA = [
+  { pseudo: "ExpresSohin",    role: "organisateur", eventsOrganises: 3 },
+  { pseudo: "RavoGaming",     role: "organisateur", eventsOrganises: 2 },
+  { pseudo: "Syluskitten109", role: "joueur",        eventsOrganises: 0 },
+  { pseudo: "NightFox99",     role: "joueur",        eventsOrganises: 0 },
+  { pseudo: "BladeStrike",    role: "joueur",        eventsOrganises: 0 },
+  { pseudo: "ZeroLag",        role: "joueur",        eventsOrganises: 0 },
+  { pseudo: "AdminEsportify", role: "admin",         eventsOrganises: 0 },
+];
+
+function badgeLabel(statut) {
+  const labels = {
+    valide: 'Validé',
+    en_cours: 'En cours',
+    en_attente: 'En attente',
+    suspendu: 'Suspendu',
+    refuse: 'Refusé'
+  };
+  return labels[statut] || statut;
+}
