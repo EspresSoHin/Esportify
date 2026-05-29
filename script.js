@@ -62,7 +62,7 @@ document.getElementById('galleryNext')?.addEventListener('click', () => {
   updateGallery();
 });
 
-// Autoplay galerie toutes les 4 secondes
+// Pour initialiser la galerie
 if (document.getElementById('galleryTrack')) {
   initGallery();
 }
@@ -125,7 +125,7 @@ function renderCarousel() {
   }).join('');
 
 
-  if (dotsContainer) {
+  if (dotsContainer) { //question sur (_, i) le tiret du bas
     dotsContainer.innerHTML = Array.from({ length: totalPages }, (_, i) => `
       <span class="dot${i === carouselPage ? ' active' : ''}" onclick="goToCarouselPage(${i})"></span>
     `).join('');
@@ -196,6 +196,50 @@ function gameSVG(titre) {
   return GAME_ICONS.default;
 }
 
+
+// ================================
+// FAVORIS
+// ================================
+const FAVORIS = new Set();
+
+function toggleFavori(eventId, btnEl) {
+  if (!USER_SESSION.connecte) {
+    showToast(`
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+      <a href="connexion.html">Connecte-toi</a> pour sauvegarder cet événement
+    `);
+    return;
+  }
+
+  if (FAVORIS.has(eventId)) {
+    FAVORIS.delete(eventId);
+    btnEl.classList.remove('active');
+    btnEl.title = "Ajouter aux favoris";
+    showToast('Retiré des favoris');
+  } else {
+    FAVORIS.add(eventId);
+    btnEl.classList.add('active');
+    btnEl.title = "Retirer des favoris";
+    showToast('Ajouté aux favoris ★');
+    // Plus tard : fetch('/api/favoris', { method: 'POST', body: JSON.stringify({ eventId }) })
+  }
+}
+
+let toastTimeout;
+function showToast(message) {
+  let toast = document.getElementById('globalToast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'globalToast';
+    toast.className = 'toast';
+    document.body.appendChild(toast);
+  }
+  toast.innerHTML = message;
+  toast.classList.add('show');
+  clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
 // ================================
 // PAGE EVENTS — liste publique
 // ================================
@@ -223,8 +267,17 @@ function renderEvents(events) {
       }
       <div class="elc-body">
         <div class="elc-header">
-          <h2 class="elc-title">${ev.titre}</h2>
-          <span class="elc-badge badge-${ev.statut}">${badgeLabel(ev.statut)}</span>
+            <h2 class="elc-title">${ev.titre}</h2>
+            <div style="display:flex; align-items:center; gap:8px;">
+                <span class="elc-badge badge-${ev.statut}">${badgeLabel(ev.statut)}</span>
+                <button class="btn-favori${FAVORIS.has(ev.id) ? ' active' : ''}" 
+                    title="Ajouter aux favoris"
+                    onclick="event.preventDefault(); toggleFavori(${ev.id}, this)">
+                 <svg width="14" height="14" viewBox="0 0 24 24" fill="${FAVORIS.has(ev.id) ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
+                    <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
+                 </svg>
+                </button>
+            </div>
         </div>
         <div class="elc-meta">
           <span>👥 ${ev.joueurs} joueurs</span>
@@ -434,6 +487,15 @@ function renderDetail() {
           <a href="connexion.html" class="btn-join" style="display:block; text-align:center; padding: 12px; border-radius: 8px; font-size:14px;">
             S'inscrire au tournoi
           </a>
+          <button class="btn-favori${FAVORIS.has(ev.id) ? ' active' : ''}"
+          style="width:100%; margin-top:0.75rem; height:38px; border-radius:6px;"
+          title="Ajouter aux favoris"
+          onclick="toggleFavori(${ev.id}, this)">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="${FAVORIS.has(ev.id) ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
+      <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
+    </svg>
+    ${FAVORIS.has(ev.id) ? 'Retiré des favoris' : 'Ajouter aux favoris'}
+  </button>
           <p class="cta-note">Tu dois être connecté pour t'inscrire</p>
         </div>
         <div class="detail-dates-card">
@@ -804,7 +866,7 @@ function submitJoueurEvent() {
   renderMesEvents();
 }
 
-// Navigation sidebar espace joueur
+
 function switchJoueurView(view) {
   const vues = ['home', 'events', 'favoris', 'classement', 'params-joueur'];
   vues.forEach(v => {
@@ -846,3 +908,6 @@ if (document.getElementById('vue-home')) {
     e.preventDefault(); switchJoueurView('params-joueur');
   });
 }
+
+
+

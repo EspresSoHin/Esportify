@@ -1025,6 +1025,45 @@ img { max-width: 100%; display: block; }
   letter-spacing: 0.04em;
 }
 
+.btn-favori {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 6px;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+.btn-favori:hover { border-color: var(--purple); color: var(--purple); }
+.btn-favori.active { border-color: var(--purple); color: var(--purple); background: rgba(183,52,190,0.15); }
+
+
+.toast {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: var(--navy);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  font-size: 13px;
+  color: var(--white);
+  z-index: 300;
+  transition: transform 0.3s ease;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+.toast a { color: var(--blue); font-weight: 600; }
+
 
 /* ============================
    PAGE DETAIL EVENT

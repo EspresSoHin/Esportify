@@ -1,5 +1,16 @@
 //Je vais m'en servir de JSON et stocker mes petites datas hehehehehehheehehehe
 
+
+// ================================
+// AUTH PROVISOIRE
+// ================================
+
+const USER_SESSION = {
+  connecte: false,
+  pseudo: null
+};
+
+
 // ================================
 // PHOTOS GALERIE
 // ================================
