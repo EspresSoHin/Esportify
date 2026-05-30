@@ -1,4 +1,3 @@
-
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
@@ -626,6 +625,8 @@ img { max-width: 100%; display: block; }
   background: var(--black);
   padding: 2.5rem 3rem;
   max-width: 900px;
+  width: 100%;
+  min-width: 0;
 }
 
 
@@ -1407,7 +1408,7 @@ img { max-width: 100%; display: block; }
   right: 0;
   background: var(--navy);
   border-top: 1px solid rgba(69,172,247,0.15);
-  z-index: 90;
+  z-index: 999;
   padding: 0.5rem 0 0.75rem;
 }
 
@@ -1667,208 +1668,82 @@ img { max-width: 100%; display: block; }
 
 
 
-
-
-
 /* ============================
    RESPONSIVE MOBILE
 ============================ */
 @media (max-width: 768px) {
 
-  .navbar { 
-    padding: 0 1.25rem; 
-  }
-  .nav-links,
-  .nav-events,
-  .nav-right .btn-join { 
-    display: none; 
-  }
-  .hamburger { 
-    display: flex; 
-  }
  
-  .btn-join-mobile {
-    padding: 10px 24px;
-    font-size: 14px;
-  }
-  
-  .hero { 
-    padding: 3rem 1.25rem; 
-    min-height: auto;
-  }
-
-  .hero-content { 
-    grid-template-columns: 1fr; 
-    gap: 2rem;
-  }
-
- .hero-image {
-  order: -1;
-}
-  
-  .hero-text { 
-    text-align: center; 
-  }
-
-  .hero-subtitle { 
-    max-width: 100%; 
-    margin: 0 auto 2rem;
-  }
-
-  .btn-primary {
-  margin: 0 auto;
-  }
-  
-  .tournaments { 
-    padding: 3rem 1.25rem; 
-  }
-  .tournament-cards {
-    grid-template-columns: 1fr;
-    max-width: 360px;
-    margin: 0 auto 2rem;
-  }
-  
-  
-.gallery { 
-  padding: 3rem 1.25rem; 
-}
-.gallery-slider {
-  overflow: hidden;
-  width: 100%;
-}
-.gallery-track {
-  display: flex;
-  width: 100%;
-}
-.gallery-slide {
-  min-width: 100%;
-  width: 100%;
-  flex-shrink: 0;
-}
-.gallery-slide img {
-  height: 220px;
-  width: 100%;
-  object-fit: cover;
-}
+  .navbar { padding: 0 1.25rem; }
+  .nav-links, .nav-events, .nav-right .btn-join, .lang-selector { display: none; }
+  .hamburger { display: flex; }
 
   
-.sponsor-logos {
-  flex-direction: column;
-  align-items: center;
-  gap: 1.5rem;
-}
-.sponsor-item img {
-  max-width: 140px;
-  height: auto;
-}
-  
-  
-  .contact { 
-    padding: 3rem 1.25rem; 
-  }
-  .contact-inner {
-    grid-template-columns: 1fr;
-    gap: 2.5rem;
-  }
-  .contact-image img {
-    height: 280px; 
-  }
-  .form-row { 
-    grid-template-columns: 1fr; 
-  }
-  
-  
-  .footer { 
-    padding: 3rem 1.25rem 2rem; 
-  }
-  .footer-inner { 
-    grid-template-columns: 1fr; 
-    gap: 2.5rem; 
-  }
-  .footer-cols { 
-    grid-template-columns: 1fr 1fr; 
-    gap: 2rem;
-  }
-  .footer-bottom {
-    flex-direction: column; 
-    gap: 1.25rem;
-    text-align: center;
-  }
+  .hero { padding: 3rem 1.25rem; min-height: auto; }
+  .hero-content { grid-template-columns: 1fr; gap: 2rem; }
+  .hero-image { order: -1; }
+  .hero-text { text-align: center; }
+  .hero-subtitle { max-width: 100%; margin: 0 auto 2rem; }
+  .btn-primary { margin: 0 auto; }
+
+
+  .tournaments { padding: 3rem 1.25rem; }
+  .tournament-cards { grid-template-columns: 1fr; max-width: 360px; margin: 0 auto 2rem; }
 
   
-  .app-layout { 
-    grid-template-columns: 1fr; 
-  }
-  .sidebar { 
-    display: none; 
-  }
-  .app-main {
-    padding: 1.5rem 1.25rem 100px; 
-    max-width: 100%;
-  }
-  .stat-cards { 
-    grid-template-columns: 1fr 1fr; 
-    gap: 0.75rem; 
-  }
-  .events-grid { 
-    grid-template-columns: 1fr; 
-  }
-  
-  
-  .bottom-nav { 
-    display: block; 
-  }
+  .gallery { padding: 3rem 1.25rem; }
+  .gallery-slider { overflow: hidden; width: 100%; }
+  .gallery-track { display: flex; width: 100%; }
+  .gallery-slide { min-width: 100%; width: 100%; flex-shrink: 0; }
+  .gallery-slide img { height: 220px; width: 100%; object-fit: cover; }
 
-  .app-main {
-    padding-bottom: 90px !important;
-  }
   
-  .events-page { 
-    padding: 2rem 1.25rem 4rem; 
-  }
-  .filters-bar { 
-    flex-direction: column; 
-    align-items: stretch;
-    gap: 1rem; 
-  }
-  .filter-group select,
-  .filter-group input { 
-    width: 100%; 
-  }
-  .results-count { 
-    margin-left: 0; 
-    padding-bottom: 0;
-  }
-  .events-list { 
-    grid-template-columns: 1fr; 
-  }
-  
-  .detail-hero { 
-    height: 240px; 
-  }
-  .detail-hero-inner { 
-    padding: 1.5rem 1.25rem; 
-  }
-  .detail-body {
-    grid-template-columns: 1fr;
-    padding: 2rem 1.25rem;
-    gap: 2.5rem;
-  }
-  .detail-info-grid { 
-    grid-template-columns: 1fr; 
-  }
-  .detail-sidebar {
-    gap: 1.5rem;
-  }
-  /* Connexion mobile */
-  .auth-page { 
-    grid-template-columns: 1fr; 
-  }
-  .auth-deco { 
-    display: none; 
-  }
-  .auth-container { 
-    padding: 3rem 1.25rem; 
-    max-width: 100%; 
-  }
+  .sponsor-logos { flex-direction: column; align-items: center; gap: 1.5rem; }
+  .sponsor-item img { max-width: 140px; height: auto; }
+
+  .contact { padding: 3rem 1.25rem; }
+  .contact-inner { grid-template-columns: 1fr; gap: 2.5rem; }
+  .contact-image img { height: 280px; }
+  .form-row { grid-template-columns: 1fr; }
+
+  .footer { padding: 3rem 1.25rem 2rem; }
+  .footer-inner { grid-template-columns: 1fr; gap: 2.5rem; }
+  .footer-cols { grid-template-columns: 1fr 1fr; gap: 2rem; }
+  .footer-bottom { flex-direction: column; gap: 1.25rem; text-align: center; }
+
+  .app-layout { grid-template-columns: 1fr; }
+  .sidebar { display: none; }
+  .app-main { padding: 1.5rem 1.25rem 90px; max-width: 100%; width: 100%; }
+
+  .stat-cards { grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+  .events-grid { grid-template-columns: 1fr; }
+  .page-title-row { flex-direction: column; align-items: flex-start; gap: 1rem; }
+  .page-title { font-size: 28px; }
+  .orga-table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .orga-table { min-width: 520px; }
+
+  .filters-bar { flex-direction: column; align-items: stretch; gap: 1rem; }
+  .filter-group { width: 100%; }
+  .filter-group select, .filter-group input { width: 100%; min-width: unset; }
+  .results-count { margin-left: 0; padding-bottom: 0; }
+
+  .modal-overlay { padding: 1rem; align-items: flex-end; }
+  .modal-box { width: 100%; max-height: 85vh; border-radius: 12px 12px 0 0; padding-bottom: 60px; }
+  .modal-body .form-row { grid-template-columns: 1fr; }
+  .params-card .form-row { grid-template-columns: 1fr; }
+
+  .bottom-nav { display: block; }
+
+  .events-page { padding: 2rem 1.25rem 4rem; }
+  .events-list { grid-template-columns: 1fr; }
+
+  .detail-hero { height: 240px; }
+  .detail-hero-inner { padding: 1.5rem 1.25rem; }
+  .detail-body { grid-template-columns: 1fr; padding: 2rem 1.25rem; gap: 2.5rem; }
+  .detail-info-grid { grid-template-columns: 1fr; }
+  .detail-sidebar { gap: 1.5rem; }
+
+  .auth-page { grid-template-columns: 1fr; }
+  .auth-deco { display: none; }
+  .auth-container { padding: 3rem 1.25rem; max-width: 100%; }
 }
