@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Esportify – Connexion</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-left">
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links">
+      <li><a href="index.html">Accueil</a></li>
+      <li><a href="index.html#gallery">Galerie</a></li>
+      <li><a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" rel="noopener noreferrer">FAQ</a></li>
+      <li><a href="index.html#contact">Contact</a></li>
+    </ul>
+  </div>
+  <a href="index.html" class="nav-logo">
+    <img class="logo-img" src="Assets/logobleu.webp" alt="logo-Esportify" height="50" width="50" />
+    <span class="logo-text">ESPORTIFY</span>
+  </a>
+  <div class="nav-right">
+    <a href="events.html" class="nav-events">VOIR LES EVENTS</a>
+    <div class="lang-selector">
+      <span class="lang-btn active" data-lang="fr">🌐 FR</span>
+      <span class="lang-btn" data-lang="en">🌐 EN</span>
+    </div>
+  </div>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <ul>
+    <li><a href="index.html">Accueil</a></li>
+    <li><a href="index.html#gallery">Galerie</a></li>
+    <li><a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" rel="noopener noreferrer">FAQ</a></li>
+    <li><a href="index.html#contact">Contact</a></li>
+    <li><a href="events.html">Voir les events</a></li>
+  </ul>
+</div>
+
+<section class="auth-page">
+  <div class="auth-container">
+
+    <!-- TABS -->
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tabConnexion" onclick="switchAuthTab('connexion')">
+        Se connecter
+      </button>
+      <button class="auth-tab" id="tabInscription" onclick="switchAuthTab('inscription')">
+        S'inscrire
+      </button>
+    </div>
+
+    <!-- FORMULAIRE CONNEXION -->
+    <div id="formConnexion">
+      <div class="auth-header">
+        <h1 class="auth-title">CONTENT DE TE <span class="blue">REVOIR</span></h1>
+        <p class="auth-subtitle">Connecte-toi pour accéder à ton espace</p>
+      </div>
+      <div class="auth-form">
+        <div class="form-group">
+          <label>Email ou pseudo</label>
+          <input type="text" id="loginIdentifiant" placeholder="ton@email.com" />
+        </div>
+        <div class="form-group">
+          <label>Mot de passe</label>
+          <div class="input-password-wrapper">
+            <input type="password" id="loginPassword" placeholder="••••••••" />
+            <button class="toggle-password" onclick="togglePasswordVisibility('loginPassword', this)" type="button">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div class="auth-options">
+          <label class="checkbox-label">
+            <input type="checkbox" id="rememberMe" />
+            Se souvenir de moi
+          </label>
+          <a href="#" class="forgot-link">Mot de passe oublié ?</a>
+        </div>
+        <button class="btn-submit auth-submit" onclick="handleLogin()">
+          Se connecter →
+        </button>
+        <div class="auth-error" id="loginError" style="display:none"></div>
+
+        <!-- Info démo -->
+        <div class="auth-demo-info">
+          <p class="demo-label">COMPTES DE DÉMONSTRATION</p>
+          <div class="demo-accounts">
+            <button class="demo-btn" onclick="fillDemo('joueur')">
+              <span class="role-badge role-joueur">JOUEUR</span>
+              Syluskitten109
+            </button>
+            <button class="demo-btn" onclick="fillDemo('organisateur')">
+              <span class="role-badge role-orga">ORGA</span>
+              ExpresSohin
+            </button>
+            <button class="demo-btn" onclick="fillDemo('admin')">
+              <span class="role-badge role-admin">ADMIN</span>
+              AdminEsportify
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FORMULAIRE INSCRIPTION -->
+    <div id="formInscription" style="display:none">
+      <div class="auth-header">
+        <h1 class="auth-title">REJOINS <span class="purple">L'ARÈNE</span></h1>
+        <p class="auth-subtitle">Crée ton compte et commence à jouer</p>
+      </div>
+      <div class="auth-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Pseudo *</label>
+            <input type="text" id="regPseudo" placeholder="TonPseudo" />
+          </div>
+          <div class="form-group">
+            <label>Email *</label>
+            <input type="email" id="regEmail" placeholder="ton@email.com" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Type de compte</label>
+          <div class="auth-note" style="background: rgba(69,172,247,0.08); border: 1px solid rgba(69,172,247,0.2); border-radius: 6px; padding: 0.75rem 1rem; text-align:left; margin-top:0;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2" style="display:inline; vertical-align:middle; margin-right:6px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Tous les comptes sont créés en tant que <strong style="color:var(--blue)">Joueur</strong>. Le rôle Organisateur est attribué par un administrateur.
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Mot de passe *</label>
+            <div class="input-password-wrapper">
+              <input type="password" id="regPassword" placeholder="••••••••" />
+              <button class="toggle-password" onclick="togglePasswordVisibility('regPassword', this)" type="button">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Confirmer *</label>
+            <div class="input-password-wrapper">
+              <input type="password" id="regPasswordConfirm" placeholder="••••••••" />
+              <button class="toggle-password" onclick="togglePasswordVisibility('regPasswordConfirm', this)" type="button">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="regCGU" />
+            J'accepte les <a href="#" style="color:var(--blue)">conditions d'utilisation</a>
+          </label>
+        </div>
+        <button class="btn-submit auth-submit" onclick="handleRegister()">
+          Créer mon compte →
+        </button>
+        <div class="auth-error" id="registerError" style="display:none"></div>
+
+        <p class="auth-note">
+          Le compte Organisateur sera soumis à validation par notre équipe avant activation.
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- PANNEAU DÉCORATIF -->
+  <div class="auth-deco">
+  <div class="auth-deco-bg"></div>
+  <div class="auth-deco-overlay"></div>
+  <div class="auth-deco-content">
+    <div class="auth-deco-quote">
+      CHAQUE<br>
+      <span class="blue">VICTOIRE</span><br>
+      COMMENCE<br>
+      <span class="purple">ICI.</span>
+    </div>
+    <p class="auth-deco-sub">Des centaines de joueurs t'attendent déjà</p>
+    <div class="auth-deco-pills">
+      <span class="elc-badge badge-en_cours">6 tournois actifs</span>
+      <span class="elc-badge badge-valide">247 joueurs</span>
+    </div>
+  </div>
+</div>
+</section>
+
+<script src="data.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
