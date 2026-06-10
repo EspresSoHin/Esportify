@@ -3,7 +3,7 @@ from datetime import datetime, date
 from typing import Optional
 
 
-#bloc pour cenurer des mots dans les commentaires
+#bloc pour censurer des mots dans les commentaires
 class CommentaireCreate(BaseModel):
     contenu: str
 
@@ -40,6 +40,7 @@ class UserUpdate(BaseModel):
     pseudo: Optional[str] = None
     email: Optional[EmailStr] = None
     password: Optional[str] = None
+    id_role: Optional[int] = None
 
 
 ## ##############################
@@ -71,6 +72,18 @@ class EventResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class EventUpdate(BaseModel):
+    titre: Optional[str] = None
+    description: Optional[str] = None
+    nb_joueurs_max: Optional[int] = None
+    date_debut: Optional[datetime] = None
+    date_fin: Optional[datetime] = None
+    image_url: Optional[str] = None
+    visible: Optional[bool] = None
+    discussion_active: Optional[bool] = None
+    id_statut: Optional[int] = None
 
 
 ## ##############################

@@ -6,8 +6,8 @@ from passlib.context import CryptContext
 
 
 router = APIRouter(
-    prefix="/users",  # toutes les routes commenceront par /users
-    tags=["users"]    # pour la doc automatique FastAPI
+    prefix="/users",
+    tags=["users"]    
 ) 
 
 pwd_context = CryptContext(schemes=["bcrypt"])
@@ -68,8 +68,6 @@ def update_user(id: int, user_update: schemas.UserUpdate, db: Session = Depends(
     db.refresh(user)
     return user
     
-
-
 
 #############################
 ## suppression d'un user D##
