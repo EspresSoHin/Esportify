@@ -1,4 +1,3 @@
-
 -- -----------------------------------------------------
 -- Schema esportifydb
 -- -----------------------------------------------------
@@ -18,7 +17,7 @@ VALUES ('Joueur'), ('Admin'), ('Organisateur');
 
 
 -- -----------------------------------------------------
--- Table esportifydb.USERS
+-- Table esportifydb.USERS 
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS esportifydb.USERS (
   ID SERIAL PRIMARY KEY,
@@ -33,7 +32,7 @@ CREATE TABLE IF NOT EXISTS esportifydb.USERS (
 
 
 -- -----------------------------------------------------
--- Table esportifydb.STATUTS_INSCRIPTION
+-- Table esportifydb.STATUTS_INSCRIPTION 
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS esportifydb.STATUTS_INSCRIPTION (
   ID SERIAL PRIMARY KEY,

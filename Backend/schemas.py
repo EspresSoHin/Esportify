@@ -105,6 +105,10 @@ class InscriptionResponse(BaseModel):
     class Config:
         from_attributes = True
 
+class InscriptionUpdate(BaseModel):
+    id_statut_inscription: Optional[int] = None
+
+
 ## ##############################
 ##           FAVORIS           ##
 ## ##############################
