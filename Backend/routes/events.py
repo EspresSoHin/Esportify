@@ -36,7 +36,7 @@ def create_event(event: schemas.EventCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_event)
     return new_event
- 
+
 
 ##############################
 ## récupération d'un event R##
