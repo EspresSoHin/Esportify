@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session 
 from database import get_db
 import models, schemas
+from datetime import datetime, date
 
 
 router = APIRouter(
@@ -27,13 +28,15 @@ def create_event(event: schemas.EventCreate, db: Session = Depends(get_db)):
         nb_joueurs_max=event.nb_joueurs_max,
         date_debut=event.date_debut,
         date_fin=event.date_fin,
-        image_url=event.image_url
+        image_url=event.image_url,
+        id_organisateur=event.id_organisateur
     )
+
     db.add(new_event)
     db.commit()
     db.refresh(new_event)
     return new_event
-
+ 
 
 ##############################
 ## récupération d'un event R##
@@ -75,6 +78,7 @@ def update_event(id: int, event_update: schemas.EventUpdate, db: Session = Depen
         event.discussion_active = event_update.discussion_active
     if event_update.id_statut is not None:
         event.id_statut = event_update.id_statut
+    event.updated_at = datetime.now()
 
     db.commit()
     db.refresh(event)

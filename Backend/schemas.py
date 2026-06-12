@@ -54,6 +54,7 @@ class EventCreate(BaseModel):
     date_debut: datetime
     date_fin: datetime
     image_url: Optional[str] = None
+    id_organisateur: int
 
 class EventResponse(BaseModel):
     id: int

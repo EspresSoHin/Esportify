@@ -1,5 +1,3 @@
-#models.py
-
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, Date, Text, ForeignKey, CheckConstraint, UniqueConstraint
 from sqlalchemy.orm import relationship, declarative_base
 from datetime import datetime, date
@@ -27,7 +25,7 @@ class Users(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     pseudo = Column(String(45), nullable=False, unique=True)
-    password = Column(String(255), nullable=False) #hashed
+    password = Column(String(255), nullable=False) 
     email = Column(String(255), nullable=False, unique=True)
     id_role = Column(Integer, ForeignKey('roles.id'), nullable=False, default=1)
     created_at = Column(DateTime, nullable=False, default=datetime.now)
@@ -107,6 +105,7 @@ class InscriptionsEv(Base):
     user = relationship("Users", back_populates="inscriptions")
     event = relationship("Events", back_populates="inscriptions")
     statut_inscription = relationship("StatutsInscription", back_populates="inscriptions")
+
 
 ## ##############################
 ##        TABLE FAVORIS        ##

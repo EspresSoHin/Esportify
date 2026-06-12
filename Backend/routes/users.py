@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from database import get_db
 import models, schemas
 from passlib.context import CryptContext
+from datetime import datetime, date
 
 
 router = APIRouter(
@@ -63,6 +64,7 @@ def update_user(id: int, user_update: schemas.UserUpdate, db: Session = Depends(
         user.email = user_update.email
     if user_update.password is not None:
         user.password = pwd_context.hash(user_update.password[:72]) 
+    user.updated_at = datetime.now()
 
     db.commit()
     db.refresh(user)
