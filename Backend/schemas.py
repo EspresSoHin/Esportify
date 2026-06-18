@@ -150,6 +150,10 @@ class ScoresResponse(BaseModel):
     class Config:
         from_attributes = True
 
+class ScoresUpdate(BaseModel):
+    position: Optional[int] = None
+    points: Optional[int] = None
+    resultat: Optional[str] = None
 
 ## ##############################
 ##            ROLES            ##

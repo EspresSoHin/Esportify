@@ -65,6 +65,8 @@ def update_user(id: int, user_update: schemas.UserUpdate, db: Session = Depends(
     if user_update.password is not None:
         user.password = pwd_context.hash(user_update.password[:72]) 
     user.updated_at = datetime.now()
+    if user_update.id_role is not None:
+        user.id_role = user_update.id_role
 
     db.commit()
     db.refresh(user)

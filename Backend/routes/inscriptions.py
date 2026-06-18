@@ -42,7 +42,7 @@ def get_inscription(id_inscription: int, db: Session = Depends(get_db)):
         models.InscriptionsEv.id == id_inscription
     ).first()
     if inscription is None:
-            raise HTTPException(status_code=404, detail="Event not found")
+            raise HTTPException(status_code=404, detail="Inscription not found")
     return inscription
 
 
@@ -54,7 +54,7 @@ def get_inscription(id_inscription: int, db: Session = Depends(get_db)):
 def patch_inscription(id: int, inscription_patch: schemas.InscriptionUpdate, db: Session = Depends(get_db)):
     inscription = db.query(models.InscriptionsEv).filter(models.InscriptionsEv.id == id).first()
     if inscription is None:
-        raise HTTPException(status_code=404, detail="Event not found")
+        raise HTTPException(status_code=404, detail="Inscription not found")
 
     if inscription_patch.id_statut_inscription is not None:
         inscription.id_statut_inscription = inscription_patch.id_statut_inscription
@@ -64,15 +64,15 @@ def patch_inscription(id: int, inscription_patch: schemas.InscriptionUpdate, db:
     return inscription
 
 
-#############################
-## suppression d'un event D##
-#############################
+####################################
+## suppression d'une inscription D##
+####################################
 
 @router.delete("/{id}")
 def delete_inscription(id: int, db: Session = Depends(get_db)):
     inscription = db.query(models.InscriptionsEv).filter(models.InscriptionsEv.id == id).first()
     if inscription is None:
-        raise HTTPException(status_code=404, detail="Event not found")
+        raise HTTPException(status_code=404, detail="Inscription not found")
     
     db.delete(inscription)
     db.commit()
