@@ -91,7 +91,7 @@
         </button>
         <div class="auth-error" id="loginError" style="display:none"></div>
 
-        <!-- Info démo -->
+        <!-- Info démo on supprimera -->
         <div class="auth-demo-info">
           <p class="demo-label">COMPTES DE DÉMONSTRATION</p>
           <div class="demo-accounts">
@@ -118,7 +118,7 @@
         <h1 class="auth-title">REJOINS <span class="purple">L'ARÈNE</span></h1>
         <p class="auth-subtitle">Crée ton compte et commence à jouer</p>
       </div>
-      <div class="auth-form">
+      <form class="auth-form" onsubmit="event.preventDefault(); handleLogin()">
         <div class="form-row">
           <div class="form-group">
             <label>Pseudo *</label>
@@ -166,7 +166,7 @@
             J'accepte les <a href="#" style="color:var(--blue)">conditions d'utilisation</a>
           </label>
         </div>
-        <button class="btn-submit auth-submit" onclick="handleRegister()">
+        <button class="btn-submit auth-submit">
           Créer mon compte →
         </button>
         <div class="auth-error" id="registerError" style="display:none"></div>
@@ -201,5 +201,6 @@
 
 <script src="data.js"></script>
 <script src="script.js"></script>
+<script src="fetchdata.js"></script>
 </body>
 </html>
