@@ -1,5 +1,3 @@
-//Je vais m'en servir de JSON et stocker mes petites datas hehehehehehheehehehe
-
 // ================================
 // AUTH PROVISOIRE
 // ================================
@@ -22,89 +20,16 @@ const GALLERY_DATA = [
 ];
 
 // ================================
-// DONNÉES EVENTS
+// DONNÉES EVENTS (on remplace par un fetch api/events)
 // ================================
-const EVENTS_DATA = [
-  {
-    id: 1,
-    titre: "Valorant Open Cup",
-    description: "Tournoi ouvert à tous les niveaux. Format best-of-3, bracket simple élimination. Rejoins ton équipe et prouve ta valeur sur la scène compétitive.",
-    joueurs: 32,
-    organisateur: "ExpresSohin",
-    dateDebut: "2026-08-10T18:00",
-    dateFin: "2026-08-10T23:00",
-    statut: "valide",
-    visible: true,
-    image: "Assets/valorant-thumb.webp",
-    discussion: true
-  },
-  {
-    id: 2,
-    titre: "League of Legends 5V5",
-    description: "Clash inter-communautés en 5v5. Toutes les lignes représentées. Format suisse sur 4 rounds puis top 8 en élimination directe.",
-    joueurs: 10,
-    organisateur: "RavoGaming",
-    dateDebut: "2026-08-28T20:00",
-    dateFin: "2026-08-28T23:30",
-    statut: "en_cours",
-    visible: true,
-    image: "Assets/leagueoflegend-thumb.webp",
-    discussion: true
-  },
-  {
-    id: 3,
-    titre: "CS2 Pro Series",
-    description: "Compétition semi-pro réservée aux joueurs Master Guardian et au-dessus. Maps en rotation officielle. Prix : 150€ pour le gagnant.",
-    joueurs: 64,
-    organisateur: "ExpresSohin",
-    dateDebut: "2026-09-04T15:00",
-    dateFin: "2026-09-04T21:00",
-    statut: "en_attente",
-    visible: true,
-    image: "Assets/cs2-thumb.webp",
-    discussion: false
-  },
-  {
-    id: 4,
-    titre: "Fortnite Solo Cup",
-    description: "Battle royale solo, 100 joueurs, 3 parties comptabilisées. Score = éliminations × 3 + placement. Rejoins le lobby 15 minutes avant le début.",
-    joueurs: 100,
-    organisateur: "Syluskitten109",
-    dateDebut: "2026-09-12T19:00",
-    dateFin: "2026-09-12T22:00",
-    statut: "en_attente",
-    visible: true,
-    image: "Assets/fortnite-thumb.webp",
-    discussion: true
-  },
-  {
-    id: 5,
-    titre: "Rocket League 2v2",
-    description: "Duos uniquement. Format round-robin puis playoffs. Classement basé sur les points de buts et victoires. Inscription par équipe obligatoire.",
-    joueurs: 24,
-    organisateur: "RavoGaming",
-    dateDebut: "2026-08-20T17:00",
-    dateFin: "2026-08-20T20:00",
-    statut: "valide",
-    visible: true,
-    image: "Assets/rocketleague-thumb.webp",
-    discussion: false
-  },
-  {
-    id: 6,
-    titre: "FIFA 26 Weekend League",
-    description: "Tournoi FIFA du weekend. Poules de 4 puis élimination directe. Tous niveaux acceptés, ambiance décontractée garantie.",
-    joueurs: 16,
-    organisateur: "Syluskitten109",
-    dateDebut: "2026-09-20T14:00",
-    dateFin: "2026-09-20T18:00",
-    statut: "valide",
-    visible: true,
-    image: "Assets/fifa26-thumb.webp",
-    discussion: true
-  }
-];
 
+const STATUTS_EVENEMENT = { //faire route API plus tard
+  1: 'en_cours',
+  2: 'valide', 
+  3: 'en_attente',
+  4: 'suspendu',
+  5: 'refuse'
+};
 
 // ================================
 // PAGE DÉTAIL EVENT

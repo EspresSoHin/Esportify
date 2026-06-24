@@ -1,3 +1,85 @@
+document.addEventListener('dataReady', () => {
+  console.log("dataReady reçu !");
+  if (document.getElementById('eventsList')) {
+  renderEvents(EVENTS_DATA.filter(ev => ev.visible));
+  document.getElementById('filterSort').addEventListener('change', applyFilters);
+  document.getElementById('filterStatut').addEventListener('change', applyFilters);
+  document.getElementById('filterSearch').addEventListener('input', applyFilters);
+}
+  if (document.getElementById('orgaEventsList')) {
+  renderOrgaEvents();
+  renderAllEvents();
+  initParticipantSelect();
+  renderStatsBars();
+
+  document.getElementById('sidebarDashboard')?.addEventListener('click', e => {
+    e.preventDefault(); switchDashboardView('dashboard');
+  });
+  document.getElementById('sidebarEvents')?.addEventListener('click', e => {
+    e.preventDefault(); switchDashboardView('tous-events');
+  });
+  document.getElementById('sidebarParticipants')?.addEventListener('click', e => {
+    e.preventDefault(); switchDashboardView('participants');
+  });
+  document.getElementById('sidebarStats')?.addEventListener('click', e => {
+    e.preventDefault(); switchDashboardView('statistiques');
+  });
+  document.getElementById('sidebarParams')?.addEventListener('click', e => {
+    e.preventDefault(); switchDashboardView('parametres');
+  });
+}
+  if (document.getElementById('vue-home')) {
+  renderMesEvents();
+  renderScores();
+
+  document.getElementById('sidebarHome')?.addEventListener('click', e => {
+    e.preventDefault(); switchJoueurView('home');
+  });
+  document.getElementById('sidebarEvents')?.addEventListener('click', e => {
+    e.preventDefault(); switchJoueurView('events');
+  });
+  document.getElementById('sidebarFavoris')?.addEventListener('click', e => {
+    e.preventDefault(); switchJoueurView('favoris');
+  });
+  document.getElementById('sidebarClassement')?.addEventListener('click', e => {
+    e.preventDefault(); switchJoueurView('classement');
+  });
+  document.getElementById('sidebarParams')?.addEventListener('click', e => {
+    e.preventDefault(); switchJoueurView('params-joueur');
+  });
+}
+  if (document.getElementById('admin-vue-dashboard')) {
+  renderAdminDashboard();
+  renderModeration();
+  renderUtilisateurs();
+  renderAdminAllEvents();
+  renderAdminStats();
+
+  document.getElementById('adminSidebarDashboard')?.addEventListener('click', e => {
+    e.preventDefault(); switchAdminView('dashboard');
+  });
+  document.getElementById('adminSidebarModeration')?.addEventListener('click', e => {
+    e.preventDefault(); switchAdminView('moderation');
+  });
+  document.getElementById('adminSidebarUtilisateurs')?.addEventListener('click', e => {
+    e.preventDefault(); switchAdminView('utilisateurs');
+  });
+  document.getElementById('adminSidebarEvenements')?.addEventListener('click', e => {
+    e.preventDefault(); renderAdminAllEvents(); switchAdminView('evenements');
+  });
+  document.getElementById('adminSidebarStats')?.addEventListener('click', e => {
+    e.preventDefault(); renderAdminStats(); switchAdminView('stats');
+  });
+  document.getElementById('adminSidebarParams')?.addEventListener('click', e => {
+    e.preventDefault(); switchAdminView('params');
+  });
+}
+  if (document.getElementById('tournamentCards')) {
+  renderCarousel();
+}
+});
+
+
 // ================================
 // ENCODAGE HTML
 // ================================
@@ -95,7 +177,7 @@ function hideAuthError(id) {
   if (el) el.style.display = 'none';
 }
 
-function handleLogin() {
+async function handleLogin() {
   hideAuthError('loginError');
   const identifiant = document.getElementById('loginIdentifiant').value.trim();
   const password    = document.getElementById('loginPassword').value;
@@ -105,26 +187,40 @@ function handleLogin() {
     return;
   }
 
-  // Simulation auth — à remplacer par un fetch('/api/login')
-  const user = DEMO_CREDENTIALS[identifiant];
-  if (!user || user.password !== password) {
-    showAuthError('loginError', 'Identifiant ou mot de passe incorrect.');
-    return;
+  try {
+    const response = await fetch(`${API_URL}/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      credentials: 'include', // envoie et reçoit les cookies
+      body: new URLSearchParams({ username: identifiant, password: password })
+    });
+
+    if (!response.ok) {
+      showAuthError('loginError', 'Identifiant ou mot de passe incorrect.');
+      return;
+    }
+
+    const data = await response.json();
+
+    // On stocke les infos users non sensibles
+    sessionStorage.setItem('pseudo', data.pseudo);
+    sessionStorage.setItem('id', data.id);
+    sessionStorage.setItem('id_role', data.id_role);
+
+    showToast(`Bienvenue ${data.pseudo} !`);
+
+    setTimeout(() => {
+      if (data.id_role === 2)      window.location.href = 'dashboard-admin.html';
+      else if (data.id_role === 3) window.location.href = 'dashboard-organisateur.html';
+      else                         window.location.href = 'espace-joueur.html';
+    }, 800);
+
+  } catch(error) {
+    showAuthError('loginError', 'Erreur de connexion au serveur.');
+    console.error(error);
   }
-
-
-  USER_SESSION.connecte = true;
-  USER_SESSION.pseudo   = identifiant;
-  USER_SESSION.role     = user.role;
-
-  showToast(`Bienvenue ${identifiant} !`);
-
-  setTimeout(() => {
-    if (user.role === 'admin')        window.location.href = 'dashboard-admin.html';
-    else if (user.role === 'organisateur') window.location.href = 'dashboard-organisateur.html';
-    else                              window.location.href = 'espace-joueur.html';
-  }, 800);
 }
+
 
 function handleRegister() {
   hideAuthError('registerError');
@@ -293,6 +389,7 @@ function renderCarousel() {
   
   document.getElementById('prevBtn')?.classList.toggle('active', carouselPage > 0);
   document.getElementById('nextBtn')?.classList.toggle('active', carouselPage < totalPages - 1);
+  
 }
 
 function goToCarouselPage(page) {
@@ -305,9 +402,7 @@ function goToCarouselPage(page) {
 document.getElementById('prevBtn')?.addEventListener('click', () => goToCarouselPage(carouselPage - 1));
 document.getElementById('nextBtn')?.addEventListener('click', () => goToCarouselPage(carouselPage + 1));
 
-if (document.getElementById('tournamentCards')) {
-  renderCarousel();
-}
+
 
 
 
@@ -356,7 +451,7 @@ function gameSVG(titre) {
 const FAVORIS = new Set();
 
 function toggleFavori(eventId, btnEl) {
-  if (!USER_SESSION.connecte) {
+  if (!sessionStorage.getItem('id')) { //a supprimer et remplacer
     showToast(`
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
       <a href="connexion.html">Connecte-toi</a> pour sauvegarder cet événement
@@ -527,12 +622,6 @@ function applyFilters() {
   renderEvents(results);
 }
 
-if (document.getElementById('eventsList')) {
-  renderEvents(EVENTS_DATA.filter(ev => ev.visible));
-  document.getElementById('filterSort').addEventListener('change', applyFilters);
-  document.getElementById('filterStatut').addEventListener('change', applyFilters);
-  document.getElementById('filterSearch').addEventListener('input', applyFilters);
-}
 
 // ================================
 // PAGE DÉTAIL EVENT
@@ -933,28 +1022,7 @@ function createEvent() {
   renderOrgaEvents();
 }
 
-if (document.getElementById('orgaEventsList')) {
-  renderOrgaEvents();
-  renderAllEvents();
-  initParticipantSelect();
-  renderStatsBars();
 
-  document.getElementById('sidebarDashboard')?.addEventListener('click', e => {
-    e.preventDefault(); switchDashboardView('dashboard');
-  });
-  document.getElementById('sidebarEvents')?.addEventListener('click', e => {
-    e.preventDefault(); switchDashboardView('tous-events');
-  });
-  document.getElementById('sidebarParticipants')?.addEventListener('click', e => {
-    e.preventDefault(); switchDashboardView('participants');
-  });
-  document.getElementById('sidebarStats')?.addEventListener('click', e => {
-    e.preventDefault(); switchDashboardView('statistiques');
-  });
-  document.getElementById('sidebarParams')?.addEventListener('click', e => {
-    e.preventDefault(); switchDashboardView('parametres');
-  });
-}
 
 
 // ================================
@@ -1076,26 +1144,7 @@ function switchJoueurView(view) {
   document.getElementById(bnMap[view])?.classList.add('active');
 }
 
-if (document.getElementById('vue-home')) {
-  renderMesEvents();
-  renderScores();
 
-  document.getElementById('sidebarHome')?.addEventListener('click', e => {
-    e.preventDefault(); switchJoueurView('home');
-  });
-  document.getElementById('sidebarEvents')?.addEventListener('click', e => {
-    e.preventDefault(); switchJoueurView('events');
-  });
-  document.getElementById('sidebarFavoris')?.addEventListener('click', e => {
-    e.preventDefault(); switchJoueurView('favoris');
-  });
-  document.getElementById('sidebarClassement')?.addEventListener('click', e => {
-    e.preventDefault(); switchJoueurView('classement');
-  });
-  document.getElementById('sidebarParams')?.addEventListener('click', e => {
-    e.preventDefault(); switchJoueurView('params-joueur');
-  });
-}
 
 
 // ================================
@@ -1341,30 +1390,3 @@ function switchAdminView(view) {
   document.getElementById(bnMap[view])?.classList.add('active');
 }
 
-// Init admin
-if (document.getElementById('admin-vue-dashboard')) {
-  renderAdminDashboard();
-  renderModeration();
-  renderUtilisateurs();
-  renderAdminAllEvents();
-  renderAdminStats();
-
-  document.getElementById('adminSidebarDashboard')?.addEventListener('click', e => {
-    e.preventDefault(); switchAdminView('dashboard');
-  });
-  document.getElementById('adminSidebarModeration')?.addEventListener('click', e => {
-    e.preventDefault(); switchAdminView('moderation');
-  });
-  document.getElementById('adminSidebarUtilisateurs')?.addEventListener('click', e => {
-    e.preventDefault(); switchAdminView('utilisateurs');
-  });
-  document.getElementById('adminSidebarEvenements')?.addEventListener('click', e => {
-    e.preventDefault(); renderAdminAllEvents(); switchAdminView('evenements');
-  });
-  document.getElementById('adminSidebarStats')?.addEventListener('click', e => {
-    e.preventDefault(); renderAdminStats(); switchAdminView('stats');
-  });
-  document.getElementById('adminSidebarParams')?.addEventListener('click', e => {
-    e.preventDefault(); switchAdminView('params');
-  });
-}
