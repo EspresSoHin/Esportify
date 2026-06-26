@@ -63,7 +63,7 @@
         <h1 class="auth-title">CONTENT DE TE <span class="blue">REVOIR</span></h1>
         <p class="auth-subtitle">Connecte-toi pour accéder à ton espace</p>
       </div>
-      <div class="auth-form">
+      <form class="auth-form" onsubmit="event.preventDefault()">
         <div class="form-group">
           <label>Email ou pseudo</label>
           <input type="text" id="loginIdentifiant" placeholder="ton@email.com" />
@@ -109,7 +109,7 @@
             </button>
           </div>
         </div>
-      </div>
+      </form>
     </div>
 
     <!-- FORMULAIRE INSCRIPTION -->
@@ -118,7 +118,7 @@
         <h1 class="auth-title">REJOINS <span class="purple">L'ARÈNE</span></h1>
         <p class="auth-subtitle">Crée ton compte et commence à jouer</p>
       </div>
-      <form class="auth-form" onsubmit="event.preventDefault(); handleLogin()">
+      <form class="auth-form" onsubmit="event.preventDefault()">
         <div class="form-row">
           <div class="form-group">
             <label>Pseudo *</label>
@@ -166,7 +166,7 @@
             J'accepte les <a href="#" style="color:var(--blue)">conditions d'utilisation</a>
           </label>
         </div>
-        <button class="btn-submit auth-submit">
+        <button class="btn-submit auth-submit" onclick="handleRegister()">
           Créer mon compte →
         </button>
         <div class="auth-error" id="registerError" style="display:none"></div>
@@ -174,7 +174,7 @@
         <p class="auth-note">
           Le compte Organisateur sera soumis à validation par notre équipe avant activation.
         </p>
-      </div>
+      </form>
     </div>
 
   </div>
