@@ -20,7 +20,7 @@ const GALLERY_DATA = [
 ];
 
 // ================================
-// DONNÉES EVENTS (on remplace par un fetch api/events)
+// DONNÉES STATUS EVENTS (on remplace par un fetch api/)
 // ================================
 
 const STATUTS_EVENEMENT = { //faire route API plus tard
@@ -29,6 +29,16 @@ const STATUTS_EVENEMENT = { //faire route API plus tard
   3: 'en_attente',
   4: 'suspendu',
   5: 'refuse'
+};
+
+// ================================
+// DONNÉES ROLES (on remplace par un fetch api/events)
+// ================================
+
+const ROLES = {
+    1: 'joueur',
+    2: 'admin',
+    3: 'organisateur'
 };
 
 // ================================
@@ -167,15 +177,7 @@ const GAME_ICONS = {
 // DATAS ADMIN
 // ================================
 
-const USERS_DATA = [
-  { pseudo: "ExpresSohin",    role: "organisateur", eventsOrganises: 3 },
-  { pseudo: "RavoGaming",     role: "organisateur", eventsOrganises: 2 },
-  { pseudo: "Syluskitten109", role: "joueur",        eventsOrganises: 0 },
-  { pseudo: "NightFox99",     role: "joueur",        eventsOrganises: 0 },
-  { pseudo: "BladeStrike",    role: "joueur",        eventsOrganises: 0 },
-  { pseudo: "ZeroLag",        role: "joueur",        eventsOrganises: 0 },
-  { pseudo: "AdminEsportify", role: "admin",         eventsOrganises: 0 },
-];
+
 
 function badgeLabel(statut) {
   const labels = {

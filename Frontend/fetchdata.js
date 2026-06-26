@@ -9,19 +9,22 @@ const API_URL = 'http://127.0.0.1:8000' // je changerai avec le lien render apr�
 // ================================
 
 let EVENTS_DATA = [];
+let USERS_DATA = [];
 
-//TENTATIVE 1
-
-async function fetchEvents(){
+async function fetchAllData(){
     try{
-        const response = await fetch(`${API_URL}/events`)
+        const [responseEvents, responseUsers] = await Promise.all([
+            fetch(`${API_URL}/events`).then(r => {
+                if (!r.ok) throw new Error(`Events API erreur ${r.status}`);
+                return r.json();
+            }),
+            fetch(`${API_URL}/users`).then(r => {
+                if (!r.ok) throw new Error(`Users API erreur ${r.status}`);
+                return r.json();
+            }),
+        ]);
 
-        if(!response.ok) {
-            throw new Error("API FAILED HAHA")
-        }
-
-        EVENTS_DATA = await response.json();
-        EVENTS_DATA = EVENTS_DATA.map(ev => ({
+        EVENTS_DATA = responseEvents.map(ev => ({
             id: ev.id,
             titre: ev.titre,
             description: ev.description,
@@ -32,16 +35,22 @@ async function fetchEvents(){
             discussion: ev.discussion_active,
             image: ev.image_url,
             statut: STATUTS_EVENEMENT[ev.id_statut] || 'inconnu',
-            organisateur: ev.id_organisateur
+            organisateur: responseUsers.find(u => u.id === ev.id_organisateur)?.pseudo || 'inconnu'
 }));
+
+        USERS_DATA = responseUsers.map(u => ({
+            pseudo: u.pseudo,
+            role: ROLES[u.id_role] || 'joueur',
+            eventsOrganises: responseEvents.filter(ev => ev.id_organisateur === u.id).length
+        }));
+
 
         document.dispatchEvent(new CustomEvent('dataReady')); //on créer un event pour activer le script après
         
-        console.log("dataReady dispatché");
     }
     catch(error){
         console.error(error)
     }
 }
 
-fetchEvents()
+fetchAllData()

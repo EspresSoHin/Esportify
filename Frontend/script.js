@@ -77,6 +77,9 @@ document.addEventListener('dataReady', () => {
   if (document.getElementById('tournamentCards')) {
   renderCarousel();
 }
+  if (document.getElementById('eventDetail')) {
+    renderDetail();
+}
 });
 
 
@@ -190,7 +193,7 @@ async function handleLogin() {
   try {
     const response = await fetch(`${API_URL}/login`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, //on utilise ce content type pour les login en Oauth2PasswordRequestForm
       credentials: 'include', // envoie et reçoit les cookies
       body: new URLSearchParams({ username: identifiant, password: password })
     });
@@ -209,6 +212,9 @@ async function handleLogin() {
 
     showToast(`Bienvenue ${data.pseudo} !`);
 
+    console.log("Login OK, data reçue:", data);
+    console.log("id_role:", data.id_role);
+
     setTimeout(() => {
       if (data.id_role === 2)      window.location.href = 'dashboard-admin.html';
       else if (data.id_role === 3) window.location.href = 'dashboard-organisateur.html';
@@ -222,14 +228,14 @@ async function handleLogin() {
 }
 
 
-function handleRegister() {
+async function handleRegister() {
   hideAuthError('registerError');
   const pseudo    = document.getElementById('regPseudo').value.trim();
   const email     = document.getElementById('regEmail').value.trim();
-  const role      = 'joueur';
   const password  = document.getElementById('regPassword').value;
   const confirm   = document.getElementById('regPasswordConfirm').value;
   const cgu       = document.getElementById('regCGU').checked;
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
   if (!pseudo || !email || !password || !confirm) {
     showAuthError('registerError', 'Merci de remplir tous les champs obligatoires.');
@@ -239,8 +245,8 @@ function handleRegister() {
     showAuthError('registerError', 'Les mots de passe ne correspondent pas.');
     return;
   }
-  if (password.length < 6) {
-    showAuthError('registerError', 'Le mot de passe doit contenir au moins 6 caractères.');
+  if (!passwordRegex.test(password)) {
+    showAuthError('registerError', 'Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, et un caractère spécial (@,$,!,%,*,?,&).');
     return;
   }
   if (!cgu) {
@@ -248,13 +254,31 @@ function handleRegister() {
     return;
   }
 
-  // Simulation inscription — à remplacer par fetch('/api/register')
-  showToast(
-    role === 'organisateur'
-      ? 'Demande envoyée — ton compte sera activé après validation.'
-      : 'Compte créé ! Tu peux maintenant te connecter.'
-  );
+  try {
+    console.log("Envoi vers API...", { pseudo, email, password });
+
+    const response = await fetch(`${API_URL}/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }, //et la c'est un bon vieu JSON parce que c'est un schema Pydantic
+      body: JSON.stringify({ pseudo, email, password })
+    });
+
+    console.log("Réponse reçue:", response.status);
+
+    if (!response.ok) {
+      const err = await response.json();
+      console.log("Erreur API:", err);
+      showAuthError('registerError', err.detail || 'Erreur lors de la création du compte.');
+      return;
+    }
+
+  showToast('Compte créé ! Tu peux maintenant te connecter.');
   setTimeout(() => switchAuthTab('connexion'), 2000);
+    }
+    catch(error) {
+    showAuthError('registerError', 'Erreur de connexion au serveur.');
+    console.error("Erreur catch:", error);
+  }
 }
 
 if (document.getElementById('formConnexion')) {
@@ -491,6 +515,8 @@ function showToast(message) {
 // ================================
 // PAGE EVENTS — liste publique
 // ================================
+
+
 function renderEvents(events) {
   const container = document.getElementById('eventsList');
   const counter = document.getElementById('resultsCount');
@@ -506,6 +532,11 @@ function renderEvents(events) {
       </div>`;
     return;
   }
+
+  events.forEach(ev => {
+    if (typeof ev.titre !== 'string') console.log("titre pas string:", ev.id, ev.titre);
+    if (typeof ev.organisateur !== 'string') console.log("organisateur pas string:", ev.id, ev.organisateur);
+  });
 
   container.innerHTML = events.map(ev => `
     <a href="event-detail.html?id=${ev.id}" class="event-list-card statut-${ev.statut}">
@@ -790,9 +821,7 @@ function postMessage(eventId) {
   list.scrollTop = list.scrollHeight;
 }
 
-if (document.getElementById('eventDetail')) {
-  renderDetail();
-}
+
 
 // ================================
 // DASHBOARD ORGANISATEUR
