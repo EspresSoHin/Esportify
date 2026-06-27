@@ -80,6 +80,24 @@ document.addEventListener('dataReady', () => {
   if (document.getElementById('eventDetail')) {
     renderDetail();
 }
+if (document.getElementById('orgaEventsList')) {
+    if (!checkAuth(3)) return; // 3 = organisateur
+    renderOrgaEvents();
+    // ...
+  }
+
+  if (document.getElementById('admin-vue-dashboard')) {
+    if (!checkAuth(2)) return; // 2 = admin
+    renderAdminDashboard();
+    // ...
+  }
+
+  if (document.getElementById('vue-home')) {
+    if (!checkAuth(1)) return; // 1 = joueur
+    renderMesEvents();
+    // ...
+  }
+
 });
 
 
@@ -135,12 +153,7 @@ document.addEventListener('click', (e) => {
 // CONNEXION
 // ================================
 
-// Mots de passe démo — Bien sur que ça va pas rester à la fin baka gaijin
-const DEMO_CREDENTIALS = {
-  'Syluskitten109':  { password: 'joueur123',  role: 'joueur' },
-  'ExpresSohin':     { password: 'orga123',    role: 'organisateur' },
-  'AdminEsportify':  { password: 'admin123',   role: 'admin' },
-};
+let toastTimeout;
 
 function switchAuthTab(tab) {
   const isConnexion = tab === 'connexion';
@@ -157,17 +170,6 @@ function togglePasswordVisibility(inputId, btn) {
   btn.style.color = isHidden ? 'var(--blue)' : 'var(--text-muted)';
 }
 
-function fillDemo(role) {
-  const map = {
-    joueur:       { id: 'Syluskitten109', pw: 'joueur123' },
-    organisateur: { id: 'ExpresSohin',    pw: 'orga123' },
-    admin:        { id: 'AdminEsportify', pw: 'admin123' },
-  };
-  const creds = map[role];
-  if (!creds) return;
-  document.getElementById('loginIdentifiant').value = creds.id;
-  document.getElementById('loginPassword').value    = creds.pw;
-}
 
 function showAuthError(id, message) {
   const el = document.getElementById(id);
@@ -259,7 +261,7 @@ async function handleRegister() {
 
     const response = await fetch(`${API_URL}/register`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' }, //et la c'est un bon vieu JSON parce que c'est un schema Pydantic
+      headers: { 'Content-Type': 'application/json' }, 
       body: JSON.stringify({ pseudo, email, password })
     });
 
@@ -289,8 +291,44 @@ if (document.getElementById('formConnexion')) {
     if (formConn && formConn.style.display !== 'none') handleLogin();
     else if (formInsc && formInsc.style.display !== 'none') handleRegister();
   });
+  const params = new URLSearchParams(window.location.search);
+  const reason = params.get('reason');
+  
+  if (reason === 'not_logged_in') {
+    showToast('Connecte-toi pour accéder à cette page.');
+  } else if (reason === 'unauthorized') {
+    showToast("Tu n'as pas accès à cette page.");
+  }
 }
 
+
+async function handleLogout() {
+  await fetch(`${API_URL}/logout`, {
+    method: 'POST',
+    credentials: 'include'
+  });
+  sessionStorage.clear();
+  window.location.href = 'connexion.html';
+}
+
+
+//Pour verifier si le user est bien connecté sinon pas d'acces au dashboard
+function checkAuth(roleRequis) {
+  const id = sessionStorage.getItem('id');
+  const role = sessionStorage.getItem('id_role');
+
+  if (!id) {
+    window.location.href = 'connexion.html?reason=not_logged_in';
+    return false;
+  }
+
+  if (roleRequis && String(role) !== String(roleRequis)) {
+    window.location.href = 'connexion.html?reason=unauthorized';
+    return false;
+  }
+
+  return true;
+}
 
 // ================================
 // GALERIE
@@ -497,7 +535,7 @@ function toggleFavori(eventId, btnEl) {
   }
 }
 
-let toastTimeout;
+
 function showToast(message) {
   let toast = document.getElementById('globalToast');
   if (!toast) {
