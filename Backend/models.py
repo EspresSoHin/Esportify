@@ -78,7 +78,7 @@ class Events(Base):
     discussion_active = Column(Boolean, nullable=False, default=True)
     image_url = Column(String(100), nullable=True)
     id_organisateur = Column(Integer, ForeignKey('users.id'), nullable=False)
-    id_statut = Column(Integer, ForeignKey('statuts_evenement.id'), nullable=False, default=1)
+    id_statut = Column(Integer, ForeignKey('statuts_evenement.id'), nullable=False, default=3)
     created_at = Column(DateTime, nullable=False, default=datetime.now)
     updated_at = Column(DateTime, nullable=True)
     organisateur = relationship("Users", back_populates="evenements_organises")

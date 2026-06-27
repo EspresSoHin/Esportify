@@ -128,6 +128,7 @@ const MES_SCORES_DATA = [
 // SVG ICONS
 // ================================
 
+//à changer avec les positions des events?
 
 const GAME_ICONS = {
   valorant: `<svg width="28" height="28" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">

@@ -11,6 +11,26 @@ const API_URL = 'http://127.0.0.1:8000' // je changerai avec le lien render aprÃ
 let EVENTS_DATA = [];
 let USERS_DATA = [];
 
+//Petit mapping des events
+
+function mapEvent(ev, usersData) {
+  return {
+    id: ev.id,
+    titre: ev.titre,
+    description: ev.description,
+    joueurs: ev.nb_joueurs_max,
+    dateDebut: ev.date_debut,
+    dateFin: ev.date_fin,
+    visible: ev.visible,
+    discussion: ev.discussion_active,
+    image: ev.image_url,
+    statut: STATUTS_EVENEMENT[ev.id_statut] || 'inconnu',
+    organisateur: usersData
+      ? usersData.find(u => u.id === ev.id_organisateur)?.pseudo || 'inconnu'
+      : sessionStorage.getItem('pseudo')
+  };
+}
+
 async function fetchAllData(){
     try{
         const [responseEvents, responseUsers] = await Promise.all([
@@ -24,19 +44,7 @@ async function fetchAllData(){
             }),
         ]);
 
-        EVENTS_DATA = responseEvents.map(ev => ({
-            id: ev.id,
-            titre: ev.titre,
-            description: ev.description,
-            joueurs: ev.nb_joueurs_max,
-            dateDebut: ev.date_debut,
-            dateFin: ev.date_fin,
-            visible: ev.visible,
-            discussion: ev.discussion_active,
-            image: ev.image_url,
-            statut: STATUTS_EVENEMENT[ev.id_statut] || 'inconnu',
-            organisateur: responseUsers.find(u => u.id === ev.id_organisateur)?.pseudo || 'inconnu'
-}));
+        EVENTS_DATA = responseEvents.map(ev => mapEvent(ev, responseUsers));
 
         USERS_DATA = responseUsers.map(u => ({
             pseudo: u.pseudo,

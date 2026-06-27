@@ -1062,7 +1062,8 @@ function showCreateModal() {
 function hideCreateModal() {
   document.getElementById('createModal').style.display = 'none';
 }
-function createEvent() {
+
+async function creerEvenement() {
   const titre     = document.getElementById('newTitre').value.trim();
   const joueurs   = parseInt(document.getElementById('newJoueurs').value);
   const desc      = document.getElementById('newDescription').value.trim();
@@ -1075,18 +1076,43 @@ function createEvent() {
     alert('Merci de remplir tous les champs obligatoires (*).');
     return;
   }
-  const newEvent = {
-    id: EVENTS_DATA.length + 1,
-    titre, description: desc, joueurs,
-    organisateur: ORGA_PSEUDO,
-    dateDebut, dateFin,
-    statut: 'en_attente',
-    visible: false,
-    image, discussion
-  };
-  EVENTS_DATA.push(newEvent);
+const id_organisateur = parseInt(sessionStorage.getItem('id'));
+
+  try {
+    const response = await fetch(`${API_URL}/events`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({
+        titre,
+        description: desc,
+        nb_joueurs_max: joueurs,
+        date_debut: dateDebut,
+        date_fin: dateFin,
+        image_url: image,
+        discussion_active: discussion,
+        id_organisateur
+      })
+    });
+
+    if (!response.ok) {
+      const err = await response.json();
+      alert(err.detail || 'Erreur lors de la création.');
+      return;
+    }
+
+  const newEvent = await response.json();
+
+  EVENTS_DATA.push(mapEvent(newEvent, null));
+
   hideCreateModal();
   renderOrgaEvents();
+  showToast('Événement créé — en attente de validation.');
+
+  } catch(error) {
+    console.error(error);
+    alert('Erreur de connexion au serveur.');
+  }
 }
 
 
@@ -1155,28 +1181,51 @@ function showJoueurCreateModal() {
 function hideJoueurCreateModal() {
   document.getElementById('joueurCreateModal').style.display = 'none';
 }
-function submitJoueurEvent() {
-  const titre  = document.getElementById('joueurTitre').value.trim();
-  const joueurs = parseInt(document.getElementById('joueurJoueurs').value);
-  const desc   = document.getElementById('joueurDescription').value.trim();
-  const dateDebut = document.getElementById('joueurDateDebut').value;
-  const dateFin   = document.getElementById('joueurDateFin').value;
-  const image     = document.getElementById('joueurImage').value.trim() || null;
+
+async function submitJoueurEvent() {
+  const titre      = document.getElementById('joueurTitre').value.trim();
+  const joueurs    = parseInt(document.getElementById('joueurJoueurs').value);
+  const desc       = document.getElementById('joueurDescription').value.trim();
+  const dateDebut  = document.getElementById('joueurDateDebut').value;
+  const dateFin    = document.getElementById('joueurDateFin').value;
+  const image      = document.getElementById('joueurImage').value.trim() || null;
 
   if (!titre || !joueurs || !desc || !dateDebut || !dateFin) {
     alert('Merci de remplir tous les champs obligatoires (*).');
     return;
   }
 
-  MES_EVENTS_DATA.push({
-    id: MES_EVENTS_DATA.length + 1,
-    titre, dateDebut,
-    statut: 'en_attente',
-    modifiable: true
-  });
+  try {
+    const response = await fetch(`${API_URL}/events`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({
+        titre,
+        description: desc,
+        nb_joueurs_max: joueurs,
+        date_debut: dateDebut,
+        date_fin: dateFin,
+        image_url: image,
+        discussion_active: false,
+        id_organisateur: parseInt(sessionStorage.getItem('id'))
+      })
+    });
 
-  hideJoueurCreateModal();
-  renderMesEvents();
+    if (!response.ok) {
+      const err = await response.json();
+      alert(err.detail || 'Erreur lors de la création.');
+      return;
+    }
+
+    hideJoueurCreateModal();
+    showToast('Événement soumis — en attente de validation.');
+    renderMesEvents();
+
+  } catch(error) {
+    console.error(error);
+    alert('Erreur de connexion au serveur.');
+  }
 }
 
 
