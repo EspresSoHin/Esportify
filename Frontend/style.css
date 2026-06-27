@@ -1482,6 +1482,7 @@ img { max-width: 100%; display: block; }
   max-width: 520px;
   width: 100%;
   margin: 0 auto;
+  min-height: 600px
 }
 
 .auth-tabs {
@@ -1583,36 +1584,6 @@ img { max-width: 100%; display: block; }
   line-height: 1.6;
   margin-top: -0.5rem;
 }
-
-/* les démos maybe on enlèvera chai pas ARRETE DE REGARDER MES COMMENTAIRES CEST EMBARASSAAAANT */
-.auth-demo-info {
-  border-top: 1px solid rgba(255,255,255,0.06);
-  padding-top: 1.25rem;
-  margin-top: 0.5rem;
-}
-.demo-label {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  color: var(--text-muted);
-  margin-bottom: 0.75rem;
-}
-.demo-accounts { display: flex; gap: 8px; flex-wrap: wrap; }
-.demo-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 6px;
-  padding: 7px 12px;
-  color: var(--white);
-  font-family: var(--font-body);
-  font-size: 12px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.demo-btn:hover { border-color: var(--blue); background: rgba(69,172,247,0.08); }
 
 
 .auth-deco {
