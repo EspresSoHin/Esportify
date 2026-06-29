@@ -184,7 +184,6 @@ class StatutInscriptionResponse(BaseModel):
     class Config:
         from_attributes = True
 
-
 ## ##############################
 ##     STATUTS EVENEMENT       ##
 ## ##############################
