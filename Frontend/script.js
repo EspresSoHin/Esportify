@@ -1,5 +1,4 @@
 document.addEventListener('dataReady', () => {
-  console.log("dataReady reçu !");
   if (document.getElementById('eventsList')) {
   renderEvents(EVENTS_DATA.filter(ev => ev.visible));
   document.getElementById('filterSort').addEventListener('change', applyFilters);
@@ -7,6 +6,8 @@ document.addEventListener('dataReady', () => {
   document.getElementById('filterSearch').addEventListener('input', applyFilters);
 }
   if (document.getElementById('orgaEventsList')) {
+      if (!checkAuth(3)) return;
+  renderStatsOrga();
   renderOrgaEvents();
   renderAllEvents();
   initParticipantSelect();
@@ -29,6 +30,15 @@ document.addEventListener('dataReady', () => {
   });
 }
   if (document.getElementById('vue-home')) {
+    if (!checkAuth(1)) return;
+
+    const pseudo = sessionStorage.getItem('pseudo');
+    const profileName = document.querySelector('.profile-name');
+    if (profileName) profileName.textContent = pseudo?.toUpperCase() || 'JOUEUR';
+
+  renderStatsJoueur();
+  renderHomeCards();
+  renderFavoris();
   renderMesEvents();
   renderScores();
 
@@ -83,19 +93,11 @@ document.addEventListener('dataReady', () => {
 if (document.getElementById('orgaEventsList')) {
     if (!checkAuth(3)) return; // 3 = organisateur
     renderOrgaEvents();
-    // ...
   }
 
   if (document.getElementById('admin-vue-dashboard')) {
     if (!checkAuth(2)) return; // 2 = admin
     renderAdminDashboard();
-    // ...
-  }
-
-  if (document.getElementById('vue-home')) {
-    if (!checkAuth(1)) return; // 1 = joueur
-    renderMesEvents();
-    // ...
   }
 
 });
@@ -636,7 +638,7 @@ function renderAllEvents() {
         <div class="elc-footer">
   <span class="elc-organisateur">Par <strong>${escapeHTML(ev.organisateur)}</strong></span>
   <div class="action-btns">
-    ${ev.organisateur === ORGA_PSEUDO
+    ${ev.organisateur === sessionStorage.getItem('pseudo')
       ? `
         <button class="btn-icon" onclick="editEvent(${ev.id})" title="Modifier">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -864,7 +866,6 @@ function postMessage(eventId) {
 // ================================
 // DASHBOARD ORGANISATEUR
 // ================================
-const ORGA_PSEUDO = "ExpresSohin";
 
 function canStart(dateDebutStr) {
   const now = new Date();
@@ -877,7 +878,7 @@ function renderOrgaEvents() {
   const tbody = document.getElementById('orgaEventsList');
   if (!tbody) return;
 
-  const mesEvents = EVENTS_DATA.filter(ev => ev.organisateur === ORGA_PSEUDO);
+  const mesEvents = EVENTS_DATA.filter(ev => ev.organisateur === sessionStorage.getItem('pseudo'));
 
   tbody.innerHTML = mesEvents.map(ev => {
     const peutDemarrer = canStart(ev.dateDebut);
@@ -979,7 +980,7 @@ function renderParticipants() {
       <td>
         ${p.statut !== 'refuse'
           ? `<button class="action-btn btn-stop" style="font-size:11px; padding:5px 12px;"
-               onclick="rejectParticipant(${p.eventId}, ${p.idx})">Refuser</button>`
+               onclick="rejectParticipant(${p.id})">Refuser</button>`
           : `<span style="font-size:12px; color:var(--text-muted);">Ne peut plus s'inscrire</span>`
         }
       </td>
@@ -987,16 +988,45 @@ function renderParticipants() {
   `).join('');
 }
 
-function rejectParticipant(eventId, idx) {
+
+async function rejectParticipant(inscriptionId) {
   if (!confirm('Refuser ce joueur ? Il ne pourra plus se réinscrire.')) return;
-  PARTICIPANTS_DATA[eventId][idx].statut = 'refuse';
-  renderParticipants();
+
+  try {
+    const response = await fetch(`${API_URL}/inscriptions/${inscriptionId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ id_statut_inscription: 3 }) // 3 = refuse
+    });
+
+    if (!response.ok) {
+      showToast('Erreur lors du refus.');
+      return;
+    }
+
+    // Mise à jour locale
+    for (const eventId in PARTICIPANTS_DATA) {
+      const p = PARTICIPANTS_DATA[eventId].find(p => p.id === inscriptionId);
+      if (p) { p.statut = 'refuse'; break; }
+    }
+
+    showToast('Joueur refusé.');
+    renderParticipants();
+
+  } catch(error) {
+    console.error(error);
+  }
 }
+
 
 function initParticipantSelect() {
   const select = document.getElementById('participantEventFilter');
   if (!select) return;
-  const mesEvents = EVENTS_DATA.filter(ev => ev.organisateur === ORGA_PSEUDO);
+
+  const pseudo = sessionStorage.getItem('pseudo');
+  const mesEvents = EVENTS_DATA.filter(ev => ev.organisateur === pseudo);
+
   select.innerHTML =
     `<option value="tous">Tous les événements</option>` +
     mesEvents.map(ev =>
@@ -1008,7 +1038,15 @@ function initParticipantSelect() {
 function renderStatsBars() {
   const container = document.getElementById('statsBars');
   if (!container) return;
-  const mesEvents = EVENTS_DATA.filter(ev => ev.organisateur === ORGA_PSEUDO);
+
+  const pseudo = sessionStorage.getItem('pseudo');
+  const mesEvents = EVENTS_DATA.filter(ev => ev.organisateur === pseudo);
+  
+  if (mesEvents.length === 0) {
+    container.innerHTML = `<p style="color:var(--text-muted);">Aucun événement pour l'instant</p>`;
+    return;
+  }
+  
   const max = Math.max(...mesEvents.map(ev => ev.joueurs));
   const colors = ['blue', 'purple', 'green', 'blue', 'purple', 'green'];
   container.innerHTML = mesEvents.map((ev, i) => `
@@ -1024,6 +1062,35 @@ function renderStatsBars() {
     </div>
   `).join('');
 }
+
+function renderStatsOrga() {
+  const pseudo = sessionStorage.getItem('pseudo');
+
+  const subtitle = document.querySelector('#vue-dashboard .page-subtitle .blue');
+  if (subtitle) subtitle.textContent = pseudo;
+
+  const mesEvents = EVENTS_DATA.filter(ev => ev.organisateur === pseudo);
+  const actifs = mesEvents.filter(ev => ev.statut === 'valide' || ev.statut === 'en_cours').length;
+  const enAttente = mesEvents.filter(ev => ev.statut === 'en_attente').length;
+  const totalJoueurs = mesEvents.reduce((acc, ev) => {
+    return acc + INSCRIPTIONS_DATA.filter(i => i.id_evenement === ev.id).length;
+  }, 0);
+
+  const statValues = document.querySelectorAll('#vue-dashboard .stat-value');
+  if (statValues[0]) statValues[0].textContent = actifs;
+  if (statValues[1]) statValues[1].textContent = totalJoueurs;
+  if (statValues[2]) statValues[2].textContent = enAttente;
+
+
+  const totalEl = document.getElementById('orgaStatTotalEvents');
+  const joueursEl = document.getElementById('orgaStatTotalJoueurs');
+  const tauxEl = document.getElementById('tauxRemplissage');
+
+  if (totalEl) totalEl.textContent = mesEvents.length;
+  if (joueursEl) joueursEl.textContent = totalJoueurs;
+  if (tauxEl) tauxEl.textContent = STATS_ORGA.tauxRemplissage;
+}
+
 
 function switchDashboardView(view) {
   const vues = ['dashboard', 'tous-events', 'participants', 'statistiques', 'parametres'];
@@ -1121,17 +1188,33 @@ const id_organisateur = parseInt(sessionStorage.getItem('id'));
 // ================================
 // ESPACE JOUEUR
 // ================================
+
 function renderMesEvents() {
   const tbody = document.getElementById('mesEventsList');
   if (!tbody) return;
 
-  tbody.innerHTML = MES_EVENTS_DATA.map(ev => {
-    const badgeClass = ev.statut === 'valide' ? 'badge-valide'
-      : ev.statut === 'en_attente' ? 'badge-en_attente'
+  const userId = parseInt(sessionStorage.getItem('id'));
+  const mesInscriptions = INSCRIPTIONS_DATA.filter(i => i.id_utilisateur === userId);
+  
+  if (mesInscriptions.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding:2rem;">Aucune inscription pour l'instant</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = mesInscriptions.map(insc => {
+    const ev = EVENTS_DATA.find(e => e.id === insc.id_evenement);
+    if (!ev) return '';
+
+    const badgeClass = insc.id_statut_inscription === 2 ? 'badge-valide'
+      : insc.id_statut_inscription === 1 ? 'badge-en_attente'
+      : insc.id_statut_inscription === 3 ? 'badge-refuse'
       : 'badge-non_valide';
-    const badgeText = ev.statut === 'valide' ? 'Validé'
-      : ev.statut === 'en_attente' ? 'En attente'
-      : 'Non validé';
+    const badgeText = insc.id_statut_inscription === 2 ? 'Accepté'
+      : insc.id_statut_inscription === 1 ? 'En attente'
+      : insc.id_statut_inscription === 3 ? 'Refusé'
+      : 'badge-non_valide';
+
+    const modifiable = insc.id_statut_inscription === 1;
 
     return `
       <tr>
@@ -1139,11 +1222,10 @@ function renderMesEvents() {
         <td>${formatDateShort(ev.dateDebut)}</td>
         <td><span class="elc-badge ${badgeClass}">${badgeText}</span></td>
         <td>
-          ${ev.modifiable
-            ? `<button class="action-btn btn-start" style="font-size:11px; padding:5px 12px;"
-                 onclick="editJoueurEvent(${ev.id})">
-                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                 Modifier
+          ${modifiable
+            ? `<button class="action-btn btn-stop" style="font-size:11px; padding:5px 12px;"
+                 onclick="annulerInscription(${insc.id})">
+                 Se désinscrire
                </button>`
             : `<span style="font-size:12px; color:var(--text-muted);">Non modifiable</span>`
           }
@@ -1152,21 +1234,57 @@ function renderMesEvents() {
   }).join('');
 }
 
+async function annulerInscription(inscriptionId) {
+  if (!confirm('Se désinscrire de cet événement ?')) return;
+
+  try {
+    const response = await fetch(`${API_URL}/inscriptions/${inscriptionId}`, {
+      method: 'DELETE',
+      credentials: 'include'
+    });
+
+    if (!response.ok) {
+      showToast('Erreur lors de la désinscription.');
+      return;
+    }
+
+    // Pour retirer de INSCRIPTIONS_DATA localement
+    INSCRIPTIONS_DATA = INSCRIPTIONS_DATA.filter(i => i.id !== inscriptionId);
+    showToast('Désinscription effectuée.');
+    renderMesEvents();
+
+  } catch(error) {
+    console.error(error);
+  }
+}
+
+
 function renderScores() {
   const tbody = document.getElementById('scoresTable');
   if (!tbody) return;
 
-  tbody.innerHTML = MES_SCORES_DATA.map(s => {
+  const userId = parseInt(sessionStorage.getItem('id'));
+  const mesScores = SCORES_DATA.filter(s => s.id_utilisateur === userId);
+
+  if (mesScores.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:2rem;">Aucun score pour l'instant</td></tr>`;
+    return;
+  }
+
+
+  tbody.innerHTML = mesScores.map(s => {
+    const ev = EVENTS_DATA.find(e => e.id === s.id_evenement);
     const couleur = s.position === 1 ? 'var(--blue)'
       : s.position <= 3 ? 'var(--purple)'
       : 'var(--text-muted)';
+
     return `
       <tr>
-        <td>${escapeHTML(s.evenement)}</td>
-        <td>${new Date(s.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}</td>
+        <td>${escapeHTML(ev?.titre || 'Événement inconnu')}</td>
+        <td>${new Date(s.date_score).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}</td>
         <td style="font-family: var(--font-heading); font-size: 18px; color: ${couleur};">#${s.position}</td>
         <td style="color: var(--blue); font-weight: 600;">${s.points} pts</td>
-        <td><span class="elc-badge ${s.position === 1 ? 'badge-en_cours' : s.position <= 3 ? 'badge-valide' : 'badge-en_attente'}">${s.resultat}</span></td>
+        <td><span class="elc-badge ${s.position === 1 ? 'badge-en_cours' : s.position <= 3 ? 'badge-valide' : 'badge-en_attente'}">${escapeHTML(s.resultat || '-')}</span></td>
       </tr>`;
   }).join('');
 }
@@ -1260,7 +1378,130 @@ function switchJoueurView(view) {
   document.getElementById(bnMap[view])?.classList.add('active');
 }
 
+function renderHomeCards() {
+  const container = document.getElementById('homeEventCards');
+  if (!container) return;
 
+  const userId = parseInt(sessionStorage.getItem('id'));
+
+  console.log("FAVORIS_DATA:", FAVORIS_DATA);
+  console.log("favoris filtrés:", FAVORIS_DATA.filter(f => f.id_utilisateur === userId));
+ 
+
+  const mesFavoris = FAVORIS_DATA.filter(f => f.id_utilisateur === userId);
+  const mesInscriptions = INSCRIPTIONS_DATA.filter(i => i.id_utilisateur === userId);
+
+  // On combine les deux sans doublons
+  const eventIds = [...new Set([
+    ...mesFavoris.map(f => f.id_evenement),
+    ...mesInscriptions.map(i => i.id_evenement)
+  ])];
+
+  const cards = eventIds.map(eventId => {
+    const ev = EVENTS_DATA.find(e => e.id === eventId);
+    if (!ev) return '';
+
+    const isFavori = mesFavoris.some(f => f.id_evenement === eventId);
+    const inscription = mesInscriptions.find(i => i.id_evenement === eventId);
+
+    const borderClass = ev.statut === 'en_cours' ? 'green-border'
+      : inscription ? 'blue-border'
+      : 'purple-border';
+
+    const badge = ev.statut === 'en_cours'
+      ? '<span class="event-badge badge-live">En cours</span>'
+      : inscription
+      ? '<span class="event-badge badge-join">Inscrit</span>'
+      : '<span class="event-badge badge-fav">Favoris</span>';
+
+    const btnText = ev.statut === 'en_cours' ? '▶ Rejoindre maintenant'
+      : ev.statut === 'valide' ? '⏱ Pas encore démarré'
+      : '↺ Voir les détails';
+
+    return `
+      <div class="event-card ${borderClass}">
+        <div class="event-card-header">
+          <h3 class="event-title">${escapeHTML(ev.titre)}</h3>
+          ${badge}
+        </div>
+        <div class="event-meta">
+          <span>👥 ${ev.joueurs} joueurs</span>
+          <span>📅 ${formatDateShort(ev.dateDebut)}</span>
+        </div>
+        <button class="event-btn" onclick="window.location.href='event-detail.html?id=${ev.id}'">${btnText}</button>
+      </div>`;
+  });
+
+  // Card "Parcourir"
+  cards.push(`
+    <div class="event-card empty" onclick="window.location.href='events.html'" style="cursor:pointer;">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      Parcourir les événements
+    </div>`);
+
+  container.innerHTML = cards.join('');
+}
+
+function renderFavoris() {
+  const container = document.getElementById('favorisGrid');
+  if (!container) return;
+
+  const userId = parseInt(sessionStorage.getItem('id'));
+  const mesFavoris = FAVORIS_DATA.filter(f => f.id_utilisateur === userId);
+
+  if (mesFavoris.length === 0) {
+    container.innerHTML = `
+      <div class="event-card empty">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        Aucun favori pour l'instant
+      </div>
+      <div class="event-card empty" onclick="window.location.href='events.html'" style="cursor:pointer;">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        Parcourir les événements
+      </div>`;
+    return;
+  }
+
+  const cards = mesFavoris.map(f => {
+    const ev = EVENTS_DATA.find(e => e.id === f.id_evenement);
+    if (!ev) return '';
+    return `
+      <div class="event-card purple-border">
+        <div class="event-card-header">
+          <h3 class="event-title">${escapeHTML(ev.titre)}</h3>
+          <span class="event-badge badge-fav">Favoris</span>
+        </div>
+        <div class="event-meta">
+          <span>👥 ${ev.joueurs} joueurs</span>
+          <span>📅 ${formatDateShort(ev.dateDebut)}</span>
+        </div>
+        <button class="event-btn" onclick="window.location.href='event-detail.html?id=${ev.id}'">
+          Voir l'événement →
+        </button>
+      </div>`;
+  });
+
+  cards.push(`
+    <div class="event-card empty" onclick="window.location.href='events.html'" style="cursor:pointer;">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      Parcourir les événements
+    </div>`);
+
+  container.innerHTML = cards.join('');
+}
+
+
+function renderStatsJoueur() {
+  const userId = parseInt(sessionStorage.getItem('id'));
+
+  const tournoisJoues = INSCRIPTIONS_DATA.filter(i => i.id_utilisateur === userId).length;
+  const victoires = SCORES_DATA.filter(s => s.id_utilisateur === userId && s.position === 1).length;
+  const favoris = FAVORIS_DATA.filter(f => f.id_utilisateur === userId).length;
+
+  document.querySelector('.stat-value.blue').textContent = tournoisJoues;
+  document.querySelector('.stat-value.purple').textContent = victoires;
+  document.querySelector('.stat-value.white').textContent = favoris;
+}
 
 
 // ================================
@@ -1268,26 +1509,51 @@ function switchJoueurView(view) {
 // ================================
 
 
-function moderationAction(id, action) {
+async function moderationAction(id, action) {
   const ev = EVENTS_DATA.find(e => e.id === id);
   if (!ev) return;
 
-  if (action === 'valider') {
-    ev.statut = 'valide';
-    ev.visible = true;
-    showToast('Événement validé — maintenant visible publiquement');
-  } else if (action === 'refuser') {
-    ev.statut = 'refuse';
-    ev.visible = false;
-    showToast('Événement refusé');
-  } else if (action === 'suspendre') {
-    ev.statut = 'suspendu';
-    ev.visible = false;
-    showToast('Événement suspendu');
-  }
+    const statutMap = {
+    'valider':   { id_statut: 2, visible: true },
+    'refuser':   { id_statut: 5, visible: false },
+    'suspendre': { id_statut: 4, visible: false },
+  };
 
-  renderModeration();
-  renderAdminDashboard();
+  const payload = statutMap[action];
+  if (!payload) return;
+
+  try {
+    const response = await fetch(`${API_URL}/events/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+      const err = await response.json();
+      showToast('Erreur : ' + (err.detail || 'inconnue'));
+      return;
+    }
+
+    // Mise à jour locale
+    ev.statut = action === 'valider' ? 'valide' : action === 'refuser' ? 'refuse' : 'suspendu';
+    ev.visible = payload.visible;
+
+    const toastMap = {
+      'valider':   'Événement validé — maintenant visible publiquement',
+      'refuser':   'Événement refusé',
+      'suspendre': 'Événement suspendu',
+    };
+    showToast(toastMap[action]);
+
+    renderModeration();
+    renderAdminDashboard();
+
+  } catch(error) {
+    console.error(error);
+    showToast('Erreur de connexion au serveur.');
+  }
 }
 
 function promouvoir(pseudo, nouveauRole) {
@@ -1300,12 +1566,16 @@ function promouvoir(pseudo, nouveauRole) {
 }
 
 function renderAdminDashboard() {
-  const attente = EVENTS_DATA.filter(ev => ev.statut === 'en_attente').length;
-  const suspendus = EVENTS_DATA.filter(ev => ev.statut === 'suspendu').length;
+  const attente = EVENTS_DATA.filter(ev => ev.statut === 'en_attente').length; //a remplacer par les id statuts?
+  const suspendus = EVENTS_DATA.filter(ev => ev.statut === 'suspendu').length; //ca aussi?
 
   const elAttente = document.getElementById('adminCountAttente');
   const elUsers = document.getElementById('adminCountUsers');
   const elSuspendus = document.getElementById('adminCountSuspendus');
+  const pseudo = sessionStorage.getItem('pseudo');
+  const subtitle = document.querySelector('#admin-vue-dashboard .page-subtitle .purple');
+  
+  if (subtitle) subtitle.textContent = pseudo;
   if (elAttente) elAttente.textContent = attente;
   if (elUsers) elUsers.textContent = USERS_DATA.length;
   if (elSuspendus) elSuspendus.textContent = suspendus;
@@ -1314,7 +1584,7 @@ function renderAdminDashboard() {
   if (!tbody) return;
 
   const recentes = EVENTS_DATA
-    .filter(ev => ev.statut === 'en_attente' || ev.statut === 'suspendu')
+    .filter(ev => ev.statut === 'en_attente' || ev.statut === 'suspendu') //si oui et pareil ici, relecture total du code pour enlever tout ça
     .slice(0, 5);
 
   tbody.innerHTML = recentes.length === 0
@@ -1450,10 +1720,14 @@ function renderAdminAllEvents() {
 function renderAdminStats() {
   const totalEl = document.getElementById('adminStatTotalEvents');
   const orgasEl = document.getElementById('adminStatOrgas');
+  const totalJoueursEl = document.getElementById('adminStatTotalJoueurs');
+
   if (totalEl) totalEl.textContent = EVENTS_DATA.length;
 
   const orgas = [...new Set(EVENTS_DATA.map(ev => ev.organisateur))];
   if (orgasEl) orgasEl.textContent = orgas.length;
+
+  if (totalJoueursEl) totalJoueursEl.textContent = INSCRIPTIONS_DATA.length;
 
   const container = document.getElementById('adminStatsBars');
   if (!container) return;

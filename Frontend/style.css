@@ -1459,7 +1459,7 @@ img { max-width: 100%; display: block; }
   letter-spacing: 0.05em;
 }
 .role-admin   { background: rgba(183,52,190,0.2); color: var(--purple); border: 1px solid rgba(183,52,190,0.4); }
-.role-orga    { background: rgba(69,172,247,0.15); color: var(--blue); border: 1px solid rgba(69,172,247,0.4); }
+.role-organisateur    { background: rgba(69,172,247,0.15); color: var(--blue); border: 1px solid rgba(69,172,247,0.4); }
 .role-joueur  { background: rgba(255,255,255,0.06); color: var(--text-muted); border: 1px solid rgba(255,255,255,0.1); }
 
 
@@ -1482,7 +1482,6 @@ img { max-width: 100%; display: block; }
   max-width: 520px;
   width: 100%;
   margin: 0 auto;
-  min-height: 600px
 }
 
 .auth-tabs {

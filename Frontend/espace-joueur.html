@@ -101,7 +101,7 @@
           </svg>
         </div>
         <div>
-          <p class="profile-name">SYLUSKITTEN109</p>
+          <p class="profile-name">...</p>
           <p class="profile-rank">🏆 Rang #42 – Platinum</p>
         </div>
       </div>
@@ -121,7 +121,7 @@
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
           Tournois joués
         </div>
-        <div class="stat-value blue">12</div>
+        <div class="stat-value blue">...</div>
       </div>
       <div class="stat-card">
         <div class="stat-label">
@@ -131,47 +131,19 @@
           </svg>
           Victoires
         </div>
-        <div class="stat-value purple">4</div>
+        <div class="stat-value purple">...</div>
       </div>
       <div class="stat-card">
         <div class="stat-label">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
           Favoris
         </div>
-        <div class="stat-value white">3</div>
+        <div class="stat-value white">...</div>
       </div>
     </div>
 
     <p class="section-label">MES FAVORIS & ÉVÉNEMENTS</p>
-    <div class="events-grid">
-      <div class="event-card green-border">
-        <div class="event-card-header">
-          <h3 class="event-title">LEAGUE OF LEGENDS 5V5</h3>
-          <span class="event-badge badge-live">En cours</span>
-        </div>
-        <div class="event-meta"><span>👥 10 joueurs</span><span>📅 28 Août</span></div>
-        <button class="event-btn">▶ Rejoindre maintenant</button>
-      </div>
-      <div class="event-card blue-border">
-        <div class="event-card-header">
-          <h3 class="event-title">VALORANT OPEN CUP</h3>
-          <span class="event-badge badge-join">Inscrit</span>
-        </div>
-        <div class="event-meta"><span>👥 32 joueurs</span><span>📅 10 Août</span></div>
-        <button class="event-btn">↺ Voir la rediff.</button>
-      </div>
-      <div class="event-card purple-border">
-        <div class="event-card-header">
-          <h3 class="event-title">CS 2 PRO SERIES</h3>
-          <span class="event-badge badge-fav">Favoris</span>
-        </div>
-        <div class="event-meta"><span>👥 64 joueurs</span><span>📅 04 Sept.</span></div>
-        <button class="event-btn">⏱ Pas encore démarré</button>
-      </div>
-      <div class="event-card empty">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        Parcourir les événements
-      </div>
+    <div class="events-grid" id="homeEventCards">
     </div>
   </div>
 
@@ -207,20 +179,7 @@
   <div id="vue-favoris" style="display:none">
     <h1 class="page-title">FAVORIS</h1>
     <p class="page-subtitle" style="margin-bottom: 2rem;">Tes tournois sauvegardés</p>
-    <div class="events-grid">
-      <div class="event-card purple-border">
-        <div class="event-card-header">
-          <h3 class="event-title">CS 2 PRO SERIES</h3>
-          <span class="event-badge badge-fav">Favoris</span>
-        </div>
-        <div class="event-meta"><span>👥 64 joueurs</span><span>📅 04 Sept.</span></div>
-        <button class="event-btn">Voir l'événement →</button>
-      </div>
-      <div class="event-card empty">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        Parcourir les événements
-      </div>
-    </div>
+    <div class="events-grid" id="favorisGrid"></div>
   </div>
 
   <!-- VUE CLASSEMENT -->
@@ -253,11 +212,11 @@
         <div class="form-row">
           <div class="form-group">
             <label>Pseudo</label>
-            <input type="text" value="SYLUSKITTEN109" />
+            <input type="text" value="Nouveau Pseudo" />
           </div>
           <div class="form-group">
             <label>Email</label>
-            <input type="email" value="syluski@esportify.gg" />
+            <input type="email" value="address@mail.com" />
           </div>
         </div>
       </div>

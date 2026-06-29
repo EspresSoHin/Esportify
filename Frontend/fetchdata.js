@@ -10,6 +10,11 @@ const API_URL = 'http://127.0.0.1:8000' // je changerai avec le lien render apr�
 
 let EVENTS_DATA = [];
 let USERS_DATA = [];
+let PARTICIPANTS_DATA = {};
+let INSCRIPTIONS_DATA = [];
+let FAVORIS_DATA = [];
+let SCORES_DATA = [];
+
 
 //Petit mapping des events
 
@@ -31,15 +36,30 @@ function mapEvent(ev, usersData) {
   };
 }
 
+
+//Les fetch API!
+
 async function fetchAllData(){
     try{
-        const [responseEvents, responseUsers] = await Promise.all([
+        const [responseEvents, responseUsers, responseInscriptions, responseFavoris, responseScores] = await Promise.all([
             fetch(`${API_URL}/events`).then(r => {
                 if (!r.ok) throw new Error(`Events API erreur ${r.status}`);
                 return r.json();
             }),
             fetch(`${API_URL}/users`).then(r => {
                 if (!r.ok) throw new Error(`Users API erreur ${r.status}`);
+                return r.json();
+            }),
+            fetch(`${API_URL}/inscriptions`).then(r => {
+                if (!r.ok) throw new Error(`Inscriptions API erreur ${r.status}`);
+                return r.json();
+            }),
+            fetch(`${API_URL}/favoris`).then(r => {
+                if (!r.ok) throw new Error(`Favoris API erreur ${r.status}`);
+                return r.json();
+            }),
+            fetch(`${API_URL}/scores`).then(r => {
+                if (!r.ok) throw new Error(`Scores API erreur ${r.status}`);
                 return r.json();
             }),
         ]);
@@ -52,6 +72,23 @@ async function fetchAllData(){
             eventsOrganises: responseEvents.filter(ev => ev.id_organisateur === u.id).length
         }));
 
+        INSCRIPTIONS_DATA = responseInscriptions;
+        FAVORIS_DATA = responseFavoris;
+        SCORES_DATA = responseScores;
+
+        responseInscriptions.forEach(insc => {
+            const user = responseUsers.find(u => u.id === insc.id_utilisateur);
+            if (!PARTICIPANTS_DATA[insc.id_evenement]) {
+                PARTICIPANTS_DATA[insc.id_evenement] = [];
+            }
+            PARTICIPANTS_DATA[insc.id_evenement].push({
+                id: insc.id,
+                joueur: user?.pseudo || 'inconnu',
+                dateInscription: insc.date_inscription,
+                statut: insc.id_statut_inscription === 1 ? 'en_attente' : 
+                        insc.id_statut_inscription === 2 ? 'accepte' : 'refuse'
+            });
+        });
 
         document.dispatchEvent(new CustomEvent('dataReady')); //on créer un event pour activer le script après
         

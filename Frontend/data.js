@@ -1,13 +1,4 @@
 // ================================
-// AUTH PROVISOIRE
-// ================================
-
-const USER_SESSION = {
-  connecte: false,
-  pseudo: null
-};
-
-// ================================
 // PHOTOS GALERIE
 // ================================
 
@@ -65,66 +56,6 @@ const DISCUSSION_DATA = {
 
 
 // ================================
-// DASHBOARD ORGANISATEUR
-// ================================
-
-const PARTICIPANTS_DATA = {
-  1: [
-    { joueur: "Syluskitten109", dateInscription: "2026-07-28T10:15", statut: "accepte" },
-    { joueur: "RavoGaming",     dateInscription: "2026-07-29T14:32", statut: "accepte" },
-    { joueur: "NightFox99",     dateInscription: "2026-07-30T09:00", statut: "en_attente" },
-    { joueur: "BladeStrike",    dateInscription: "2026-07-31T17:45", statut: "en_attente" },
-    { joueur: "ZeroLag",        dateInscription: "2026-08-01T11:20", statut: "refuse" },
-  ],
-  2: [
-    { joueur: "Syluskitten109", dateInscription: "2026-08-05T08:00", statut: "accepte" },
-    { joueur: "NightFox99",     dateInscription: "2026-08-06T12:10", statut: "en_attente" },
-  ],
-  3: [
-    { joueur: "BladeStrike",    dateInscription: "2026-08-10T16:00", statut: "accepte" },
-    { joueur: "ZeroLag",        dateInscription: "2026-08-11T09:30", statut: "en_attente" },
-    { joueur: "RavoGaming",     dateInscription: "2026-08-12T14:00", statut: "accepte" },
-  ]
-};
-
-
-// ================================
-// JOUEUR EVENTS ET SCORE
-// ================================
-
-const MES_EVENTS_DATA = [
-  {
-    id: 1,
-    titre: "Valorant Open Cup",
-    dateDebut: "2026-08-10T18:00",
-    statut: "valide",
-    modifiable: true
-  },
-  {
-    id: 2,
-    titre: "CS2 Amateur Series",
-    dateDebut: "2026-07-01T15:00",
-    statut: "non_valide",
-    modifiable: false
-  },
-  {
-    id: 3,
-    titre: "Fortnite Solo Cup",
-    dateDebut: "2026-09-12T19:00",
-    statut: "en_attente",
-    modifiable: true
-  }
-];
-
-const MES_SCORES_DATA = [
-  { evenement: "Valorant Open Cup",    date: "2026-06-10", position: 3,  points: 450, resultat: "Top 3" },
-  { evenement: "League of Legends 5V5", date: "2026-05-28", position: 1,  points: 800, resultat: "Victoire" },
-  { evenement: "CS2 Pro Series",        date: "2026-04-04", position: 12, points: 120, resultat: "Éliminé" },
-  { evenement: "Rocket League 2v2",     date: "2026-03-20", position: 2,  points: 600, resultat: "Top 3" },
-];
-
-
-// ================================
 // SVG ICONS
 // ================================
 
@@ -179,7 +110,6 @@ const GAME_ICONS = {
 // ================================
 
 
-
 function badgeLabel(statut) {
   const labels = {
     valide: 'Validé',
@@ -190,3 +120,7 @@ function badgeLabel(statut) {
   };
   return labels[statut] || statut;
 }
+
+const STATS_ORGA = {
+  tauxRemplissage: '78%'
+};
