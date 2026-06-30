@@ -14,11 +14,12 @@ let PARTICIPANTS_DATA = {};
 let INSCRIPTIONS_DATA = [];
 let FAVORIS_DATA = [];
 let SCORES_DATA = [];
+let STATUTS_EVENEMENT = [];
 
 
 //Petit mapping des events
 
-function mapEvent(ev, usersData) {
+function mapEvent(ev, usersData, statutsData) {
   return {
     id: ev.id,
     titre: ev.titre,
@@ -29,7 +30,7 @@ function mapEvent(ev, usersData) {
     visible: ev.visible,
     discussion: ev.discussion_active,
     image: ev.image_url,
-    statut: STATUTS_EVENEMENT[ev.id_statut] || 'inconnu',
+    statut: statutsData.find(s => s.id === ev.id_statut)?.nom || 'inconnu',
     organisateur: usersData
       ? usersData.find(u => u.id === ev.id_organisateur)?.pseudo || 'inconnu'
       : sessionStorage.getItem('pseudo')
@@ -41,7 +42,7 @@ function mapEvent(ev, usersData) {
 
 async function fetchAllData(){
     try{
-        const [responseEvents, responseUsers, responseInscriptions, responseFavoris, responseScores] = await Promise.all([
+        const [responseEvents, responseUsers, responseInscriptions, responseFavoris, responseScores, responseStatutsEv] = await Promise.all([ 
             fetch(`${API_URL}/events`).then(r => {
                 if (!r.ok) throw new Error(`Events API erreur ${r.status}`);
                 return r.json();
@@ -62,12 +63,17 @@ async function fetchAllData(){
                 if (!r.ok) throw new Error(`Scores API erreur ${r.status}`);
                 return r.json();
             }),
+            fetch(`${API_URL}/statuts_evenement`).then(r => {
+                if (!r.ok) throw new Error(`Statut evenement API erreur ${r.status}`);
+                return r.json();
+            }),
         ]);
 
-        EVENTS_DATA = responseEvents.map(ev => mapEvent(ev, responseUsers));
+        EVENTS_DATA = responseEvents.map(ev => mapEvent(ev, responseUsers, responseStatutsEv));
 
         USERS_DATA = responseUsers.map(u => ({
             pseudo: u.pseudo,
+            email: u.email,
             role: ROLES[u.id_role] || 'joueur',
             eventsOrganises: responseEvents.filter(ev => ev.id_organisateur === u.id).length
         }));
@@ -75,6 +81,7 @@ async function fetchAllData(){
         INSCRIPTIONS_DATA = responseInscriptions;
         FAVORIS_DATA = responseFavoris;
         SCORES_DATA = responseScores;
+        STATUTS_EVENEMENT = responseStatutsEv;
 
         responseInscriptions.forEach(insc => {
             const user = responseUsers.find(u => u.id === insc.id_utilisateur);
@@ -99,3 +106,4 @@ async function fetchAllData(){
 }
 
 fetchAllData()
+

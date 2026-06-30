@@ -202,40 +202,41 @@
     </div>
   </div>
 
-  <!-- VUE PARAMÈTRES -->
-  <div id="vue-params-joueur" style="display:none">
-    <h1 class="page-title">PARAMÈTRES</h1>
-    <p class="page-subtitle" style="margin-bottom: 2rem;">Gérer ton profil</p>
-    <div class="params-card">
-      <div class="params-section">
-        <h3 class="params-title">Informations du compte</h3>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Pseudo</label>
-            <input type="text" value="Nouveau Pseudo" />
-          </div>
-          <div class="form-group">
-            <label>Email</label>
-            <input type="email" value="address@mail.com" />
-          </div>
+<!-- VUE PARAMÈTRES -->
+<div id="vue-params-joueur" style="display:none">
+  <h1 class="page-title">PARAMÈTRES</h1>
+  <p class="page-subtitle" style="margin-bottom: 2rem;">Gérer ton profil</p>
+  <div class="params-card">
+    <div class="params-section">
+      <h3 class="params-title">Informations du compte</h3>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Pseudo</label>
+          <input type="text" id="paramsPseudo" />
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="paramsEmail" />
         </div>
       </div>
-      <div class="params-section">
-        <h3 class="params-title">Sécurité</h3>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Nouveau mot de passe</label>
-            <input type="password" placeholder="••••••••" />
-          </div>
-          <div class="form-group">
-            <label>Confirmer</label>
-            <input type="password" placeholder="••••••••" />
-          </div>
-        </div>
-      </div>
-      <button class="btn-submit" style="margin-top: 1.5rem;">Sauvegarder</button>
     </div>
+    <div class="params-section">
+      <h3 class="params-title">Sécurité</h3>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Nouveau mot de passe</label>
+          <input type="password" id="paramsPassword" placeholder="••••••••" />
+        </div>
+        <div class="form-group">
+          <label>Confirmer</label>
+          <input type="password" id="paramsPasswordConfirm" placeholder="••••••••" />
+        </div>
+      </div>
+    </div>
+    <div class="auth-error" id="paramsError" style="display:none"></div>
+    <button class="btn-submit" style="margin-top: 1.5rem;" onclick="updateProfile()">Sauvegarder</button>
   </div>
+</div>
 
 </main>
 </div>

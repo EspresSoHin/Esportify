@@ -11,19 +11,7 @@ const GALLERY_DATA = [
 ];
 
 // ================================
-// DONNÉES STATUS EVENTS (on remplace par un fetch api/)
-// ================================
-
-const STATUTS_EVENEMENT = { //faire route API plus tard
-  1: 'en_cours',
-  2: 'valide', 
-  3: 'en_attente',
-  4: 'suspendu',
-  5: 'refuse'
-};
-
-// ================================
-// DONNÉES ROLES (on remplace par un fetch api/events)
+// DONNÉES ROLES (on remplace par un fetch api/)
 // ================================
 
 const ROLES = {
@@ -109,7 +97,6 @@ const GAME_ICONS = {
 // DATAS ADMIN
 // ================================
 
-
 function badgeLabel(statut) {
   const labels = {
     valide: 'Validé',
@@ -120,6 +107,7 @@ function badgeLabel(statut) {
   };
   return labels[statut] || statut;
 }
+
 
 const STATS_ORGA = {
   tauxRemplissage: '78%'

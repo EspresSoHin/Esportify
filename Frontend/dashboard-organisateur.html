@@ -224,16 +224,16 @@
           <div class="form-row">
             <div class="form-group">
               <label>Pseudo</label>
-              <input type="text" value="Nouveau Pseudo" />
+              <input type="text" id="paramsPseudo" />
             </div>
             <div class="form-group">
               <label>Email</label>
-              <input type="email" value="address@mail.com" />
+              <input type="email" id="paramsEmail" />
             </div>
           </div>
           <div class="form-group" style="margin-top: 1rem;">
             <label>Bio</label>
-            <textarea rows="3">Organisatrice compétitive depuis 2022. Spécialisée FPS et MOBA.</textarea>
+            <textarea rows="3" placeholder="Organisatrice compétitive depuis 2022. Spécialisée FPS et MOBA."></textarea>
           </div>
         </div>
         <div class="params-section">
@@ -241,15 +241,16 @@
           <div class="form-row">
             <div class="form-group">
               <label>Nouveau mot de passe</label>
-              <input type="password" placeholder="••••••••" />
+              <input type="password" id="paramsPassword" placeholder="••••••••" />
             </div>
             <div class="form-group">
               <label>Confirmer</label>
-              <input type="password" placeholder="••••••••" />
+              <input type="password" id="paramsPasswordConfirm" placeholder="••••••••" />
             </div>
           </div>
         </div>
-        <button class="btn-submit" style="margin-top: 1.5rem;">Sauvegarder les modifications</button>
+        <div class="auth-error" id="paramsError" style="display:none"></div>
+        <button class="btn-submit" style="margin-top: 1.5rem;" onclick="updateProfile()">Sauvegarder</button>
       </div>
     </div>
 
