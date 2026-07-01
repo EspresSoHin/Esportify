@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Response
+from fastapi import APIRouter, Depends, HTTPException, status, Response, Request
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from database import get_db
@@ -6,7 +6,7 @@ from passlib.context import CryptContext
 from jose import jwt
 from datetime import datetime, timedelta
 import models, schemas
-from Oauth2 import create_access_token
+from Oauth2 import create_access_token, decode_token
 
 router = APIRouter(tags=["auth"])
 
@@ -76,6 +76,7 @@ def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
 
     # On renvoie juste les infos non sensibles pour le frontend
     return {
+        "access_token": token,
         "pseudo": user.pseudo,
         "id": user.id,
         "id_role": user.id_role
@@ -87,6 +88,32 @@ def logout(response: Response):
     return {"message": "Déconnecté"}
 
 
+#Pour la persistence des login
+
+@router.get("/me")
+def get_me(request: Request, db: Session = Depends(get_db)):
+    auth_header = request.headers.get("Authorization")
+    if auth_header and auth_header.startswith("Bearer "):
+        token = auth_header.split(" ")[1]
+    else:
+        token = request.cookies.get("access_token")
+    
+    if not token:
+        raise HTTPException(status_code=401, detail="Non connecté")
+    
+    payload = decode_token(token)
+    if not payload:
+        raise HTTPException(status_code=401, detail="Token invalide")
+    
+    user = db.query(models.Users).filter(models.Users.pseudo == payload).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User introuvable")
+    
+    return {
+        "pseudo": user.pseudo,
+        "id": user.id,
+        "id_role": user.id_role
+    }
 
 
 # ============================================

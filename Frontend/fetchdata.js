@@ -15,6 +15,7 @@ let INSCRIPTIONS_DATA = [];
 let FAVORIS_DATA = [];
 let SCORES_DATA = [];
 let STATUTS_EVENEMENT = [];
+//let ROLES = {} ou [];
 
 
 //Petit mapping des events
@@ -82,6 +83,7 @@ async function fetchAllData(){
         FAVORIS_DATA = responseFavoris;
         SCORES_DATA = responseScores;
         STATUTS_EVENEMENT = responseStatutsEv;
+        //ROLES = ;
 
         responseInscriptions.forEach(insc => {
             const user = responseUsers.find(u => u.id === insc.id_utilisateur);
@@ -105,5 +107,38 @@ async function fetchAllData(){
     }
 }
 
-fetchAllData()
 
+//Check sessionStorage for token et pseudo
+
+async function checkSession() {
+    const token = sessionStorage.getItem('token');
+    if (!token) return;
+
+    try {
+        const response = await fetch(`${API_URL}/me`, {
+            credentials: 'include',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            sessionStorage.setItem('pseudo', data.pseudo);
+            sessionStorage.setItem('id', data.id);
+            sessionStorage.setItem('id_role', data.id_role);
+        } else {
+            sessionStorage.clear();
+        }
+    } catch(error) {
+        console.error("Erreur checkSession:", error);
+    }
+}
+
+async function init() {
+    await checkSession();
+    updateNavbar();
+    await fetchAllData();
+}
+
+init(); //on a remplacé le fetchAllData() par init() pour inclure la vérif de session
