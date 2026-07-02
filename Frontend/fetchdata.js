@@ -5,7 +5,7 @@
 const API_URL = 'http://127.0.0.1:8000' // je changerai avec le lien render après
 
 // ================================
-// DONNÉES EVENTS
+// DONNÉES GÉNÉRALES
 // ================================
 
 let EVENTS_DATA = [];
@@ -18,7 +18,9 @@ let STATUTS_EVENEMENT = [];
 //let ROLES = {} ou [];
 
 
-//Petit mapping des events
+// ================================
+// MAPPING DES DONNÉES
+// ================================
 
 function mapEvent(ev, usersData, statutsData) {
   return {
@@ -38,8 +40,9 @@ function mapEvent(ev, usersData, statutsData) {
   };
 }
 
-
-//Les fetch API!
+// ================================
+// FETCH API
+// ================================
 
 async function fetchAllData(){
     try{
@@ -107,8 +110,9 @@ async function fetchAllData(){
     }
 }
 
-
-//Check sessionStorage for token et pseudo
+// ================================
+// CHECK SESSION STORAGE
+// ================================
 
 async function checkSession() {
     const token = sessionStorage.getItem('token');
@@ -141,4 +145,4 @@ async function init() {
     await fetchAllData();
 }
 
-init(); //on a remplacé le fetchAllData() par init() pour inclure la vérif de session
+init();

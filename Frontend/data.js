@@ -11,16 +11,6 @@ const GALLERY_DATA = [
 ];
 
 // ================================
-// DONNÉES ROLES (on remplace par un fetch api/)
-// ================================
-
-const ROLES = {
-    1: 'joueur',
-    2: 'admin',
-    3: 'organisateur'
-};
-
-// ================================
 // PAGE DÉTAIL EVENT
 // ================================
 const DISCUSSION_DATA = {
@@ -111,4 +101,15 @@ function badgeLabel(statut) {
 
 const STATS_ORGA = {
   tauxRemplissage: '78%'
+};
+
+
+// ================================
+// DONNÉES ROLES (on remplace par un fetch api/)
+// ================================
+
+const ROLES = {
+    1: 'joueur',
+    2: 'admin',
+    3: 'organisateur'
 };

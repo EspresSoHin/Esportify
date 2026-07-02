@@ -93,7 +93,7 @@ document.addEventListener('dataReady', () => {
   if (document.getElementById('eventDetail')) {
     renderDetail();
 }
-if (document.getElementById('orgaEventsList')) {
+  if (document.getElementById('orgaEventsList')) {
     if (!checkAuth(3)) return; // 3 = organisateur
     renderOrgaEvents();
   }
@@ -102,6 +102,10 @@ if (document.getElementById('orgaEventsList')) {
     if (!checkAuth(2)) return; // 2 = admin
     renderAdminDashboard();
   }
+
+  if (document.getElementById('formConnexion')) {
+    renderStatsConnexion();
+}
 
 });
 
@@ -1557,6 +1561,20 @@ function renderStatsJoueur() {
   document.querySelector('.stat-value.white').textContent = favoris;
 }
 
+
+function renderStatsConnexion() {
+  const tournoisActifs = EVENTS_DATA.filter(ev => 
+    ev.statut === 'valide' || ev.statut === 'en_cours'
+  ).length;
+  
+  const totalJoueurs = INSCRIPTIONS_DATA.length;
+
+  const allEvActifs = document.getElementById('activeTournaments');
+  const allJoueurs = document.getElementById('totalPlayers');
+
+  if (allEvActifs) allEvActifs.textContent = `${tournoisActifs} tournois actifs`;
+  if (allJoueurs) allJoueurs.textContent = `${totalJoueurs} joueurs`;
+}
 
 // ================================
 // DASHBOARD ADMIN
