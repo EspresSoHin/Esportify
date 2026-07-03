@@ -15,7 +15,7 @@ let INSCRIPTIONS_DATA = [];
 let FAVORIS_DATA = [];
 let SCORES_DATA = [];
 let STATUTS_EVENEMENT = [];
-//let ROLES = {} ou [];
+let ROLES_DATA = [];
 
 
 // ================================
@@ -46,7 +46,7 @@ function mapEvent(ev, usersData, statutsData) {
 
 async function fetchAllData(){
     try{
-        const [responseEvents, responseUsers, responseInscriptions, responseFavoris, responseScores, responseStatutsEv] = await Promise.all([ 
+        const [responseEvents, responseUsers, responseInscriptions, responseFavoris, responseScores, responseStatutsEv, responseRoles] = await Promise.all([ 
             fetch(`${API_URL}/events`).then(r => {
                 if (!r.ok) throw new Error(`Events API erreur ${r.status}`);
                 return r.json();
@@ -71,22 +71,32 @@ async function fetchAllData(){
                 if (!r.ok) throw new Error(`Statut evenement API erreur ${r.status}`);
                 return r.json();
             }),
+            fetch(`${API_URL}/roles`).then(r => {
+                if (!r.ok) throw new Error(`Roles API erreur ${r.status}`);
+                return r.json();
+            })
         ]);
 
         EVENTS_DATA = responseEvents.map(ev => mapEvent(ev, responseUsers, responseStatutsEv));
 
-        USERS_DATA = responseUsers.map(u => ({
-            pseudo: u.pseudo,
-            email: u.email,
-            role: ROLES[u.id_role] || 'joueur',
-            eventsOrganises: responseEvents.filter(ev => ev.id_organisateur === u.id).length
-        }));
+        USERS_DATA = responseUsers.map(u => {
+            const role = responseRoles.find(r => r.id === u.id_role);
+            return {
+                pseudo: u.pseudo,
+                email: u.email,
+                role: role?.nom.toLowerCase() || 'joueur',
+                eventsOrganises: responseEvents.filter(ev => ev.id_organisateur === u.id).length
+            };
+    });
 
         INSCRIPTIONS_DATA = responseInscriptions;
         FAVORIS_DATA = responseFavoris;
         SCORES_DATA = responseScores;
         STATUTS_EVENEMENT = responseStatutsEv;
-        //ROLES = ;
+        ROLES_DATA = responseRoles;
+
+        console.log("responseRoles:", responseRoles);
+        console.log("premier user id_role:", responseUsers[0]?.id_role);
 
         responseInscriptions.forEach(insc => {
             const user = responseUsers.find(u => u.id === insc.id_utilisateur);
@@ -146,3 +156,14 @@ async function init() {
 }
 
 init();
+
+
+// ================================
+// DONNÉES ROLES (on remplace par un fetch api/)
+// ================================
+
+//const ROLES = {
+//    1: 'joueur',
+//    2: 'admin',
+//    3: 'organisateur'
+//};

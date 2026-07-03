@@ -777,7 +777,25 @@ function renderDetail() {
     return;
   }
 
-  const discussion = DISCUSSION_DATA[ev.id] || []; //FAILLE DE SECURITER ICI AVEC INPUT NON SANITIZE 
+  const userId = parseInt(sessionStorage.getItem('id'));
+  const isConnected = !!sessionStorage.getItem('id');
+  const isInscrit = INSCRIPTIONS_DATA.some(i => i.id_evenement === ev.id && i.id_utilisateur === userId);
+
+  const inscriptionBtn = isConnected
+    ? isInscrit
+      ? `<button class="btn-join" style="display:block; text-align:center; padding: 12px; border-radius: 8px; font-size:14px; width:100%; border:none; cursor:pointer; background:var(--text-muted);" disabled>
+          Déjà inscrit ✓
+         </button>`
+      : `<button class="btn-join" style="display:block; text-align:center; padding: 12px; border-radius: 8px; font-size:14px; width:100%; border:none; cursor:pointer;"
+          onclick="sInscrire(${ev.id})">
+          S'inscrire au tournoi
+         </button>`
+    : `<a href="connexion.html" class="btn-join" style="display:block; text-align:center; padding: 12px; border-radius: 8px; font-size:14px;">
+        Se connecter pour s'inscrire
+       </a>`;
+
+  const discussion = DISCUSSION_DATA[ev.id] || [];
+  const isFavori = FAVORIS_DATA.some(f => f.id_evenement === ev.id && f.id_utilisateur === userId);
 
   container.innerHTML = `
     <div class="detail-hero" ${ev.image ? `style="background-image: url('${escapeHTML(ev.image)}')"` : ''}>
@@ -859,18 +877,16 @@ function renderDetail() {
         <div class="detail-cta-card">
           <p class="cta-price">Gratuit</p>
           <p class="cta-spots">${ev.joueurs} places disponibles</p>
-          <a href="connexion.html" class="btn-join" style="display:block; text-align:center; padding: 12px; border-radius: 8px; font-size:14px;">
-            S'inscrire au tournoi
-          </a>
-          <button class="btn-favori${FAVORIS_DATA.some(f => f.id_evenement === ev.id && f.id_utilisateur === parseInt(sessionStorage.getItem('id'))) ? ' active' : ''}"
-          style="width:100%; margin-top:0.75rem; height:38px; border-radius:6px;"
-          title="Ajouter aux favoris"
-          onclick="toggleFavori(${ev.id}, this)">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="${FAVORIS_DATA.some(f => f.id_evenement === ev.id && f.id_utilisateur === parseInt(sessionStorage.getItem('id'))) ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
-      <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
-    </svg>
-    ${FAVORIS_DATA.some(f => f.id_evenement === ev.id && f.id_utilisateur === parseInt(sessionStorage.getItem('id'))) ? 'Retirer des favoris' : 'Ajouter aux favoris'}
-  </button>
+          ${inscriptionBtn}
+          <button class="btn-favori${isFavori ? ' active' : ''}"
+            style="width:100%; margin-top:0.75rem; height:38px; border-radius:6px;"
+            title="${isFavori ? 'Retirer des favoris' : 'Ajouter aux favoris'}"
+            onclick="toggleFavori(${ev.id}, this)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="${isFavori ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
+              <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
+            </svg>
+            ${isFavori ? 'Retirer des favoris' : 'Ajouter aux favoris'}
+          </button>
           <p class="cta-note">Tu dois être connecté pour t'inscrire</p>
         </div>
         <div class="detail-dates-card">
@@ -882,6 +898,39 @@ function renderDetail() {
       </div>
     </div>
   `;
+}
+
+
+
+async function sInscrire(eventId) {
+  const userId = parseInt(sessionStorage.getItem('id'));
+  const token = sessionStorage.getItem('token');
+
+  try {
+    const response = await fetch(`${API_URL}/inscriptions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      credentials: 'include',
+      body: JSON.stringify({ id_utilisateur: userId, id_evenement: eventId })
+    });
+
+    if (!response.ok) {
+      const err = await response.json();
+      showToast(err.detail || 'Erreur lors de l\'inscription.');
+      return;
+    }
+
+    const newInscription = await response.json();
+    INSCRIPTIONS_DATA.push(newInscription);
+    showToast('Inscription envoyée — en attente de validation !');
+    renderDetail(); // re-render pour mettre à jour le bouton
+
+  } catch(error) {
+    console.error(error);
+  }
 }
 
 
@@ -1041,9 +1090,16 @@ function renderParticipants() {
       </span></td>
       <td>
         ${p.statut !== 'refuse'
-          ? `<button class="action-btn btn-stop" style="font-size:11px; padding:5px 12px;"
-               onclick="rejectParticipant(${p.id})">Refuser</button>`
-          : `<span style="font-size:12px; color:var(--text-muted);">Ne peut plus s'inscrire</span>`
+          ? `<div class="action-btns">
+              ${p.statut !== 'accepte'
+                ? `<button class="action-btn btn-start" style="font-size:11px; padding:5px 12px;"
+                  onclick="acceptParticipant(${p.id})">Accepter</button>`
+                : ''
+              }
+              <button class="action-btn btn-stop" style="font-size:11px; padding:5px 12px;"
+                   onclick="rejectParticipant(${p.id})">Refuser</button>
+              </div>`
+          : `<span style="font-size:12px; color:var(--text-muted);">Refusé</span>`
         }
       </td>
     </tr>
@@ -1081,6 +1137,32 @@ async function rejectParticipant(inscriptionId) {
   }
 }
 
+async function acceptParticipant(inscriptionId) {
+  try {
+    const response = await fetch(`${API_URL}/inscriptions/${inscriptionId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ id_statut_inscription: 2 }) // 2 = accepte
+    });
+
+    if (!response.ok) {
+      showToast('Erreur lors de l\'acceptation.');
+      return;
+    }
+
+    for (const eventId in PARTICIPANTS_DATA) {
+      const p = PARTICIPANTS_DATA[eventId].find(p => p.id === inscriptionId);
+      if (p) { p.statut = 'accepte'; break; }
+    }
+
+    showToast('Joueur accepté !');
+    renderParticipants();
+
+  } catch(error) {
+    console.error(error);
+  }
+}
 
 function initParticipantSelect() {
   const select = document.getElementById('participantEventFilter');

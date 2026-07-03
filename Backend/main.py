@@ -4,7 +4,7 @@ from database import engine
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm, HTTPBearer, HTTPAuthorizationCredentials
 from Oauth2 import create_access_token, decode_token
-from routes import users , events, inscriptions, favoris, scores, auth, statuts_evenement
+from routes import users , events, inscriptions, favoris, scores, auth, statuts_evenement, roles
 
 
 app = FastAPI()
@@ -29,3 +29,4 @@ app.include_router(favoris.router)
 app.include_router(scores.router)
 app.include_router(auth.router)
 app.include_router(statuts_evenement.router)
+app.include_router(roles.router)
