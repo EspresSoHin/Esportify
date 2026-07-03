@@ -1775,18 +1775,47 @@ async function moderationAction(id, action) {
   }
 }
 
-function promouvoir(pseudo, nouveauRole) {
+async function promouvoir(pseudo, nouveauRole) {
   const user = USERS_DATA.find(u => u.pseudo === pseudo);
   if (!user) return;
-  const ancienRole = user.role;
-  user.role = nouveauRole;
-  showToast(`${pseudo} promu ${nouveauRole}`);
-  renderUtilisateurs();
+
+  const token = sessionStorage.getItem('token');
+  
+  const role = ROLES_DATA.find(r => r.nom.toLowerCase() === nouveauRole);
+  if (!role) return;
+
+  const userComplet = USERS_DATA.find(u => u.pseudo === pseudo);
+  if (!userComplet) return;
+
+  try {
+    const response = await fetch(`${API_URL}/users/${userComplet.id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      credentials: 'include',
+      body: JSON.stringify({ id_role: role.id })
+    });
+
+    if (!response.ok) {
+      showToast('Erreur lors de la promotion.');
+      return;
+    }
+
+    user.role = nouveauRole;
+    showToast(`${pseudo} promu ${nouveauRole}`);
+    renderUtilisateurs();
+
+  } catch(error) {
+    console.error(error);
+    showToast('Erreur de connexion au serveur.');
+  }
 }
 
 function renderAdminDashboard() {
-  const attente = EVENTS_DATA.filter(ev => ev.statut === 'en_attente').length; //a remplacer par les id statuts?
-  const suspendus = EVENTS_DATA.filter(ev => ev.statut === 'suspendu').length; //ca aussi?
+  const attente = EVENTS_DATA.filter(ev => ev.statut === 'en_attente').length;
+  const suspendus = EVENTS_DATA.filter(ev => ev.statut === 'suspendu').length; 
 
   const elAttente = document.getElementById('adminCountAttente');
   const elUsers = document.getElementById('adminCountUsers');

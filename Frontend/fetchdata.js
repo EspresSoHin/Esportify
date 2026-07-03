@@ -82,6 +82,7 @@ async function fetchAllData(){
         USERS_DATA = responseUsers.map(u => {
             const role = responseRoles.find(r => r.id === u.id_role);
             return {
+                id: u.id,
                 pseudo: u.pseudo,
                 email: u.email,
                 role: role?.nom.toLowerCase() || 'joueur',
