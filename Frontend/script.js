@@ -1048,7 +1048,73 @@ function stopEvent(id) {
 }
 
 function editEvent(id) {
-  alert(`Modification de l'événement #${id} — à connecter au formulaire.`);
+  const ev = EVENTS_DATA.find(e => e.id === id);
+  if (!ev) return;
+
+  document.getElementById('editEventId').value = ev.id;
+  document.getElementById('editTitre').value = ev.titre;
+  document.getElementById('editJoueurs').value = ev.joueurs;
+  document.getElementById('editDescription').value = ev.description;
+  document.getElementById('editDateDebut').value = ev.dateDebut;
+  document.getElementById('editDateFin').value = ev.dateFin;
+  document.getElementById('editImage').value = ev.image || '';
+
+  document.getElementById('editEventModal').style.display = 'flex';
+}
+
+function hideEditModal() {
+  document.getElementById('editEventModal').style.display = 'none';
+}
+
+async function saveEditEvent() {
+  const id = document.getElementById('editEventId').value;
+  const token = sessionStorage.getItem('token');
+
+  const payload = {
+    titre: document.getElementById('editTitre').value.trim(),
+    nb_joueurs_max: parseInt(document.getElementById('editJoueurs').value),
+    description: document.getElementById('editDescription').value.trim(),
+    date_debut: document.getElementById('editDateDebut').value,
+    date_fin: document.getElementById('editDateFin').value,
+    image_url: document.getElementById('editImage').value.trim() || null,
+  };
+
+  try {
+    const response = await fetch(`${API_URL}/events/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      credentials: 'include',
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+      showToast('Erreur lors de la modification.');
+      return;
+    }
+
+    // Mise à jour locale
+    const ev = EVENTS_DATA.find(e => e.id === parseInt(id));
+    if (ev) {
+      ev.titre = payload.titre;
+      ev.joueurs = payload.nb_joueurs_max;
+      ev.description = payload.description;
+      ev.dateDebut = payload.date_debut;
+      ev.dateFin = payload.date_fin;
+      ev.image = payload.image_url;
+    }
+
+    hideEditModal();
+    showToast('Événement modifié !');
+    renderAdminAllEvents();
+    renderModeration();
+
+  } catch(error) {
+    console.error(error);
+    showToast('Erreur de connexion au serveur.');
+  }
 }
 
 function deleteEvent(id) {
@@ -1862,6 +1928,12 @@ function renderAdminAllEvents() {
         <div class="elc-footer">
           <span class="elc-organisateur">Par <strong>${ev.organisateur}</strong></span>
           <div class="action-btns" onclick="event.preventDefault()">
+            <button class="btn-icon" onclick="editEvent(${ev.id})" title="Modifier">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+              </svg>
+            </button>
             ${renderModerationActions(ev)}
           </div>
         </div>

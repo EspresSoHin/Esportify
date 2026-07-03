@@ -95,9 +95,6 @@ async function fetchAllData(){
         STATUTS_EVENEMENT = responseStatutsEv;
         ROLES_DATA = responseRoles;
 
-        console.log("responseRoles:", responseRoles);
-        console.log("premier user id_role:", responseUsers[0]?.id_role);
-
         responseInscriptions.forEach(insc => {
             const user = responseUsers.find(u => u.id === insc.id_utilisateur);
             if (!PARTICIPANTS_DATA[insc.id_evenement]) {

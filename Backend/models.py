@@ -76,7 +76,7 @@ class Events(Base):
     date_fin = Column(DateTime, nullable=False)
     visible = Column(Boolean, nullable=False, default=False)
     discussion_active = Column(Boolean, nullable=False, default=True)
-    image_url = Column(String(100), nullable=True)
+    image_url = Column(String(500), nullable=True)
     id_organisateur = Column(Integer, ForeignKey('users.id'), nullable=False)
     id_statut = Column(Integer, ForeignKey('statuts_evenement.id'), nullable=False, default=3)
     created_at = Column(DateTime, nullable=False, default=datetime.now)

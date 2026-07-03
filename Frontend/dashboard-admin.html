@@ -239,6 +239,51 @@
       <div class="events-list" id="adminAllEventsList"></div>
     </div>
 
+    <!-- MODAL MODIFIER ÉVÉNEMENT -->
+    <div class="modal-overlay" id="editEventModal" style="display:none">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h2 class="modal-title">MODIFIER L'ÉVÉNEMENT</h2>
+      <button class="modal-close" onclick="hideEditModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="editEventId" />
+      <div class="form-row">
+        <div class="form-group">
+          <label>Titre *</label>
+          <input type="text" id="editTitre" />
+        </div>
+        <div class="form-group">
+          <label>Nombre de joueurs *</label>
+          <input type="number" id="editJoueurs" min="2" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Description *</label>
+        <textarea id="editDescription" rows="3"></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Date début *</label>
+          <input type="datetime-local" id="editDateDebut" />
+        </div>
+        <div class="form-group">
+          <label>Date fin *</label>
+          <input type="datetime-local" id="editDateFin" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Image (URL)</label>
+        <input type="text" id="editImage" />
+      </div>
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="hideEditModal()">Annuler</button>
+        <button class="btn-create" onclick="saveEditEvent()">Sauvegarder</button>
+      </div>
+    </div>
+  </div>
+</div>
+
     <!-- VUE STATISTIQUES -->
     <div id="admin-vue-stats" style="display:none">
       <h1 class="page-title">STATISTIQUES</h1>
