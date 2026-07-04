@@ -160,3 +160,30 @@ def get_me(request: Request, db: Session = Depends(get_db)):
 #     user.email_verifie = True  # nécessite colonne email_verifie en BDD
 #     db.commit()
 #     return {"message": "Email confirmé, tu peux te connecter"}
+
+
+# ============================================
+# FORMULAIRE DE CONTACT — EMAIL (de l'admin) 
+# Configurer un serveur SMTP (ex: Gmail, Outlook)
+# ============================================
+
+# @router.post("/contact")
+# async def send_contact_email(
+#     prenom: str, nom: str, email: str, message: str
+# ):
+#     msg = MessageSchema(
+#         subject=f"[Esportify] Message de {prenom} {nom}",
+#         recipients=["contact@esportify.gg"],  # adresse de destination
+#         body=f"De : {email}\n\n{message}",
+#         subtype="plain"
+#     )
+#     fm = FastMail(conf)  # conf = même config que validation email
+#     await fm.send_message(msg)
+#    return {"message": "Email envoyé avec succès"}
+
+# Côté frontend, fetch vers /contact avec les données du formulaire :
+# await fetch(`${API_URL}/contact`, {
+#     method: 'POST',
+#     headers: { 'Content-Type': 'application/json' },
+#     body: JSON.stringify({ prenom, nom, email, message })
+# });
