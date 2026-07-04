@@ -122,7 +122,6 @@ function escapeHTML(str) {
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
 }
-//apres je dois ajouter escapeHTML sur les variables qui sont injecté dans le DOM pour eviter les faille XSS
 
 // ================================
 // LANGUAGE SELECTOR
@@ -699,7 +698,7 @@ function renderAllEvents() {
         </div>
         <div class="elc-footer">
   <span class="elc-organisateur">Par <strong>${escapeHTML(ev.organisateur)}</strong></span>
-  <div class="action-btns">
+  <div class="action-btns" onclick="event.preventDefault()">
     ${ev.organisateur === sessionStorage.getItem('pseudo')
       ? `
         <button class="btn-icon" onclick="editEvent(${ev.id})" title="Modifier">
@@ -835,7 +834,7 @@ function renderDetail() {
             </div>
             <div class="detail-info-item">
               <span class="info-label">🎮 Organisateur</span>
-              <span class="info-value blue">${ev.organisateur}</span>
+              <span class="info-value blue">${escapeHTML(ev.organisateur)}</span>
             </div>
             <div class="detail-info-item">
               <span class="info-label">👁 Visibilité</span>
@@ -854,7 +853,7 @@ function renderDetail() {
           <div class="discussion-list" id="discussionList">
             ${discussion.map(msg => `
               <div class="discussion-msg">
-                <div class="msg-avatar">${msg.auteur.slice(0,2).toUpperCase()}</div>
+                <div class="msg-avatar">${escapeHTML(msg.auteur.slice(0,2).toUpperCase())}</div>
                 <div class="msg-content">
                   <div class="msg-header">
                     <strong class="msg-auteur">${escapeHTML(msg.auteur)}</strong>
@@ -1024,7 +1023,7 @@ function renderOrgaEvents() {
 
     return `
       <tr>
-        <td>${ev.titre}</td>
+        <td>${escapeHTML(ev.titre)}</td>
         <td>${ev.joueurs}</td>
         <td>${formatDateShort(ev.dateDebut)}</td>
         <td><span class="elc-badge badge-${ev.statut}">${badgeLabel(ev.statut)}</span></td>
@@ -1240,7 +1239,7 @@ function initParticipantSelect() {
   select.innerHTML =
     `<option value="tous">Tous les événements</option>` +
     mesEvents.map(ev =>
-      `<option value="${ev.id}">${ev.titre}</option>`
+      `<option value="${ev.id}">${escapeHTML(ev.titre)}</option>`
     ).join('');
   renderParticipants();
 }
@@ -1839,8 +1838,8 @@ function renderAdminDashboard() {
     ? `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:2rem;">Aucune demande en attente</td></tr>`
     : recentes.map(ev => `
       <tr>
-        <td>${ev.titre}</td>
-        <td style="color:var(--blue)">${ev.organisateur}</td>
+        <td>${escapeHTML(ev.titre)}</td>
+        <td style="color:var(--blue)">${escapeHTML(ev.organisateur)}</td>
         <td>${formatDateShort(ev.dateDebut)}</td>
         <td><span class="elc-badge badge-${ev.statut}">${badgeLabel(ev.statut)}</span></td>
         <td>${renderModerationActions(ev)}</td>
@@ -1890,8 +1889,8 @@ function renderModeration() {
     ? `<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:2rem;">Aucun événement trouvé</td></tr>`
     : events.map(ev => `
       <tr>
-        <td>${ev.titre}</td>
-        <td style="color:var(--blue)">${ev.organisateur}</td>
+        <td>${escapeHTML(ev.titre)}</td>
+        <td style="color:var(--blue)">${escapeHTML(ev.organisateur)}</td>
         <td>${ev.joueurs}</td>
         <td>${formatDateShort(ev.dateDebut)}</td>
         <td><span class="elc-badge badge-${ev.statut}">${badgeLabel(ev.statut)}</span></td>
@@ -1922,7 +1921,7 @@ function renderUtilisateurs() {
             ${rolesDisponibles.map(r => `
               <button class="action-btn ${r === 'admin' ? 'btn-stop' : 'btn-start'}"
                       style="font-size:11px; padding:5px 12px;"
-                      onclick="promouvoir('${u.pseudo}', '${r}')">
+                      onclick="promouvoir('${escapeHTML(u.pseudo)}', '${r}')">
                 → ${r.charAt(0).toUpperCase() + r.slice(1)}
               </button>
             `).join('')}
@@ -1939,12 +1938,12 @@ function renderAdminAllEvents() {
   container.innerHTML = EVENTS_DATA.map(ev => `
     <a href="event-detail.html?id=${ev.id}" class="event-list-card statut-${ev.statut}">
       ${ev.image
-        ? `<img class="elc-image" src="${ev.image}" alt="${ev.titre}" />`
-        : `<div class="elc-image-placeholder">${gameSVG(ev.titre)}</div>`
+        ? `<img class="elc-image" src="${ev.image}" alt="${escapeHTML(ev.titre)}" />`
+        : `<div class="elc-image-placeholder">${gameSVG(escapeHTML(ev.titre))}</div>`
       }
       <div class="elc-body">
         <div class="elc-header">
-          <h2 class="elc-title">${ev.titre}</h2>
+          <h2 class="elc-title">${escapeHTML(ev.titre)}</h2>
           <span class="elc-badge badge-${ev.statut}">${badgeLabel(ev.statut)}</span>
         </div>
         <div class="elc-meta">
@@ -1955,7 +1954,7 @@ function renderAdminAllEvents() {
           </span>
         </div>
         <div class="elc-footer">
-          <span class="elc-organisateur">Par <strong>${ev.organisateur}</strong></span>
+          <span class="elc-organisateur">Par <strong>${escapeHTML(ev.organisateur)}</strong></span>
           <div class="action-btns" onclick="event.preventDefault()">
             <button class="btn-icon" onclick="editEvent(${ev.id})" title="Modifier">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
