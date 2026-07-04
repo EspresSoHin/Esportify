@@ -2,6 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session 
 from database import get_db
 import models, schemas
+from Oauth2 import get_current_user
+from Oauth2 import get_current_user, check_admin
 
 router = APIRouter(
     prefix="/scores",
@@ -13,15 +15,14 @@ def get_scores(db: Session = Depends(get_db)):
     scores = db.query(models.Scores).all() 
     return scores
 
-# pas de vrai tournois dans le cadre de l'ECF donc on va faire les choses simplement for now
-
 
 ## ##########################
 ##   CREATION DE SCORES    ##
 ## ##########################
 
 @router.post("/", response_model=schemas.ScoresResponse)
-def create_scores(scores: schemas.ScoresCreate, db: Session = Depends(get_db)):
+def create_scores(scores: schemas.ScoresCreate, db: Session = Depends(get_db),
+                current_user: models.Users = Depends(check_admin)):
     new_score = models.Scores(
         id_utilisateur= scores.id_utilisateur,
         id_evenement= scores.id_evenement,
@@ -60,7 +61,8 @@ def get_scores_by_user(id_utilisateur: int, db: Session = Depends(get_db)):
 ##############################
 
 @router.put("/{id}", response_model=schemas.ScoresResponse)
-def update_score(id: int, score_update: schemas.ScoresUpdate, db: Session = Depends(get_db)):
+def update_score(id: int, score_update: schemas.ScoresUpdate, db: Session = Depends(get_db),
+                current_user: models.Users = Depends(check_admin)):
     score = db.query(models.Scores).filter(models.Scores.id == id).first()
     if score is None:
         raise HTTPException(status_code=404, detail="Score not found")

@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from database import get_db
 import models, schemas
 from datetime import datetime, date
+from Oauth2 import get_current_user, check_admin, check_orga
 
 
 router = APIRouter(
@@ -55,7 +56,8 @@ def get_event(id: int, db: Session = Depends(get_db)):
 ###############################
 
 @router.put("/{id}", response_model=schemas.EventResponse)
-def update_event(id: int, event_update: schemas.EventUpdate, db: Session = Depends(get_db)):
+def update_event(id: int, event_update: schemas.EventUpdate, db: Session = Depends(get_db),
+                current_user: models.Users = Depends(check_admin)):
     event = db.query(models.Events).filter(models.Events.id == id).first()
     if event is None:
         raise HTTPException(status_code=404, detail="Event not found")
@@ -90,7 +92,8 @@ def update_event(id: int, event_update: schemas.EventUpdate, db: Session = Depen
 #############################
 
 @router.delete("/{id}")
-def delete_event(id: int, db: Session = Depends(get_db)):
+def delete_event(id: int, db: Session = Depends(get_db),
+                current_user: models.Users = Depends(check_orga)):
     event = db.query(models.Events).filter(models.Events.id == id).first()
     if event is None:
         raise HTTPException(status_code=404, detail="Event not found")

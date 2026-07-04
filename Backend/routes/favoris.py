@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session 
 from database import get_db
 import models, schemas
-
+from Oauth2 import get_current_user
 
 router = APIRouter(
     prefix="/favoris",
@@ -20,7 +20,8 @@ def get_favoris(db: Session = Depends(get_db)):
 ############################
 
 @router.post("/", response_model=schemas.FavorisResponse)
-def create_favoris(favoris: schemas.FavorisCreate, db: Session = Depends(get_db)):
+def create_favoris(favoris: schemas.FavorisCreate, db: Session = Depends(get_db),
+                current_user: models.Users = Depends(get_current_user)):
     new_favoris = models.Favoris(
         id_utilisateur=favoris.id_utilisateur,
         id_evenement=favoris.id_evenement
@@ -51,7 +52,8 @@ def get_favoris_by_user(id_utilisateur: int, db: Session = Depends(get_db)):
 
 #pour delete on a besoin des deux
 @router.delete("/{id_utilisateur}/{id_evenement}")
-def delete_favoris(id_utilisateur: int, id_evenement: int, db: Session = Depends(get_db)):
+def delete_favoris(id_utilisateur: int, id_evenement: int, db: Session = Depends(get_db),
+                current_user: models.Users = Depends(get_current_user)):
     favoris = db.query(models.Favoris).filter(
         models.Favoris.id_utilisateur == id_utilisateur,
         models.Favoris.id_evenement == id_evenement

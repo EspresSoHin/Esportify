@@ -4,6 +4,7 @@ from database import get_db
 import models, schemas
 from passlib.context import CryptContext
 from datetime import datetime, date
+from Oauth2 import get_current_user, check_admin
 
 
 router = APIRouter(
@@ -24,7 +25,7 @@ def get_users(db: Session = Depends(get_db)): #ca ouvre une session de base de d
 #########################
 
 @router.post("/", response_model=schemas.UserResponse)
-def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
+def create_user(user: schemas.UserCreate, db: Session = Depends(get_db), current_user: models.Users = Depends(get_current_user)):
     hashed_password = pwd_context.hash(user.password[:72]) #hash le mot de passe avant de le stocker
     new_user = models.Users(
         pseudo=user.pseudo, 
@@ -53,7 +54,8 @@ def get_user(id: int, db: Session = Depends(get_db)):
 #############################
 
 @router.put("/{id}", response_model=schemas.UserResponse)
-def update_user(id: int, user_update: schemas.UserUpdate, db: Session = Depends(get_db)):
+def update_user(id: int, user_update: schemas.UserUpdate, db: Session = Depends(get_db),
+                current_user: models.Users = Depends(check_admin)):
     user = db.query(models.Users).filter(models.Users.id == id).first()
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
@@ -78,7 +80,8 @@ def update_user(id: int, user_update: schemas.UserUpdate, db: Session = Depends(
 #############################
 
 @router.delete("/{id}")
-def delete_user(id: int, db: Session = Depends(get_db)):
+def delete_user(id: int, db: Session = Depends(get_db),
+                current_user: models.Users = Depends(check_admin)):
     user = db.query(models.Users).filter(models.Users.id == id).first()
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
