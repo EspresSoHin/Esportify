@@ -15,7 +15,7 @@ app.add_middleware(
     allow_origins=[
         "http://127.0.0.1:5500",   # local Live Server
         "http://localhost:5500",    # d local alternative
-        "https://esportify-qr3z.onrender.com/"
+        "https://esportify-fr.onrender.com/"
     ],
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE"],
