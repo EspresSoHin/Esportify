@@ -1177,6 +1177,8 @@ function renderParticipants() {
 async function rejectParticipant(inscriptionId) {
   if (!confirm('Refuser ce joueur ? Il ne pourra plus se réinscrire.')) return;
 
+  const token = sessionStorage.getItem('token');
+
   try {
     const response = await fetch(`${API_URL}/inscriptions/${inscriptionId}`, {
       method: 'PATCH',
@@ -1205,6 +1207,8 @@ async function rejectParticipant(inscriptionId) {
 }
 
 async function acceptParticipant(inscriptionId) {
+  const token = sessionStorage.getItem('token');
+
   try {
     const response = await fetch(`${API_URL}/inscriptions/${inscriptionId}`, {
       method: 'PATCH',
@@ -1355,6 +1359,7 @@ async function creerEvenement() {
     return;
   }
 const id_organisateur = parseInt(sessionStorage.getItem('id'));
+const token = sessionStorage.getItem('token');
 
   try {
     const response = await fetch(`${API_URL}/events`, {
@@ -1445,6 +1450,8 @@ function renderMesEvents() {
 async function annulerInscription(inscriptionId) {
   if (!confirm('Se désinscrire de cet événement ?')) return;
 
+  const token = sessionStorage.getItem('token');
+
   try {
     const response = await fetch(`${API_URL}/inscriptions/${inscriptionId}`, {
       method: 'DELETE',
@@ -1512,6 +1519,7 @@ async function submitJoueurEvent() {
   const dateDebut  = document.getElementById('joueurDateDebut').value;
   const dateFin    = document.getElementById('joueurDateFin').value;
   const image      = document.getElementById('joueurImage').value.trim() || null;
+  const token      = sessionStorage.getItem('token');
 
   if (!titre || !joueurs || !desc || !dateDebut || !dateFin) {
     alert('Merci de remplir tous les champs obligatoires (*).');
@@ -1736,6 +1744,8 @@ async function moderationAction(id, action) {
   const payload = statutMap[action];
   if (!payload) return;
 
+  const token = sessionStorage.getItem('token');
+
   try {
     const response = await fetch(`${API_URL}/events/${id}`, {
       method: 'PUT',
@@ -1793,7 +1803,7 @@ async function promouvoir(userId, nouveauRole) {
     }
 
     user.role = nouveauRole;
-    showToast(`${pseudo} promu ${nouveauRole}`);
+    showToast(`${user.pseudo} promu ${nouveauRole}`);
     renderUtilisateurs();
 
   } catch(error) {
@@ -2052,6 +2062,7 @@ async function updateProfile() {
     return;
   }
 
+  const token = sessionStorage.getItem('token');
   const payload = { pseudo, email };
   if (password) payload.password = password;
 
