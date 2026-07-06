@@ -14,8 +14,8 @@ router = APIRouter(
 
 pwd_context = CryptContext(schemes=["bcrypt"])
 
-@router.get("/", response_model=list[schemas.UserResponse]) #fais ca quand quelqu'un fait un GET sur /users, renvoie liste de tous les utilisateurs
-def get_users(db: Session = Depends(get_db)): #ca ouvre une session de base de données pour cette route
+@router.get("/", response_model=list[schemas.UserResponse])
+def get_users(db: Session = Depends(get_db)):
     users = db.query(models.Users).all() #traduction de "SELECT * FROM users" en SQLAlchemy
     return users
 
@@ -30,10 +30,10 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db), current
     new_user = models.Users(
         pseudo=user.pseudo, 
         email=user.email, 
-        password=hashed_password) #crée un nouvel utilisateur avec les données fournies
-    db.add(new_user) #ajoute l'utilisateur à la session
-    db.commit() #enregistre les changements dans la base de données
-    db.refresh(new_user) #rafraîchit l'instance pour obtenir l'ID généré
+        password=hashed_password)
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
     return new_user
 
 #############################
@@ -41,7 +41,7 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db), current
 #############################
 
 
-@router.get("/{id}", response_model=schemas.UserResponse)  # cette fois c'est UN seul user, pas une liste
+@router.get("/{id}", response_model=schemas.UserResponse)
 def get_user(id: int, db: Session = Depends(get_db)):
         user = db.query(models.Users).filter(models.Users.id == id).first() #traduction de "SELECT * FROM users WHERE id = {id}" 
         if user is None:

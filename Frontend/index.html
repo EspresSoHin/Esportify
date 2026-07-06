@@ -7,7 +7,7 @@
   <title>Esportify – Joue. Survis. Domine.</title>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
-  <link rel="icon" href="/Frontend/Assets/favicon.png" sizes="any">
+  <link rel="icon" href="Assets/favicon.png" sizes="any">
 </head>
 <body>
 
@@ -34,7 +34,6 @@
     <div class="lang-selector">
       <span class="lang-btn active" data-lang="fr">🌐 FR</span>
       <span class="lang-btn" data-lang="en">🌐 EN</span>
-    </div>
     </div>
   </div>
 </nav>
@@ -80,38 +79,12 @@
   <div class="tournament-carousel">
     <div class="tournament-cards" id="tournamentCards">
       <div class="tournament-card">
-        <a href="event-detail.html?id=1" class="tournament-card-link">
-        <div class="card-badge validated">Validé</div>
-        <div class="game-icon"></div>
-        <h3 class="card-title">VALORANT OPEN CUP</h3>
-        <div class="card-meta">
-          <span>👥 32 joueurs</span>
-          <span>📅 10 Août</span>
-        </div></a>
       </div>
 
       <div class="tournament-card featured">
-        <a href="event-detail.html?id=2" class="tournament-card-link">
-        <div class="card-badge live">En cours</div>
-        <div class="game-icon"> <div class="game-icon">
-</div>
-</div>
-        <h3 class="card-title">LEAGUE OF LEGENDS 5V5</h3>
-        <div class="card-meta">
-          <span>👥 45 joueurs</span>
-          <span>📅 28 Août</span>
-        </div></a>
       </div>
       
       <div class="tournament-card">
-        <a href="event-detail.html?id=3" class="tournament-card-link">
-        <div class="card-badge pending">En attente</div>
-        <div class="game-icon"></div>
-        <h3 class="card-title">CS2 PRO SERIES</h3>
-        <div class="card-meta">
-          <span>👥 64 joueurs</span>
-          <span>📅 4 Sept.</span>
-        </div></a>
       </div>
     </div>
     <div class="carousel-controls">
@@ -172,7 +145,7 @@
       <p class="contact-label">NOUS ÉCRIRE</p>
       <h2>CONTACTEZ-NOUS</h2>
       <p class="contact-desc">Questions, partenariat ou presse — on vous répond au plus vite.</p>
-      <form class="contact-form" action="" method="POST" label ="contactForm">
+      <form class="contact-form" id="contactForm">
         <div class="form-row">
           <div class="form-group">
             <label>Prénom</label>

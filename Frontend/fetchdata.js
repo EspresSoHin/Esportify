@@ -154,14 +154,3 @@ async function init() {
 }
 
 init();
-
-
-// ================================
-// DONNÉES ROLES (on remplace par un fetch api/)
-// ================================
-
-//const ROLES = {
-//    1: 'joueur',
-//    2: 'admin',
-//    3: 'organisateur'
-//};

@@ -15,7 +15,7 @@ def get_roles(db: Session = Depends(get_db)):
     return roles
 
 ################################
-## RECUPERATION DE STATUT EV R##
+## RECUPERATION DE ROLES R##
 ################################
 
 @router.get("/users/{id_role}", response_model=list[schemas.RoleResponse])

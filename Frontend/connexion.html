@@ -6,7 +6,7 @@
   <title>Esportify – Connexion</title>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
-  <link rel="icon" href="/Frontend/Assets/favicon.png" sizes="any">
+  <link rel="icon" href="Assets/favicon.png" sizes="any">
 </head>
 <body>
 
@@ -72,7 +72,7 @@
         <div class="form-group">
           <label>Mot de passe</label>
           <div class="input-password-wrapper">
-            <input type="password" id="loginPassword" placeholder="••••••••" />
+            <input type="password" id="loginPassword" autocomplete="current-password" placeholder="••••••••" />
             <button class="toggle-password" onclick="togglePasswordVisibility('loginPassword', this)" type="button">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
@@ -87,7 +87,7 @@
           </label>
           <a href="#" class="forgot-link">Mot de passe oublié ?</a>
         </div>
-        <button class="btn-submit auth-submit" onclick="handleLogin()">
+        <button type="submit" class="btn-submit auth-submit" onclick="handleLogin()">
           Se connecter →
         </button>
         <div class="auth-error" id="loginError" style="display:none"></div>
@@ -122,7 +122,7 @@
           <div class="form-group">
             <label>Mot de passe *</label>
             <div class="input-password-wrapper">
-              <input type="password" id="regPassword" placeholder="••••••••" />
+              <input type="password" id="regPassword" autocomplete="new-password" placeholder="••••••••" />
               <button class="toggle-password" onclick="togglePasswordVisibility('regPassword', this)" type="button">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
@@ -148,7 +148,7 @@
             J'accepte les <a href="#" style="color:var(--blue)">conditions d'utilisation</a>
           </label>
         </div>
-        <button class="btn-submit auth-submit" onclick="handleRegister()">
+        <button type="submit" class="btn-submit auth-submit" onclick="handleRegister()">
           Créer mon compte →
         </button>
         <div class="auth-error" id="registerError" style="display:none"></div>

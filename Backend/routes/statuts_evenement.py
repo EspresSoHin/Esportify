@@ -14,9 +14,8 @@ def get_statuts_evenement(db: Session = Depends(get_db)):
     statuts_evenement = db.query(models.StatutsEvenement).all() 
     return statuts_evenement
 
-# ON GARDE QUE GET POUR AFFICHER LES STATUTS 
-# DANS LE FRONT AU LIEU D'AVOIR DES DONNEES STATIQUES
-# LES MODIF DE STATUS SE FONT VIA LA ROUTE EVENTS
+# ON GARDE QUE GET POUR AFFICHER LES STATUTS
+# LES MODIFS DE STATUS SE FONT VIA LA ROUTE EVENTS
 
 ################################
 ## RECUPERATION DE STATUT EV R##

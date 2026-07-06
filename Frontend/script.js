@@ -61,6 +61,7 @@ document.addEventListener('dataReady', () => {
   });
 }
   if (document.getElementById('admin-vue-dashboard')) {
+  if (!checkAuth(2)) return; // 2 = admin
   renderAdminDashboard();
   renderModeration();
   renderUtilisateurs();
@@ -93,16 +94,6 @@ document.addEventListener('dataReady', () => {
   if (document.getElementById('eventDetail')) {
     renderDetail();
 }
-  if (document.getElementById('orgaEventsList')) {
-    if (!checkAuth(3)) return; // 3 = organisateur
-    renderOrgaEvents();
-  }
-
-  if (document.getElementById('admin-vue-dashboard')) {
-    if (!checkAuth(2)) return; // 2 = admin
-    renderAdminDashboard();
-  }
-
   if (document.getElementById('formConnexion')) {
     renderStatsConnexion();
 }
@@ -223,8 +214,6 @@ async function handleLogin() {
 
     showToast(`Bienvenue ${data.pseudo} !`);
 
-    console.log("Login OK, data reçue:", data);
-
     setTimeout(() => {
       if (data.id_role === 2)      window.location.href = 'dashboard-admin.html';
       else if (data.id_role === 3) window.location.href = 'dashboard-organisateur.html';
@@ -265,19 +254,14 @@ async function handleRegister() {
   }
 
   try {
-    console.log("Envoi vers API...", { pseudo, email, password });
-
     const response = await fetch(`${API_URL}/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' }, 
       body: JSON.stringify({ pseudo, email, password })
     });
 
-    console.log("Réponse reçue:", response.status);
-
     if (!response.ok) {
       const err = await response.json();
-      console.log("Erreur API:", err);
       showAuthError('registerError', err.detail || 'Erreur lors de la création du compte.');
       return;
     }
@@ -287,7 +271,7 @@ async function handleRegister() {
     }
     catch(error) {
     showAuthError('registerError', 'Erreur de connexion au serveur.');
-    console.error("Erreur catch:", error);
+    console.error(error);
   }
 }
 
@@ -476,7 +460,7 @@ function renderCarousel() {
   }).join('');
 
 
-  if (dotsContainer) { //tibo in shape voice: rien à foutre de ton argument
+  if (dotsContainer) {
     dotsContainer.innerHTML = Array.from({ length: totalPages }, (_, i) => `
       <span class="dot${i === carouselPage ? ' active' : ''}" onclick="goToCarouselPage(${i})"></span>
     `).join('');
@@ -546,7 +530,7 @@ function gameSVG(titre) {
 // ================================
 
 async function toggleFavori(eventId, btnEl) {
-  if (!sessionStorage.getItem('id')) { //a supprimer et remplacer
+  if (!sessionStorage.getItem('id')) {
     showToast(`
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
       <a href="connexion.html">Connecte-toi</a> pour sauvegarder cet événement
@@ -634,15 +618,10 @@ function renderEvents(events) {
     return;
   }
 
-  events.forEach(ev => {
-    if (typeof ev.titre !== 'string') console.log("titre pas string:", ev.id, ev.titre);
-    if (typeof ev.organisateur !== 'string') console.log("organisateur pas string:", ev.id, ev.organisateur);
-  });
-
   container.innerHTML = events.map(ev => `
     <a href="event-detail.html?id=${ev.id}" class="event-list-card statut-${ev.statut}">
       ${ev.image
-        ? `<img class="elc-image" src="${ev.image}" alt="${escapeHTML(ev.titre)}" />`
+        ? `<img class="elc-image" src="${escapeHTML(ev.image)}" alt="${escapeHTML(ev.titre)}" />`
         : `<div class="elc-image-placeholder">${gameSVG(ev.titre)}</div>`
       }
       <div class="elc-body">
@@ -684,8 +663,8 @@ function renderAllEvents() {
   container.innerHTML = events.map(ev => `
     <a href="event-detail.html?id=${ev.id}" class="event-list-card statut-${ev.statut}">
       ${ev.image
-        ? `<img class="elc-image" src="${ev.image}" alt="${escapeHTML(ev.titre)}" />`
-        : `<div class="elc-image-placeholder">${gameSVG(ev.titre)}</div>`
+        ? `<img class="elc-image" src="${escapeHTML(ev.image)}" alt="${escapeHTML(ev.titre)}" />`
+        : `<div class="elc-image-placeholder">${gameSVG(escapeHTML(ev.titre))}</div>`
       }
       <div class="elc-body">
         <div class="elc-header">
@@ -1116,11 +1095,34 @@ async function saveEditEvent() {
   }
 }
 
-function deleteEvent(id) {
+async function deleteEvent(id) {
   if (!confirm('Supprimer cet événement ?')) return;
-  const idx = EVENTS_DATA.findIndex(e => e.id === id);
-  if (idx !== -1) EVENTS_DATA.splice(idx, 1);
-  renderOrgaEvents();
+
+  const token = sessionStorage.getItem('token');
+
+  try {
+    const response = await fetch(`${API_URL}/events/${id}`, {
+      method: 'DELETE',
+      credentials: 'include',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+
+    if (!response.ok) {
+      showToast('Erreur lors de la suppression.');
+      return;
+    }
+
+    const idx = EVENTS_DATA.findIndex(e => e.id === id);
+    if (idx !== -1) EVENTS_DATA.splice(idx, 1);
+
+    showToast('Événement supprimé.');
+    renderOrgaEvents();
+    renderAllEvents();
+
+  } catch(error) {
+    console.error(error);
+    showToast('Erreur de connexion au serveur.');
+  }
 }
 
 
@@ -1178,7 +1180,7 @@ async function rejectParticipant(inscriptionId) {
   try {
     const response = await fetch(`${API_URL}/inscriptions/${inscriptionId}`, {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
       credentials: 'include',
       body: JSON.stringify({ id_statut_inscription: 3 }) // 3 = refuse
     });
@@ -1206,7 +1208,7 @@ async function acceptParticipant(inscriptionId) {
   try {
     const response = await fetch(`${API_URL}/inscriptions/${inscriptionId}`, {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
       credentials: 'include',
       body: JSON.stringify({ id_statut_inscription: 2 }) // 2 = accepte
     });
@@ -1357,7 +1359,7 @@ const id_organisateur = parseInt(sessionStorage.getItem('id'));
   try {
     const response = await fetch(`${API_URL}/events`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
       credentials: 'include',
       body: JSON.stringify({
         titre,
@@ -1418,7 +1420,7 @@ function renderMesEvents() {
     const badgeText = insc.id_statut_inscription === 2 ? 'Accepté'
       : insc.id_statut_inscription === 1 ? 'En attente'
       : insc.id_statut_inscription === 3 ? 'Refusé'
-      : 'badge-non_valide';
+      : 'Non validé';
 
     const modifiable = insc.id_statut_inscription === 1;
 
@@ -1446,7 +1448,8 @@ async function annulerInscription(inscriptionId) {
   try {
     const response = await fetch(`${API_URL}/inscriptions/${inscriptionId}`, {
       method: 'DELETE',
-      credentials: 'include'
+      headers: { 'Authorization': `Bearer ${token}` },
+      credentials: 'include',
     });
 
     if (!response.ok) {
@@ -1495,10 +1498,6 @@ function renderScores() {
   }).join('');
 }
 
-function editJoueurEvent(id) {
-  alert(`Modification de l'événement #${id} — à connecter au formulaire.`);
-}
-
 function showJoueurCreateModal() {
   document.getElementById('joueurCreateModal').style.display = 'flex';
 }
@@ -1522,7 +1521,7 @@ async function submitJoueurEvent() {
   try {
     const response = await fetch(`${API_URL}/events`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
       credentials: 'include',
       body: JSON.stringify({
         titre,
@@ -1589,9 +1588,6 @@ function renderHomeCards() {
   if (!container) return;
 
   const userId = parseInt(sessionStorage.getItem('id'));
-
-  console.log("favoris filtrés:", FAVORIS_DATA.filter(f => f.id_utilisateur === userId));
- 
 
   const mesFavoris = FAVORIS_DATA.filter(f => f.id_utilisateur === userId);
   const mesInscriptions = INSCRIPTIONS_DATA.filter(i => i.id_utilisateur === userId);
@@ -1743,7 +1739,7 @@ async function moderationAction(id, action) {
   try {
     const response = await fetch(`${API_URL}/events/${id}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
       credentials: 'include',
       body: JSON.stringify(payload)
     });
@@ -1774,8 +1770,8 @@ async function moderationAction(id, action) {
   }
 }
 
-async function promouvoir(pseudo, nouveauRole) {
-  const user = USERS_DATA.find(u => u.pseudo === pseudo);
+async function promouvoir(userId, nouveauRole) {
+  const user = USERS_DATA.find(u => u.id === userId);
   if (!user) return;
 
   const token = sessionStorage.getItem('token');
@@ -1783,16 +1779,10 @@ async function promouvoir(pseudo, nouveauRole) {
   const role = ROLES_DATA.find(r => r.nom.toLowerCase() === nouveauRole);
   if (!role) return;
 
-  const userComplet = USERS_DATA.find(u => u.pseudo === pseudo);
-  if (!userComplet) return;
-
   try {
-    const response = await fetch(`${API_URL}/users/${userComplet.id}`, {
+    const response = await fetch(`${API_URL}/users/${userId}`, {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
       credentials: 'include',
       body: JSON.stringify({ id_role: role.id })
     });
@@ -1831,7 +1821,7 @@ function renderAdminDashboard() {
   if (!tbody) return;
 
   const recentes = EVENTS_DATA
-    .filter(ev => ev.statut === 'en_attente' || ev.statut === 'suspendu') //si oui et pareil ici, relecture total du code pour enlever tout ça
+    .filter(ev => ev.statut === 'en_attente' || ev.statut === 'suspendu')
     .slice(0, 5);
 
   tbody.innerHTML = recentes.length === 0
@@ -1921,7 +1911,7 @@ function renderUtilisateurs() {
             ${rolesDisponibles.map(r => `
               <button class="action-btn ${r === 'admin' ? 'btn-stop' : 'btn-start'}"
                       style="font-size:11px; padding:5px 12px;"
-                      onclick="promouvoir('${escapeHTML(u.pseudo)}', '${r}')">
+                      onclick="promouvoir('${u.id}', '${r}')">
                 → ${r.charAt(0).toUpperCase() + r.slice(1)}
               </button>
             `).join('')}
@@ -1938,7 +1928,7 @@ function renderAdminAllEvents() {
   container.innerHTML = EVENTS_DATA.map(ev => `
     <a href="event-detail.html?id=${ev.id}" class="event-list-card statut-${ev.statut}">
       ${ev.image
-        ? `<img class="elc-image" src="${ev.image}" alt="${escapeHTML(ev.titre)}" />`
+        ? `<img class="elc-image" src="${escapeHTML(ev.image)}" alt="${escapeHTML(ev.titre)}" />`
         : `<div class="elc-image-placeholder">${gameSVG(escapeHTML(ev.titre))}</div>`
       }
       <div class="elc-body">
@@ -1992,7 +1982,7 @@ function renderAdminStats() {
     return `
       <div class="stats-bar-item">
         <div class="stats-bar-label">
-          <span>${orga}</span>
+          <span>${escapeHTML(orga)}</span>
           <span>${count} event${count > 1 ? 's' : ''}</span>
         </div>
         <div class="stats-bar-track">
@@ -2068,7 +2058,7 @@ async function updateProfile() {
   try {
     const response = await fetch(`${API_URL}/users/${id}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
       credentials: 'include',
       body: JSON.stringify(payload)
     });
