@@ -2,7 +2,7 @@
 // INITIALISATION POUR API
 // ================================
 
-const API_URL = 'http://127.0.0.1:8000' // je changerai avec le lien render après
+const API_URL = 'https://esportify-qr3z.onrender.com' // je changerai avec le lien render après
 
 // ================================
 // DONNÉES GÉNÉRALES
