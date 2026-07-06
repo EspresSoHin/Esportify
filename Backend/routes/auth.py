@@ -69,7 +69,7 @@ def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
         key="access_token",
         value=token,
         httponly=True,       # inaccessible au JS
-        secure=False,        # passer à True en production (HTTPS)
+        secure=True,        # passer à True en production (HTTPS)
         samesite="lax",      # protection CSRF de base. Je mets pas 'strict' parce que RickRoll
         max_age=3600         # 1 heure
     )
