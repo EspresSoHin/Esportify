@@ -22,7 +22,8 @@ def get_events(db: Session = Depends(get_db)):
 ##########################
 
 @router.post("/", response_model=schemas.EventResponse)
-def create_event(event: schemas.EventCreate, db: Session = Depends(get_db)):
+def create_event(event: schemas.EventCreate, db: Session = Depends(get_db),
+                current_user: models.Users = Depends(get_current_user)):
     new_event = models.Events(
         titre=event.titre,
         description=event.description,

@@ -56,6 +56,13 @@ class EventCreate(BaseModel):
     image_url: Optional[str] = None
     id_organisateur: int
 
+    @validator('date_fin')
+    def date_fin_apres_debut(cls, v, values):
+        if 'date_debut' in values and v <= values['date_debut']:
+            raise ValueError('La date de fin doit être après la date de début')
+        return v
+        
+
 class EventResponse(BaseModel):
     id: int
     titre: str
