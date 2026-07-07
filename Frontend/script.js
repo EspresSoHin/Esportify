@@ -114,6 +114,19 @@ function escapeHTML(str) {
     .replaceAll("'", "&#039;");
 }
 
+
+// ================================
+// GESTION DES ERREURS
+// ================================
+
+function getErrorMessage(err) {
+  if (!err || !err.detail) return 'Une erreur est survenue.';
+  if (typeof err.detail === 'string') return err.detail;
+  if (Array.isArray(err.detail)) return err.detail.map(e => e.msg).join(' ');
+  return 'Une erreur est survenue.';
+}
+
+
 // ================================
 // LANGUAGE SELECTOR
 // ================================
@@ -1380,13 +1393,13 @@ const token = sessionStorage.getItem('token');
 
     if (!response.ok) {
       const err = await response.json();
-      alert(err.detail || 'Erreur lors de la création.');
+      alert(getErrorMessage(err));
       return;
     }
 
   const newEvent = await response.json();
 
-  EVENTS_DATA.push(mapEvent(newEvent, null));
+  EVENTS_DATA.push(mapEvent(newEvent, null, STATUTS_EVENEMENT));
 
   hideCreateModal();
   renderOrgaEvents();
@@ -1545,7 +1558,7 @@ async function submitJoueurEvent() {
 
     if (!response.ok) {
       const err = await response.json();
-      alert(err.detail || 'Erreur lors de la création.');
+      alert(getErrorMessage(err));
       return;
     }
 
