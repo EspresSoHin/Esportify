@@ -24,6 +24,12 @@ class UserCreate(BaseModel):
     password: str = Field(max_length=72)
     email: EmailStr
 
+    @validator('password') #je le rajoute sinon le message d'erreur est en anglais
+    def valider_password_longueur(cls, v):
+        if len(v) > 72:
+            raise ValueError('Le mot de passe ne doit pas dépasser 72 caractères.')
+        return v
+
 # Ce que l'API renvoie (jamais le password !)
 class UserResponse(BaseModel):
     id: int
