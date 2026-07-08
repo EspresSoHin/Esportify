@@ -119,11 +119,11 @@ function escapeHTML(str) {
 // GESTION DES ERREURS
 // ================================
 
-function getErrorMessage(err) {
-  if (!err || !err.detail) return 'Une erreur est survenue.';
+function getErrorMessage(err, fallback = 'Une erreur est survenue.') {
+  if (!err || !err.detail) return fallback;
   if (typeof err.detail === 'string') return err.detail;
   if (Array.isArray(err.detail)) return err.detail.map(e => e.msg).join(' ');
-  return 'Une erreur est survenue.';
+  return fallback;
 }
 
 
@@ -248,9 +248,14 @@ async function handleRegister() {
   const confirm   = document.getElementById('regPasswordConfirm').value;
   const cgu       = document.getElementById('regCGU').checked;
   const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+  const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   if (!pseudo || !email || !password || !confirm) {
     showAuthError('registerError', 'Merci de remplir tous les champs obligatoires.');
+    return;
+  }
+    if (!EMAIL_REGEX.test(email)) {
+    showAuthError('registerError', 'Merci d\'entrer une adresse email valide.');
     return;
   }
   if (password !== confirm) {
@@ -275,7 +280,7 @@ async function handleRegister() {
 
     if (!response.ok) {
       const err = await response.json();
-      showAuthError('registerError', err.detail || 'Erreur lors de la création du compte.');
+      showAuthError('registerError', getErrorMessage(err, 'Erreur lors de la création du compte.'));
       return;
     }
 
@@ -910,7 +915,7 @@ async function sInscrire(eventId) {
 
     if (!response.ok) {
       const err = await response.json();
-      showToast(err.detail || 'Erreur lors de l\'inscription.');
+      showToast(getErrorMessage(err, 'Erreur lors de l\'inscription.'));
       return;
     }
 
@@ -1769,7 +1774,7 @@ async function moderationAction(id, action) {
 
     if (!response.ok) {
       const err = await response.json();
-      showToast('Erreur : ' + (err.detail || 'inconnue'));
+      showToast('Erreur : ' + getErrorMessage(err, 'inconnue'));
       return;
     }
 
@@ -2089,7 +2094,7 @@ async function updateProfile() {
 
     if (!response.ok) {
       const err = await response.json();
-      errorEl.textContent = err.detail || 'Erreur lors de la mise à jour.';
+      errorEl.textContent = getErrorMessage(err, 'Erreur lors de la mise à jour.');
       errorEl.style.display = 'block';
       return;
     }
