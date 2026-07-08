@@ -62,6 +62,18 @@ class EventCreate(BaseModel):
     image_url: Optional[str] = None
     id_organisateur: int
 
+    @validator('titre')
+    def valider_titre_longueur(cls, v):
+        if len(v) > 45:
+            raise ValueError('Le titre ne doit pas dépasser 45 caractères.')
+        return v
+
+    @validator('description')
+    def valider_description_longueur(cls, v):
+        if len(v) > 200:
+            raise ValueError('La description ne doit pas dépasser 200 caractères.')
+        return v
+
     @validator('date_fin')
     def date_fin_apres_debut(cls, v, values):
         if 'date_debut' in values and v <= values['date_debut']:
