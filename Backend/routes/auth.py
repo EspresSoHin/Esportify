@@ -17,9 +17,10 @@ pwd_context = CryptContext(schemes=["bcrypt"])
 def login(
     form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
 ):
-    user = (
-        db.query(models.Users).filter(models.Users.pseudo == form_data.username).first()
-    )
+    user = (db.query(models.Users).filter(
+        (models.Users.pseudo == form_data.username) | (models.Users.email == form_data.username)
+    ).first()
+)
 
     if not user or not pwd_context.verify(form_data.password, user.password):
         raise HTTPException(
