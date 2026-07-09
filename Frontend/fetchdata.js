@@ -114,7 +114,8 @@ async function fetchAllData(){
         
     }
     catch(error){
-        console.error(error)
+        console.error(error);
+    showToast('Le serveur se réveille, réessaie dans 15-20 secondes...');
     }
 }
 

@@ -225,7 +225,7 @@ async function handleLogin() {
     sessionStorage.setItem('id', data.id);
     sessionStorage.setItem('id_role', data.id_role);
 
-    showToast(`Bienvenue ${data.pseudo} !`);
+    showToast(`Bienvenue ${escapeHTML(data.pseudo)} !`);
 
     setTimeout(() => {
       if (data.id_role === 2)      window.location.href = 'dashboard-admin.html';
