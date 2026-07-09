@@ -30,6 +30,12 @@ class UserCreate(BaseModel):
             raise ValueError('Le mot de passe ne doit pas dépasser 72 caractères.')
         return v
 
+    @validator('pseudo')
+    def valider_pseudo_longueur(cls, v):
+        if len(v) > 45:
+            raise ValueError('Le pseudo ne doit pas dépasser 45 caractères.')
+        return v
+
 # Ce que l'API renvoie (jamais le password !)
 class UserResponse(BaseModel):
     id: int

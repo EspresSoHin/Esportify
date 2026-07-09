@@ -55,7 +55,7 @@ def get_user(id: int, db: Session = Depends(get_db)):
 
 @router.put("/{id}", response_model=schemas.UserResponse)
 def update_user(id: int, user_update: schemas.UserUpdate, db: Session = Depends(get_db),
-                current_user: models.Users = Depends(check_admin)):
+                current_user: models.Users = Depends(get_current_user)):
     user = db.query(models.Users).filter(models.Users.id == id).first()
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
