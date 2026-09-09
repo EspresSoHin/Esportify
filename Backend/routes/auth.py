@@ -15,7 +15,7 @@ pwd_context = CryptContext(schemes=["bcrypt"])
 
 @router.post("/login")
 def login(
-    form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
+    response: Response, form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
 ):
     user = (
         db.query(models.Users).filter(models.Users.pseudo == form_data.username).first()
@@ -31,6 +31,17 @@ def login(
         data={"sub": user.pseudo, "id": user.id, "role": user.id_role}
     )
 
+       # On set le cookie HttpOnly — JS ne peut pas y accéder
+    response.set_cookie(
+        key="access_token",
+        value=token,
+        httponly=True,       # inaccessible au JS
+        secure=False,        # passer à True en production (HTTPS)
+        samesite="lax",      # protection CSRF de base. Je mets pas 'strict' parce que RickRoll
+        max_age=3600         # 1 heure
+    )
+
+    # On renvoie juste les infos non sensibles pour le frontend
     return {
         "access_token": token,
         "token_type": "bearer",
@@ -63,24 +74,6 @@ def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
     return {"message": "Compte créé avec succès"}
 
 
-
-   # On set le cookie HttpOnly — JS ne peut pas y accéder
-    response.set_cookie(
-        key="access_token",
-        value=token,
-        httponly=True,       # inaccessible au JS
-        secure=False,        # passer à True en production (HTTPS)
-        samesite="lax",      # protection CSRF de base. Je mets pas 'strict' parce que RickRoll
-        max_age=3600         # 1 heure
-    )
-
-    # On renvoie juste les infos non sensibles pour le frontend
-    return {
-        "access_token": token,
-        "pseudo": user.pseudo,
-        "id": user.id,
-        "id_role": user.id_role
-    }
 
 @router.post("/logout")
 def logout(response: Response):
