@@ -295,12 +295,16 @@ if (document.getElementById('formConnexion')) {
 
 
 async function handleLogout() {
-  await fetch(`${API_URL}/logout`, {
-    method: 'POST',
-    credentials: 'include'
-  });
-  sessionStorage.clear();
-  window.location.href = 'connexion.html';
+  const token = sessionStorage.getItem('token');
+    await fetch(`${API_URL}/logout`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    sessionStorage.clear();
+    window.location.href = 'connexion.html';
 }
 
 

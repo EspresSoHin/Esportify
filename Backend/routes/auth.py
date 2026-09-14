@@ -6,7 +6,7 @@ from passlib.context import CryptContext
 from jose import jwt
 from datetime import datetime, timedelta
 import models, schemas
-from Oauth2 import create_access_token, decode_token
+from Oauth2 import create_access_token, decode_token, get_current_user
 
 router = APIRouter(tags=["auth"])
 
@@ -76,8 +76,13 @@ def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
 
 
 @router.post("/logout")
-def logout(response: Response):
-    response.delete_cookie("access_token")
+def logout(response: Response, current_user: models.Users = Depends(get_current_user)):
+    response.delete_cookie(
+        key="access_token",
+        httponly=True,
+        secure=False,      # même valeur que dans set_cookie
+        samesite="lax"
+    )
     return {"message": "Déconnecté"}
 
 
