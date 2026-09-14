@@ -36,7 +36,7 @@ def login(
         key="access_token",
         value=token,
         httponly=True,       # inaccessible au JS
-        secure=False,        # passer à True en production (HTTPS)
+        secure=True,        # passer à True en production (HTTPS)
         samesite="lax",      # protection CSRF de base. Je mets pas 'strict' parce que RickRoll
         max_age=3600         # 1 heure
     )
@@ -80,7 +80,7 @@ def logout(response: Response, current_user: models.Users = Depends(get_current_
     response.delete_cookie(
         key="access_token",
         httponly=True,
-        secure=False,      # même valeur que dans set_cookie
+        secure=True,      # même valeur que dans set_cookie
         samesite="lax"
     )
     return {"message": "Déconnecté"}
