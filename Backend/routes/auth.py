@@ -18,7 +18,8 @@ def login(
     response: Response, form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
 ):
     user = (
-        db.query(models.Users).filter(models.Users.pseudo == form_data.username).first()
+        db.query(models.Users).filter(models.Users.pseudo == form_data.username).first() or 
+        db.query(models.Users).filter(models.Users.email == form_data.username).first()
     )
 
     if not user or not pwd_context.verify(form_data.password, user.password):
@@ -36,7 +37,7 @@ def login(
         key="access_token",
         value=token,
         httponly=True,       # inaccessible au JS
-        secure=True,        # passer à True en production (HTTPS)
+        secure=False,        # passer à True en production (HTTPS)
         samesite="lax",      # protection CSRF de base. Je mets pas 'strict' parce que RickRoll
         max_age=3600         # 1 heure
     )
@@ -80,7 +81,7 @@ def logout(response: Response, current_user: models.Users = Depends(get_current_
     response.delete_cookie(
         key="access_token",
         httponly=True,
-        secure=True,      # même valeur que dans set_cookie
+        secure=False,      # même valeur que dans set_cookie
         samesite="lax"
     )
     return {"message": "Déconnecté"}
