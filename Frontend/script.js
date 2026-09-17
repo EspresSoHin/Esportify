@@ -2031,12 +2031,12 @@ function switchAdminView(view) {
 
 function fillParamsForm() {
   const pseudo = sessionStorage.getItem('pseudo');
+  const email = sessionStorage.getItem('email');
   const pseudoInput = document.getElementById('paramsPseudo');
   const emailInput = document.getElementById('paramsEmail');
   
   if (pseudoInput) pseudoInput.value = pseudo || '';
-  
-  const user = USERS_DATA.find(u => u.pseudo === pseudo);
+  if (emailInput) emailInput.value = email || '';
   if (emailInput && user) emailInput.value = user.email || '';
 }
 
@@ -2075,6 +2075,7 @@ async function updateProfile() {
     }
 
     sessionStorage.setItem('pseudo', pseudo);
+    sessionStorage.setItem('email', email);
     showToast('Profil mis à jour !');
 
   } catch(error) {

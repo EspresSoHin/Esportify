@@ -14,35 +14,20 @@ router = APIRouter(
 
 pwd_context = CryptContext(schemes=["bcrypt"])
 
-@router.get("/", response_model=list[schemas.UserResponse])
+@router.get("/", response_model=list[schemas.UserPublicResponse])
 def get_users(db: Session = Depends(get_db)):
     users = db.query(models.Users).all() #traduction de "SELECT * FROM users" en SQLAlchemy
     return users
 
-
-#########################
-## création d'un user C##
-#########################
-
-@router.post("/", response_model=schemas.UserResponse)
-def create_user(user: schemas.UserCreate, db: Session = Depends(get_db), current_user: models.Users = Depends(get_current_user)):
-    hashed_password = pwd_context.hash(user.password[:72]) #hash le mot de passe avant de le stocker
-    new_user = models.Users(
-        pseudo=user.pseudo, 
-        email=user.email, 
-        password=hashed_password)
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
-    return new_user
+#On mets pas de POST parce que c'est un doublon avec register
 
 #############################
 ## récupération d'un user R##
 #############################
 
 
-@router.get("/{id}", response_model=schemas.UserResponse)
-def get_user(id: int, db: Session = Depends(get_db)):
+@router.get("/{id}", response_model=schemas.UserPublicResponse)
+def get_user(id: int, db: Session = Depends(get_db), current_user: models.Users = Depends(check_admin)):
         user = db.query(models.Users).filter(models.Users.id == id).first() #traduction de "SELECT * FROM users WHERE id = {id}" 
         if user is None:
             raise HTTPException(status_code=404, detail="User not found")
@@ -55,11 +40,20 @@ def get_user(id: int, db: Session = Depends(get_db)):
 
 @router.put("/{id}", response_model=schemas.UserResponse)
 def update_user(id: int, user_update: schemas.UserUpdate, db: Session = Depends(get_db),
-                current_user: models.Users = Depends(check_admin)):
+                current_user: models.Users = Depends(get_current_user)):
     user = db.query(models.Users).filter(models.Users.id == id).first()
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
     
+ # On autorise le proprio du compte OU un admin à modifier
+    if current_user.id != user.id and current_user.id_role != 2:
+        raise HTTPException(status_code=403, detail="Tu ne peux modifier que ton propre profil.")
+
+    # Le changement de rôle reste réservé à l'admin, même sur son propre compte
+    if user_update.id_role is not None and current_user.id_role != 2:
+        raise HTTPException(status_code=403, detail="Seul un administrateur peut modifier un rôle.")
+
+
     if user_update.pseudo is not None:
         user.pseudo = user_update.pseudo
     if user_update.email is not None:
