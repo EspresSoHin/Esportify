@@ -2035,6 +2035,8 @@ function fillParamsForm() {
   const pseudoInput = document.getElementById('paramsPseudo');
   const emailInput = document.getElementById('paramsEmail');
   
+  const user = USERS_DATA.find(u => u.pseudo === pseudo);
+
   if (pseudoInput) pseudoInput.value = pseudo || '';
   if (emailInput) emailInput.value = email || '';
   if (emailInput && user) emailInput.value = user.email || '';
