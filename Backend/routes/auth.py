@@ -111,7 +111,8 @@ def get_me(request: Request, db: Session = Depends(get_db)):
     return {
         "pseudo": user.pseudo,
         "id": user.id,
-        "id_role": user.id_role
+        "id_role": user.id_role,
+        "email": user.email
     }
 
 
