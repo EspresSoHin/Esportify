@@ -18,8 +18,8 @@ def get_roles(db: Session = Depends(get_db)):
 ## RECUPERATION DE ROLES R##
 ################################
 
-@router.get("/users/{id_role}", response_model=list[schemas.RoleResponse])
-def get_roles_by_user(id_role: int, db: Session = Depends(get_db)):
+@router.get("/{id_role}", response_model=list[schemas.RoleResponse])
+def get_roles_by_id(id_role: int, db: Session = Depends(get_db)):
     roles = db.query(models.Roles).filter(
         models.Roles.id == id_role
     ).all()

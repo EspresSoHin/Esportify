@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session 
+from sqlalchemy.exc import IntegrityError
 from database import get_db
 import models, schemas
 from Oauth2 import get_current_user
@@ -28,7 +29,12 @@ def create_favoris(favoris: schemas.FavorisCreate, db: Session = Depends(get_db)
     )
 
     db.add(new_favoris)
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="Cet événement est déjà dans tes favoris.")
+    
     db.refresh(new_favoris)
     return new_favoris
 
@@ -54,6 +60,10 @@ def get_favoris_by_user(id_utilisateur: int, db: Session = Depends(get_db)):
 @router.delete("/{id_utilisateur}/{id_evenement}")
 def delete_favoris(id_utilisateur: int, id_evenement: int, db: Session = Depends(get_db),
                 current_user: models.Users = Depends(get_current_user)):
+    if current_user.id != id_utilisateur and current_user.id_role not in (2, 3):
+        raise HTTPException(status_code=403, detail="Tu ne peux pas supprimer les favoris d'un autre utilisateur.")
+
+    
     favoris = db.query(models.Favoris).filter(
         models.Favoris.id_utilisateur == id_utilisateur,
         models.Favoris.id_evenement == id_evenement

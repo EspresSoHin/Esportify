@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session 
 from database import get_db
 import models, schemas
+from sqlalchemy.exc import IntegrityError
 from Oauth2 import get_current_user
 from Oauth2 import get_current_user, check_admin
 
@@ -31,7 +32,12 @@ def create_scores(scores: schemas.ScoresCreate, db: Session = Depends(get_db),
     )
 
     db.add(new_score)
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="Données invalides — vérifie la position (doit être positive) et les identifiants.")
+    
     db.refresh(new_score)
     return new_score
 

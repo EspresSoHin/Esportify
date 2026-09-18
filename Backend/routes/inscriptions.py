@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session 
+from sqlalchemy.exc import IntegrityError
 from database import get_db
 import models, schemas
-from Oauth2 import get_current_user
+from Oauth2 import get_current_user, check_orga, check_admin
 
 router = APIRouter(
     prefix="/inscriptions",
@@ -22,13 +23,21 @@ def get_inscriptions(db: Session = Depends(get_db)):
 @router.post("/", response_model=schemas.InscriptionResponse)
 def create_inscriptions(inscription: schemas.InscriptionCreate, db: Session = Depends(get_db),
                 current_user: models.Users = Depends(get_current_user)):
+    if current_user.id != inscription.id_utilisateur and current_user.id_role not in (2, 3):
+        raise HTTPException(status_code=403, detail="Tu ne peux pas inscrire un autre utilisateur.")
+
     new_inscription = models.InscriptionsEv(
         id_utilisateur= inscription.id_utilisateur,
         id_evenement= inscription.id_evenement
     )
 
     db.add(new_inscription)
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="Tu es déjà inscrit à cet événement.")
+    
     db.refresh(new_inscription)
     return new_inscription
 
@@ -53,7 +62,7 @@ def get_inscription(id_inscription: int, db: Session = Depends(get_db)):
 
 @router.patch("/{id}", response_model=schemas.InscriptionResponse)
 def patch_inscription(id: int, inscription_patch: schemas.InscriptionUpdate, db: Session = Depends(get_db),
-                current_user: models.Users = Depends(get_current_user)):
+                current_user: models.Users = Depends(check_orga)):
     inscription = db.query(models.InscriptionsEv).filter(models.InscriptionsEv.id == id).first()
     if inscription is None:
         raise HTTPException(status_code=404, detail="Inscription not found")
@@ -76,6 +85,10 @@ def delete_inscription(id: int, db: Session = Depends(get_db),
     inscription = db.query(models.InscriptionsEv).filter(models.InscriptionsEv.id == id).first()
     if inscription is None:
         raise HTTPException(status_code=404, detail="Inscription not found")
+    
+    if current_user.id != inscription.id_utilisateur and current_user.id_role not in (2, 3):
+        raise HTTPException(status_code=403, detail="Tu ne peux pas supprimer l'inscription d'un autre utilisateur.")
+
     
     db.delete(inscription)
     db.commit()
