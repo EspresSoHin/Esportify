@@ -2050,7 +2050,7 @@ function fillParamsForm() {
 
   if (pseudoInput) pseudoInput.value = pseudo || '';
   if (emailInput) emailInput.value = email || '';
-  if (emailInput && user) emailInput.value = user.email || '';
+  //if (emailInput && user) emailInput.value = user.email || '';
 }
 
 async function updateProfile() {
