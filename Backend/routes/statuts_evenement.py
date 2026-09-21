@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session 
 from database import get_db
 import models, schemas
+from services.statuts_ev_service import StatutsEvService
 
 
 router = APIRouter(
@@ -11,8 +12,4 @@ router = APIRouter(
 
 @router.get("/", response_model=list[schemas.StatutEvenementResponse])
 def get_statuts_evenement(db: Session = Depends(get_db)):
-    statuts_evenement = db.query(models.StatutsEvenement).all() 
-    return statuts_evenement
-
-# ON GARDE QUE GET POUR AFFICHER LES STATUTS
-# LES MODIFS DE STATUS SE FONT VIA LA ROUTE EVENTS
+    return StatutsEvService(db).get_all()
