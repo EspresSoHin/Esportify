@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
-import schemas
+import schemas, models
 from fastapi import HTTPException
 from repositories.favoris_repository import FavorisRepository
-from sqlalchemy.exc import IntegrityError #j'ai ajouté ça
+from sqlalchemy.exc import IntegrityError
 
 class FavorisService:
     def __init__(self, db: Session):

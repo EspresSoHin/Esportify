@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-import schemas
+import schemas, models
 from passlib.context import CryptContext
 from fastapi import HTTPException
 from repositories.users_repository import UsersRepository
@@ -47,5 +47,3 @@ class UsersService:
         if user is None:
             raise HTTPException(status_code=404, detail="User not found")
         return {"detail": "User deleted successfully"}
-
-
