@@ -22,11 +22,8 @@ class UsersRepository:
 
     def get_by_id(self, id: int):
         return self.db.query(models.Users).filter(models.Users.id == id).first()
-
- 
-
+    
     #pour auth
-
     def get_by_pseudo_or_email(self, pseudo: str, email: str):
         return self.db.query(models.Users).filter(
             (models.Users.pseudo == pseudo) | (models.Users.email == email)).first()

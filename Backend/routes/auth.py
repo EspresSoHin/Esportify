@@ -16,42 +16,23 @@ pwd_context = CryptContext(schemes=["bcrypt"])
 
 @router.post("/login")
 def login(
-    response: Response, form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
-):
-    user = (
-        db.query(models.Users).filter(models.Users.pseudo == form_data.username).first() or 
-        db.query(models.Users).filter(models.Users.email == form_data.username).first()
-    )
-
-    if not user or not pwd_context.verify(form_data.password, user.password):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Identifiant ou mot de passe incorrect",
-        )
-
-    token = create_access_token(
-        data={"sub": user.pseudo, "id": user.id, "role": user.id_role}
-    )
-
-       # On set le cookie HttpOnly — JS ne peut pas y accéder
+    response: Response, form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    result = AuthService(db).login(form_data)
+    
+    # On set le cookie HttpOnly — JS ne peut pas y accéder
     response.set_cookie(
         key="access_token",
-        value=token,
+        value=result["access_token"],
         httponly=True,       # inaccessible au JS
         secure=False,        # passer à True en production (HTTPS)
         samesite="lax",      # protection CSRF de base. Je mets pas 'strict' parce que RickRoll
         max_age=3600         # 1 heure
     )
+    
+    return result
 
-    # On renvoie juste les infos non sensibles pour le frontend
-    return {
-        "access_token": token,
-        "token_type": "bearer",
-        "pseudo": user.pseudo,
-        "id": user.id,
-        "id_role": user.id_role,
-    }
 
+   
 
 @router.post("/register")
 def register(user: schemas.UserCreate, db: Session = Depends(get_db)):

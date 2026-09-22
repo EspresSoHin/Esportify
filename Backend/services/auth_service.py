@@ -1,14 +1,9 @@
 from sqlalchemy.orm import Session
 import schemas, models
-from fastapi import HTTPException
-#from sqlalchemy.exc import IntegrityError
+from fastapi import HTTPException, status
 from repositories.users_repository import UsersRepository
 from passlib.context import CryptContext
-#from jose import jwt #maybe
-#from fastapi import Depends, status, Response, Request
-#from fastapi.security import OAuth2PasswordRequestForm
-#from datetime import datetime, timedelta
-#from Oauth2 import create_access_token, decode_token, get_current_user
+from Oauth2 import create_access_token
 
 
 pwd_context = CryptContext(schemes=["bcrypt"])
@@ -28,6 +23,23 @@ class AuthService:
 
         return {"message": "Compte créé avec succès"}
 
+    def login(self, form_data):
+        user = self.repo.get_by_pseudo_or_email(form_data.username, form_data.username)
 
-    
-   
+        if not user or not pwd_context.verify(form_data.password, user.password):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Identifiant ou mot de passe incorrect",
+            )
+
+        token = create_access_token(
+            data={"sub": user.pseudo, "id": user.id, "role": user.id_role}
+        )
+
+        return {
+            "access_token": token,
+            "token_type": "bearer",
+            "pseudo": user.pseudo,
+            "id": user.id,
+            "id_role": user.id_role,
+        } 
