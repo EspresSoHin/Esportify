@@ -7,6 +7,7 @@ from jose import jwt
 from datetime import datetime, timedelta
 import models, schemas
 from Oauth2 import create_access_token, decode_token, get_current_user
+from services.auth_service import AuthService
 
 router = APIRouter(tags=["auth"])
 
@@ -54,25 +55,7 @@ def login(
 
 @router.post("/register")
 def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
-    existing = (
-        db.query(models.Users)
-        .filter(
-            (models.Users.pseudo == user.pseudo) | (models.Users.email == user.email)
-        )
-        .first()
-    )
-
-
-    if existing:
-        raise HTTPException(status_code=400, detail="Pseudo ou email déjà utilisé")
-
-    hashed = pwd_context.hash(user.password[:72])
-    new_user = models.Users(pseudo=user.pseudo, email=user.email, password=hashed)
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
-
-    return {"message": "Compte créé avec succès"}
+    return AuthService(db).register(user)
 
 
 
