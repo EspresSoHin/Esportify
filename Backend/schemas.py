@@ -35,6 +35,16 @@ class UserResponse(BaseModel):
     class Config:
         from_attributes = True  # permet de lire un objet SQLAlchemy directement
 
+#pour la route /me, on renvoie juste les infos publiques
+class UserPublicResponse(BaseModel):
+    id: int
+    pseudo: str
+    id_role: int
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
 # Pour modifier un user (tout est optionnel)
 class UserUpdate(BaseModel):
     pseudo: Optional[str] = None

@@ -295,12 +295,16 @@ if (document.getElementById('formConnexion')) {
 
 
 async function handleLogout() {
-  await fetch(`${API_URL}/logout`, {
-    method: 'POST',
-    credentials: 'include'
-  });
-  sessionStorage.clear();
-  window.location.href = 'connexion.html';
+  const token = sessionStorage.getItem('token');
+    await fetch(`${API_URL}/logout`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    sessionStorage.clear();
+    window.location.href = 'connexion.html';
 }
 
 
@@ -1177,6 +1181,8 @@ function renderParticipants() {
 async function rejectParticipant(inscriptionId) {
   if (!confirm('Refuser ce joueur ? Il ne pourra plus se réinscrire.')) return;
 
+  const token = sessionStorage.getItem('token');
+
   try {
     const response = await fetch(`${API_URL}/inscriptions/${inscriptionId}`, {
       method: 'PATCH',
@@ -1205,6 +1211,8 @@ async function rejectParticipant(inscriptionId) {
 }
 
 async function acceptParticipant(inscriptionId) {
+  const token = sessionStorage.getItem('token');
+
   try {
     const response = await fetch(`${API_URL}/inscriptions/${inscriptionId}`, {
       method: 'PATCH',
@@ -1355,6 +1363,7 @@ async function creerEvenement() {
     return;
   }
 const id_organisateur = parseInt(sessionStorage.getItem('id'));
+const token = sessionStorage.getItem('token');
 
   try {
     const response = await fetch(`${API_URL}/events`, {
@@ -1445,6 +1454,8 @@ function renderMesEvents() {
 async function annulerInscription(inscriptionId) {
   if (!confirm('Se désinscrire de cet événement ?')) return;
 
+  const token = sessionStorage.getItem('token');
+
   try {
     const response = await fetch(`${API_URL}/inscriptions/${inscriptionId}`, {
       method: 'DELETE',
@@ -1517,6 +1528,8 @@ async function submitJoueurEvent() {
     alert('Merci de remplir tous les champs obligatoires (*).');
     return;
   }
+
+  const token = sessionStorage.getItem('token');
 
   try {
     const response = await fetch(`${API_URL}/events`, {
@@ -1735,6 +1748,8 @@ async function moderationAction(id, action) {
 
   const payload = statutMap[action];
   if (!payload) return;
+
+  const token = sessionStorage.getItem('token');
 
   try {
     const response = await fetch(`${API_URL}/events/${id}`, {
@@ -2027,13 +2042,15 @@ function switchAdminView(view) {
 
 function fillParamsForm() {
   const pseudo = sessionStorage.getItem('pseudo');
+  const email = sessionStorage.getItem('email');
   const pseudoInput = document.getElementById('paramsPseudo');
   const emailInput = document.getElementById('paramsEmail');
   
-  if (pseudoInput) pseudoInput.value = pseudo || '';
-  
   const user = USERS_DATA.find(u => u.pseudo === pseudo);
-  if (emailInput && user) emailInput.value = user.email || '';
+
+  if (pseudoInput) pseudoInput.value = pseudo || '';
+  if (emailInput) emailInput.value = email || '';
+  //if (emailInput && user) emailInput.value = user.email || ''; ah putain c'est ça qui a tout cassé...
 }
 
 async function updateProfile() {
@@ -2055,6 +2072,8 @@ async function updateProfile() {
   const payload = { pseudo, email };
   if (password) payload.password = password;
 
+  const token = sessionStorage.getItem('token');
+
   try {
     const response = await fetch(`${API_URL}/users/${id}`, {
       method: 'PUT',
@@ -2071,6 +2090,7 @@ async function updateProfile() {
     }
 
     sessionStorage.setItem('pseudo', pseudo);
+    sessionStorage.setItem('email', email);
     showToast('Profil mis à jour !');
 
   } catch(error) {

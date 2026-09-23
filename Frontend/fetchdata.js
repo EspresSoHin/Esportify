@@ -139,6 +139,7 @@ async function checkSession() {
             sessionStorage.setItem('pseudo', data.pseudo);
             sessionStorage.setItem('id', data.id);
             sessionStorage.setItem('id_role', data.id_role);
+            sessionStorage.setItem('email', data.email);
         } else {
             sessionStorage.clear();
         }
