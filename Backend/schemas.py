@@ -1,18 +1,8 @@
-from pydantic import BaseModel, EmailStr, validator, Field
+from pydantic import BaseModel, EmailStr, field_validator, Field
 from datetime import datetime, date
 from typing import Optional
+import re
 
-
-#bloc pour censurer des mots dans les commentaires
-class CommentaireCreate(BaseModel):
-    contenu: str
-
-    @validator('contenu')
-    def censurer_mots(cls, v):
-        mots_interdits = ['spam', 'insulte', ...] #listes à completer, liens, slurs, etc
-        for mot in mots_interdits:
-            v = v.replace(mot, '***')
-        return v
 
 ## ################################
 ##         CREATION USERS        ##
@@ -46,6 +36,16 @@ class UserResponse(BaseModel):
 
     class Config:
         from_attributes = True  # permet de lire un objet SQLAlchemy directement
+
+#pour la route /me, on renvoie juste les infos publiques
+class UserPublicResponse(BaseModel):
+    id: int
+    pseudo: str
+    id_role: int
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
 
 # Pour modifier un user (tout est optionnel)
 class UserUpdate(BaseModel):
@@ -228,3 +228,49 @@ class StatutEvenementResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+## ##############################
+##        MESSAGES CHAT        ##
+## ##############################
+
+
+MOTS_INTERDITS = ["spam", "insulte"]  # à compléter
+
+#Regex pour la casse et pour les liens
+_RE_MOTS = re.compile(
+    r"\b(" + "|".join(map(re.escape, MOTS_INTERDITS)) + r")\b", re.IGNORECASE
+)
+
+_RE_LIENS = re.compile(
+    r"""
+    (?:
+        (?:https?|ftp)://\S+
+      | www\.\S+
+      | \b(?:[a-z0-9-]+\.)+(?:com|fr|net|org|gg|io|tv|me|ly|be|xyz)\b(?:/\S*)?
+    )
+    """,
+    re.IGNORECASE | re.VERBOSE,
+)
+
+
+class MessageCreate(BaseModel):
+    content: str = Field(min_length=1, max_length=500)
+
+    @field_validator("content")
+    @classmethod
+    def moderer(cls, v: str) -> str:
+        v = v.strip()
+        if not v:
+            raise ValueError("Le message ne peut pas être vide.")
+        v = _RE_LIENS.sub("[lien supprimé]", v)
+        v = _RE_MOTS.sub("***", v)
+        return v
+
+class MessageResponse(BaseModel):
+    id: str #pas un int car sur mongo c'est ObjectId 
+    id_utilisateur: int
+    id_evenement: int
+    author: str
+    content: str
+    created_at: datetime

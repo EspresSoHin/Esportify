@@ -313,12 +313,16 @@ if (document.getElementById('formConnexion')) {
 
 
 async function handleLogout() {
-  await fetch(`${API_URL}/logout`, {
-    method: 'POST',
-    credentials: 'include'
-  });
-  sessionStorage.clear();
-  window.location.href = 'connexion.html';
+  const token = sessionStorage.getItem('token');
+    await fetch(`${API_URL}/logout`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    sessionStorage.clear();
+    window.location.href = 'connexion.html';
 }
 
 
@@ -790,7 +794,7 @@ function renderDetail() {
         Se connecter pour s'inscrire
        </a>`;
 
-  const discussion = DISCUSSION_DATA[ev.id] || [];
+  
   const isFavori = FAVORIS_DATA.some(f => f.id_evenement === ev.id && f.id_utilisateur === userId);
 
   container.innerHTML = `
@@ -847,26 +851,17 @@ function renderDetail() {
         ${ev.discussion ? `
         <div class="detail-section">
           <h2 class="detail-section-title">Fil de discussion</h2>
-          <div class="discussion-list" id="discussionList">
-            ${discussion.map(msg => `
-              <div class="discussion-msg">
-                <div class="msg-avatar">${escapeHTML(msg.auteur.slice(0,2).toUpperCase())}</div>
-                <div class="msg-content">
-                  <div class="msg-header">
-                    <strong class="msg-auteur">${escapeHTML(msg.auteur)}</strong>
-                    <span class="msg-date">${formatDateShort(msg.date)}</span>
-                  </div>
-                  <p class="msg-text">${escapeHTML(msg.message)}</p>
-                </div>
-              </div>
-            `).join('')}
-          </div>
-          <div class="discussion-form">
-            <input type="text" id="msgInput" placeholder="Écris un message..." />
-            <button onclick="postMessage(${ev.id})">Envoyer</button>
-          </div>
+          <div class="discussion-list" id="discussionList"></div>
+            ${isConnected
+            ? `<div class="discussion-form">
+                <input type="text" id="msgInput" placeholder="Écris un message..." maxlength="500" />
+                <button onclick="envoyerMessage(${ev.id})">Envoyer</button>
+              </div>`
+          : `<p class="msg-text"><a href="connexion.html" style="color:var(--blue)">Connecte-toi</a> pour participer à la discussion.</p>`
+          }
         </div>
         ` : ''}
+
       </div>
 
       <div class="detail-sidebar">
@@ -894,6 +889,8 @@ function renderDetail() {
       </div>
     </div>
   `;
+
+  if (ev.discussion) loadMessages(ev.id);
 }
 
 
@@ -939,33 +936,105 @@ document.addEventListener('keydown', (e) => {
     const params = new URLSearchParams(window.location.search);
     const eventId = parseInt(params.get('id'));
 
-    postMessage(eventId);
+    envoyerMessage(eventId);
   }
 });
 
 
-function postMessage(eventId) {
-  const input = document.getElementById('msgInput');
-  const val = input.value.trim();
-  if (!val) return;
-
-  const list = document.getElementById('discussionList');
-  const now = new Date().toISOString();
-  const div = document.createElement('div');
-  div.className = 'discussion-msg new-msg';
-  div.innerHTML = `
-    <div class="msg-avatar">MOI</div>
-    <div class="msg-content">
-      <div class="msg-header">
-        <strong class="msg-auteur">Moi</strong>
-        <span class="msg-date">${formatDateShort(now)}</span>
+function messageHTML(msg) {
+  const isAdmin = sessionStorage.getItem('id_role') === '2';
+  return `
+    <div class="discussion-msg" data-id="${escapeHTML(msg.id)}">
+      <div class="msg-avatar">${escapeHTML(msg.author.slice(0, 2).toUpperCase())}</div>
+      <div class="msg-content">
+        <div class="msg-header">
+          <strong class="msg-auteur">${escapeHTML(msg.author)}</strong>
+          <span class="msg-date">${formatDateShort(msg.created_at)}</span>
+          ${isAdmin
+            ? `<button class="btn-icon danger" style="width:24px;height:24px;margin-left:auto;"
+                 title="Supprimer" onclick="supprimerMessage('${escapeHTML(msg.id)}')">✕</button>`
+            : ''}
+        </div>
+        <p class="msg-text">${escapeHTML(msg.content)}</p>
       </div>
-      <p class="msg-text">${escapeHTML(val)}</p>
-    </div>
-  `;
-  list.appendChild(div);
-  input.value = ''; 
-  list.scrollTop = list.scrollHeight;
+    </div>`;
+}
+
+async function loadMessages(eventId) {
+  const list = document.getElementById('discussionList');
+  if (!list) return;
+  try {
+    const response = await fetch(`${API_URL}/events/${eventId}/messages`);
+    if (!response.ok) throw new Error(`Messages API erreur ${response.status}`);
+    const messages = await response.json();
+    list.innerHTML = messages.length
+      ? messages.map(messageHTML).join('')
+      : `<p class="msg-text discussion-empty">Aucun message pour l'instant.</p>`;
+    list.scrollTop = list.scrollHeight;
+  } catch (error) {
+    console.error(error);
+    list.innerHTML = `<p class="msg-text">Impossible de charger la discussion.</p>`;
+  }
+}
+
+async function envoyerMessage(eventId) {
+  const input = document.getElementById('msgInput');
+  const content = input.value.trim();
+  if (!content) return;
+
+  const token = sessionStorage.getItem('token');
+  if (!token) {
+    showToast(`<a href="connexion.html">Connecte-toi</a> pour écrire un message`);
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_URL}/events/${eventId}/messages`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      credentials: 'include',
+      body: JSON.stringify({ content })
+    });
+
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      // en 422, detail est un tableau : on affiche un message générique
+      showToast(typeof err.detail === 'string' ? err.detail : 'Message invalide (1 à 500 caractères).');
+      return;
+    }
+
+    const msg = await response.json();
+    const list = document.getElementById('discussionList');
+    list.querySelector('.discussion-empty')?.remove();
+    list.insertAdjacentHTML('beforeend', messageHTML(msg));
+    input.value = '';
+    list.scrollTop = list.scrollHeight;
+  } catch (error) {
+    console.error(error);
+    showToast('Erreur de connexion au serveur.');
+  }
+}
+
+async function supprimerMessage(id) {
+  if (!confirm('Supprimer ce message ?')) return;
+  const token = sessionStorage.getItem('token');
+
+  try {
+    const response = await fetch(`${API_URL}/messages/${id}`, {
+      method: 'DELETE',
+      credentials: 'include',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!response.ok) {
+      showToast('Erreur lors de la suppression.');
+      return;
+    }
+    document.querySelector(`.discussion-msg[data-id="${id}"]`)?.remove();
+    showToast('Message supprimé.');
+  } catch (error) {
+    console.error(error);
+    showToast('Erreur de connexion au serveur.');
+  }
 }
 
 
@@ -1544,6 +1613,8 @@ async function submitJoueurEvent() {
     return;
   }
 
+  const token = sessionStorage.getItem('token');
+
   try {
     const response = await fetch(`${API_URL}/events`, {
       method: 'POST',
@@ -2055,13 +2126,15 @@ function switchAdminView(view) {
 
 function fillParamsForm() {
   const pseudo = sessionStorage.getItem('pseudo');
+  const email = sessionStorage.getItem('email');
   const pseudoInput = document.getElementById('paramsPseudo');
   const emailInput = document.getElementById('paramsEmail');
   
-  if (pseudoInput) pseudoInput.value = pseudo || '';
-  
   const user = USERS_DATA.find(u => u.pseudo === pseudo);
-  if (emailInput && user) emailInput.value = user.email || '';
+
+  if (pseudoInput) pseudoInput.value = pseudo || '';
+  if (emailInput) emailInput.value = email || '';
+  //if (emailInput && user) emailInput.value = user.email || ''; ah putain c'est ça qui a tout cassé...
 }
 
 async function updateProfile() {
@@ -2084,6 +2157,8 @@ async function updateProfile() {
   const payload = { pseudo, email };
   if (password) payload.password = password;
 
+  const token = sessionStorage.getItem('token');
+
   try {
     const response = await fetch(`${API_URL}/users/${id}`, {
       method: 'PUT',
@@ -2100,6 +2175,7 @@ async function updateProfile() {
     }
 
     sessionStorage.setItem('pseudo', pseudo);
+    sessionStorage.setItem('email', email);
     showToast('Profil mis à jour !');
 
   } catch(error) {

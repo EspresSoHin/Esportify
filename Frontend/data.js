@@ -11,29 +11,6 @@ const GALLERY_DATA = [
 ];
 
 // ================================
-// PAGE DÉTAIL EVENT
-// ================================
-const DISCUSSION_DATA = {
-  1: [
-    { auteur: "RavoGaming", date: "2026-08-01T14:32", message: "Hâte de participer, quelqu'un cherche une équipe ?" },
-    { auteur: "Syluskitten109", date: "2026-08-02T09:15", message: "Moi ! Je suis main duelist, DM moi sur Discord." },
-    { auteur: "ExpresSohin", date: "2026-08-03T18:44", message: "Rappel : le check-in ouvre 30 minutes avant le début. Soyez ponctuels !" }
-  ],
-  2: [
-    { auteur: "Syluskitten109", date: "2026-08-10T11:00", message: "On cherche un support pour compléter notre roster, Bronze+ accepté." },
-    { auteur: "RavoGaming", date: "2026-08-10T12:30", message: "GG à tous les participants du round 1 !" }
-  ],
-  4: [
-    { auteur: "ExpresSohin", date: "2026-08-15T20:00", message: "Les builds recommandés pour ce meta ? Perso je pars full aggro." },
-    { auteur: "Syluskitten109", date: "2026-08-16T08:10", message: "Sniper + heal c'est OP en fin de game, à tester." }
-  ],
-  6: [
-    { auteur: "RavoGaming", date: "2026-08-20T15:00", message: "Qui joue quel club ? J'ai pris le PSG pour représenter 🔵🔴" }
-  ]
-};
-
-
-// ================================
 // SVG ICONS
 // ================================
 

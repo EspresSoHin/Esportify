@@ -210,7 +210,7 @@
 
       <div class="filter-group" style="margin-bottom:1.5rem;">
         <label for="adminUserSearch">Rechercher un utilisateur</label>
-        <input type="text" id="adminUserSearch" placeholder="Pseudo..." oninput="renderUtilisateurs()" style="min-width:280px;" />
+        <input autocomplete="chrome-va-te-faire-foutre" onfocus="if(this.value) this.value=' ';" type="text" id="adminUserSearch" placeholder="Pseudo..." oninput="renderUtilisateurs()" style="min-width:280px;"/>
       </div>
 
       <div class="orga-table-wrapper">
