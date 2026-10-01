@@ -2155,8 +2155,6 @@ async function updateProfile() {
   const payload = { pseudo, email };
   if (password) payload.password = password;
 
-  const token = sessionStorage.getItem('token');
-
   try {
     const response = await fetch(`${API_URL}/users/${id}`, {
       method: 'PUT',
