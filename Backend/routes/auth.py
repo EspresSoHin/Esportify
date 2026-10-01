@@ -45,7 +45,7 @@ def logout(response: Response, current_user: models.Users = Depends(get_current_
     response.delete_cookie(
         key="access_token",
         httponly=True,
-        secure=False,      # même valeur que dans set_cookie
+        secure=True,      # même valeur que dans set_cookie
         samesite="lax"
     )
     return {"message": "Déconnecté"}
