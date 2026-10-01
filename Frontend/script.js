@@ -1613,8 +1613,6 @@ async function submitJoueurEvent() {
     return;
   }
 
-  const token = sessionStorage.getItem('token');
-
   try {
     const response = await fetch(`${API_URL}/events`, {
       method: 'POST',

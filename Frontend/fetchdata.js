@@ -151,7 +151,7 @@ async function checkSession() {
 
 async function init() {
     await checkSession();
-    updateNavbar();
+    await updateNavbar();
     await fetchAllData();
 }
 
