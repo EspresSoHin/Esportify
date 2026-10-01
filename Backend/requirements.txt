@@ -29,7 +29,7 @@ pyasn1==0.6.3
 pycparser==3.0
 pydantic==2.13.4
 pydantic_core==2.46.4
-pymongo == 4.18.2
+pymongo==4.18.2
 python-dotenv==1.2.2
 python-jose==3.5.0
 python-multipart==0.0.32
