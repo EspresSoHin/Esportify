@@ -2,7 +2,7 @@
 // INITIALISATION POUR API
 // ================================
 
-const API_URL = 'http://127.0.0.1:8000' //http://127.0.0.1:8000 localhttps://esportify-qr3z.onrender.com
+const API_URL = 'https://esportify-qr3z.onrender.com' //http://127.0.0.1:8000 local
 
 // ================================
 // DONNÉES GÉNÉRALES
