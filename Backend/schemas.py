@@ -14,13 +14,13 @@ class UserCreate(BaseModel):
     password: str = Field(max_length=72)
     email: EmailStr
 
-    @validator('password') #je le rajoute sinon le message d'erreur est en anglais
+    @field_validator('password') #je le rajoute sinon le message d'erreur est en anglais
     def valider_password_longueur(cls, v):
         if len(v) > 72:
             raise ValueError('Le mot de passe ne doit pas dépasser 72 caractères.')
         return v
 
-    @validator('pseudo')
+    @field_validator('pseudo')
     def valider_pseudo_longueur(cls, v):
         if len(v) > 45:
             raise ValueError('Le pseudo ne doit pas dépasser 45 caractères.')
@@ -68,19 +68,19 @@ class EventCreate(BaseModel):
     image_url: Optional[str] = None
     id_organisateur: int
 
-    @validator('titre')
+    @field_validator('titre')
     def valider_titre_longueur(cls, v):
         if len(v) > 45:
             raise ValueError('Le titre ne doit pas dépasser 45 caractères.')
         return v
 
-    @validator('description')
+    @field_validator('description')
     def valider_description_longueur(cls, v):
         if len(v) > 200:
             raise ValueError('La description ne doit pas dépasser 200 caractères.')
         return v
 
-    @validator('date_fin')
+    @field_validator('date_fin')
     def date_fin_apres_debut(cls, v, values):
         if 'date_debut' in values and v <= values['date_debut']:
             raise ValueError('La date de fin doit être après la date de début')
