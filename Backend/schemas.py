@@ -11,7 +11,7 @@ import re
 # les inputs du front end pour créer un user
 class UserCreate(BaseModel):
     pseudo: str
-    password: str = Field(max_length=72)
+    password: str = Field(max_length=128)
     email: EmailStr
 
     @field_validator('password') #je le rajoute sinon le message d'erreur est en anglais
