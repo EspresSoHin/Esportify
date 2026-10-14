@@ -6,8 +6,8 @@ from passlib.context import CryptContext
 from Oauth2 import create_access_token
 
 
-pwd_context = CryptContext(schemes=["bcrypt"])
-#AuthService  logique (hash bcrypt, génération JWT, cookies)
+pwd_context = CryptContext(schemes=["argon2"])
+#AuthService  logique (hash argon2, génération JWT, cookies)
 
 class AuthService:
     def __init__(self, db: Session):
@@ -18,7 +18,7 @@ class AuthService:
         if existing:
             raise HTTPException(status_code=400, detail="Pseudo ou email déjà utilisé")
 
-        hashed = pwd_context.hash(user.password[:72])
+        hashed = pwd_context.hash(user.password[:128])
         self.repo.create(user.pseudo, user.email, hashed)
 
         return {"message": "Compte créé avec succès"}

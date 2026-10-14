@@ -11,7 +11,7 @@ from services.auth_service import AuthService
 
 router = APIRouter(tags=["auth"])
 
-pwd_context = CryptContext(schemes=["bcrypt"])
+pwd_context = CryptContext(schemes=["argon2"])
 
 
 @router.post("/login")

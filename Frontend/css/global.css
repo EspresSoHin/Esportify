@@ -1,0 +1,64 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --navy: #030035;
+  --purple: #B734BE;
+  --purple-light: #cc55d6;
+  --blue: #45ACF7;
+  --blue-light: #6ec0ff;
+  --black: #070010;
+  --green: #22c55e;
+  --red: #ef4444;
+  --card-bg: linear-gradient(125deg, rgb(69, 172, 247, 0.2) 0%, rgb(183, 52, 190, 0.2) 100%);
+  --card-border: rgba(69, 172, 247, 0.3);
+  --text-muted: #8899bb;
+  --white: #ffffff;
+  --font-heading: 'Bebas Neue', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background-color: var(--black);
+  color: var(--white);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+a { text-decoration: none; color: inherit; }
+ul { list-style: none; }
+img { max-width: 100%; display: block; }
+
+/* ============================
+   COMPONENTS
+============================ */
+
+.btn-join,
+.btn-submit,
+.btn-create,
+.discussion-form button {
+  font-family: var(--font-body);
+  font-weight: 700;
+  transition: background 0.2s, transform 0.15s;
+}
+
+
+.tournament-card,
+.event-card,
+.profile-card,
+.detail-info-item {
+  background: var(--card-bg);
+  border-radius: 8px;
+}
+
+
+.card-badge,
+.event-badge,
+.elc-badge {
+  font-size: 10px;
+  font-weight: 600;
+  border-radius: 10px;
+}

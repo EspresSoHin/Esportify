@@ -5,7 +5,7 @@ from fastapi import HTTPException
 from repositories.users_repository import UsersRepository
 
 
-pwd_context = CryptContext(schemes=["bcrypt"])
+pwd_context = CryptContext(schemes=["argon2"])
 
 
 class UsersService:
@@ -16,7 +16,7 @@ class UsersService:
         return self.repo.get_all()
 
     def create(self, user: schemas.UserCreate):
-        hashed_password = pwd_context.hash(user.password[:72]) #hash le mot de passe avant de le stocker
+        hashed_password = pwd_context.hash(user.password[:128]) #hash le mot de passe avant de le stocker
         return self.repo.create(user.pseudo, user.email, hashed_password)
 
     def get_by_id(self, id: int):
@@ -37,7 +37,7 @@ class UsersService:
             raise HTTPException(status_code=403, detail="Seul un administrateur peut modifier un rôle.")
 
         if user_update.password is not None:
-            user_update.password = pwd_context.hash(user_update.password[:72])  # on hash AVANT d'envoyer au repo
+            user_update.password = pwd_context.hash(user_update.password[:128])  # on hash AVANT d'envoyer au repo
         
         return self.repo.update(id, user_update)
 
