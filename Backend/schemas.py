@@ -11,7 +11,7 @@ import re
 # les inputs du front end pour créer un user
 class UserCreate(BaseModel):
     pseudo: str
-    password: str = Field(max_length=72)
+    password: str = Field(max_length=128)
     email: EmailStr
 
 # Ce que l'API renvoie (jamais le password !)
