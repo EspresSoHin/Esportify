@@ -22,5 +22,3 @@ SCRIPTS.forEach(src => {
   s.async = false;  // garde l'ordre d'exécution
   document.body.appendChild(s);
 });
-
-//on enlevera les deux lignes data et fetchdata si ça marche.
