@@ -17,3 +17,6 @@ __pycache__/
 
 #Credentials
 CREDS.txt
+
+#Tests
+Backend/bruno/

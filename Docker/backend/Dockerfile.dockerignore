@@ -2,6 +2,7 @@
 .env.*
 venv/
 .venv/
+.git
 __pycache__/
 *.pyc
 Dockerfile
