@@ -1,4 +1,3 @@
-#On branche sur la base de données MongoDB
 import os
 from urllib.parse import quote_plus
 from dotenv import load_dotenv
@@ -8,7 +7,7 @@ load_dotenv()
 
 MONGO_USER = os.getenv("MONGO_USER")
 MONGO_PASSWORD = quote_plus(os.getenv("MONGO_PASSWORD"))  # encode @ : / etc.
-MONGO_HOST = os.getenv("MONGO_HOST")  # esportifychat.nif2fsl.mongodb.net
+MONGO_HOST = os.getenv("MONGO_HOST")
 MONGO_DB = os.getenv("MONGO_DB", "EsportifyChat")
 
 MONGO_URI = f"mongodb+srv://{MONGO_USER}:{MONGO_PASSWORD}@{MONGO_HOST}/?appName=EsportifyChat"
