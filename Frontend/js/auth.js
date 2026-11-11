@@ -95,7 +95,7 @@ async function handleRegister() {
     return;
   }
   if (!passwordRegex.test(password)) {
-    showAuthError('registerError', 'Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, et un caractère spécial (@,$,!,%,*,?,&).');
+    showAuthError('registerError', 'Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial (@,$,!,%,*,?,&).');
     return;
   }
   if (!cgu) {

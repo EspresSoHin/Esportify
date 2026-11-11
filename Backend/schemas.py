@@ -16,8 +16,8 @@ class UserCreate(BaseModel):
 
     @field_validator('password') #je le rajoute sinon le message d'erreur est en anglais
     def valider_password_longueur(cls, v):
-        if len(v) > 72:
-            raise ValueError('Le mot de passe ne doit pas dépasser 72 caractères.')
+        if len(v) > 128:
+            raise ValueError('Le mot de passe ne doit pas dépasser 128 caractères.')
         return v
 
     @field_validator('pseudo')
