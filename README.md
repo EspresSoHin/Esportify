@@ -177,7 +177,7 @@ POSTGRES_USER=postgres
 POSTGRES_PASSWORD=ton_mot_de_passe
 ```
 
-2. Lancez la stack depuis le dossier `Infrastructure/` :
+2. Lancez la stack depuis le dossier `Docker/` :
 
 ```bash
 cd Docker
