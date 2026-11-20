@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, field_validator, Field
+from pydantic import BaseModel, EmailStr, field_validator, Field, ValidationInfo
 from datetime import datetime, date
 from typing import Optional
 import re
@@ -81,8 +81,8 @@ class EventCreate(BaseModel):
         return v
 
     @field_validator('date_fin')
-    def date_fin_apres_debut(cls, v, values):
-        if 'date_debut' in values and v <= values['date_debut']:
+    def date_fin_apres_debut(cls, v, info: ValidationInfo):
+        if 'date_debut' in info.data and v <= info.data['date_debut']:
             raise ValueError('La date de fin doit être après la date de début')
         return v
         

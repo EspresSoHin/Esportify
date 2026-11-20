@@ -192,7 +192,7 @@ function renderUtilisateurs() {
             ${rolesDisponibles.map(r => `
               <button class="action-btn ${r === 'admin' ? 'btn-stop' : 'btn-start'}"
                       style="font-size:11px; padding:5px 12px;"
-                      onclick="promouvoir('${u.id}', '${r}')">
+                      onclick="promouvoir(${u.id}, '${r}')">
                 → ${r.charAt(0).toUpperCase() + r.slice(1)}
               </button>
             `).join('')}
