@@ -432,7 +432,7 @@ const token = sessionStorage.getItem('token');
 
   const newEvent = await response.json();
 
-  EVENTS_DATA.push(mapEvent(newEvent, null));
+  EVENTS_DATA.push(mapEvent(newEvent, null, STATUTS_EVENEMENT));
 
   hideCreateModal();
   renderOrgaEvents();
